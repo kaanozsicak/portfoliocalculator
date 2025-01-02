@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Portföy Yöneticisi</title>
+  <style>
+    /* Arkaplan: koyu ve mavimsi geçişli */
+    body {
+      margin: 0;
+      padding: 0;
+      background-image: url('https://d.pusulahaber.com.tr/news/553733.jpg');
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+      color: #f5f5f5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Temel container stilini tekrar kullanıyoruz */
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: #2c2c2c; /* İç kısım biraz daha açık ton */
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.6);
+      margin-bottom: 50px; /* Formlar arasında boşluk */
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #ffffff;
+    }
+
+    p {
+      line-height: 1.4;
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: inline-block;
+      width: 100px;
+      margin-bottom: 8px;
+    }
+
+    input[type="number"] {
+      background-color: #3b3b3b;
+      border: 1px solid #444;
+      border-radius: 4px;
+      color: #ffffff;
+      padding: 6px;
+      width: 150px;
+      outline: none;
+      margin-bottom: 12px; 
+    }
+
+    input[type="number"]:focus {
+      border-color: #888;
+    }
+
+    /* Buton: mavi degrade */
+    button {
+      background: linear-gradient(45deg, #4a60ff, #8f8fff);
+      border-radius: 6px;
+      border: none;
+      color: #ffffff;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    #results1, #results2, #results3 {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #1f1f1f;
+      border-radius: 6px;
+      border: 1px solid #444;
+    }
+
+    .coin-result {
+      margin-bottom: 6px;
+    }
+
+    .portfolio-row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .portfolio-row label {
+      margin-right: 10px;
+    }
+
+    .section-title {
+      font-size: 22px;
+      margin-bottom: 10px;
+      text-align: center;
+      color: #ffffff;
+    }
+
+    @media (max-width: 767px) {
+  body {
+    font-size: 16px; /* Mobilde yazı boyutunu biraz büyüt */
+  }
+
+  .container {
+    width: 90%; /* Genişliği ekran genişliğinin %90'ı olarak ayarla */
+    margin: 20px auto;
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 1.5rem; /* Başlık boyutunu biraz büyüt */
+  }
+
+  .portfolio-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .portfolio-row label {
+    margin-bottom: 5px;
+    width: 100%;
+  }
+
+  input[type="number"] {
+    width: 100%; /* Girdi alanlarını genişlet */
+    box-sizing: border-box; /* Padding ve border'ı genişliğe dahil et */
+  }
+
+  button {
+    width: 100%; /* Butonları tam genişlikte yap */
+    padding: 12px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 1.3rem;
+  }
+}
+  </style>
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<body>
+
+  <!-- 1. Portföy: Fonlar, Kripto, Nakit -->
+  <div class="container" id="container3">
+    <h1>Genel Portföy Dengesi Yöneticisi</h1>
+
+    <form id="portfolioForm3">
+      <div class="portfolio-row">
+        <label for="fonlar">Fonlar:</label>
+        <input type="number" id="fonlar" value="" step="any">
+      </div>
+      <div class="portfolio-row">
+        <label for="kripto">Kripto:</label>
+        <input type="number" id="kripto" value="" step="any">
+      </div>
+      <div class="portfolio-row">
+        <label for="nakit">Nakit:</label>
+        <input type="number" id="nakit" value="" step="any">
+      </div>
+      <button type="button" onclick="calculateRebalance3()">Hesapla</button>
+    </form>
+
+    <div id="results3"></div>
+  </div>
+
+  <!-- 2. Portföy: BTC, ETH, ADA, SOL, LINK, ARB, OP, TRY -->
+  <div class="container" id="container1">
+    <h1>Kripto Portföyü Yöneticisi</h1>
+
+    <form id="portfolioForm1">
+      <div class="portfolio-row">
+        <label for="btc">BTC:</label>
+        <input type="number" id="btc" value="" step="any">
+      </div>
+      <div class="portfolio-row">
+        <label for="eth">ETH:</label>
+        <input type="number" id="eth" value="" step="any">
+      </div>
+      <div class="portfolio-row">
+        <label for="ada">ADA:</label>
+        <input type="number" id="ada" value="" step="any">
+      </div>
+      <div class="portfolio-row">
+        <label for="sol">SOL:</label>
+        <input type="number" id="sol" value="" step="any">
+      </div>
+      <div class="portfolio-row">
+        <label for="link">LINK:</label>
+        <input type="number" id="link" value="" step="any">
+      </div>
+      <div class="portfolio-row">
+        <label for="arb">ARB:</label>
+        <input type="number" id="arb" value="" step="any">
+      </div>
+      <div class="portfolio-row">
+        <label for="op">OP:</label>
+        <input type="number" id="op" value="" step="any">
+      </div>
+      <div class="portfolio-row">
+        <label for="try1">TRY:</label>
+        <input type="number" id="try1" value="" step="any">
+      </div>
+      <button type="button" onclick="calculateRebalance1()">Hesapla</button>
+    </form>
+
+    <div id="results1"></div>
+  </div>
+
+  <!-- 3. Portföy: IIH, YKT, DBH, TRY -->
+  <div class="container" id="container2">
+    <h1>Fon Portföyü Yöneticisi</h1>
+
+    <form id="portfolioForm2">
+      <div class="portfolio-row">
+        <label for="iih">IIH:</label>
+        <input type="number" id="iih" value="" step="any">
+      </div>
+      <div class="portfolio-row">
+        <label for="ykt">YKT:</label>
+        <input type="number" id="ykt" value="" step="any">
+      </div>
+      <div class="portfolio-row">
+        <label for="dbh">DBH:</label>
+        <input type="number" id="dbh" value="" step="any">
+      </div>
+      <div class="portfolio-row">
+        <label for="try2">TRY:</label>
+        <input type="number" id="try2" value="" step="any">
+      </div>
+      <button type="button" onclick="calculateRebalance2()">Hesapla</button>
+    </form>
+
+    <div id="results2"></div>
+  </div>
+
+<script>
+  /*
+   * 2. Portföy (BTC, ETH, ADA, SOL, LINK, ARB, OP, TRY)
+   *    Hedef yüzdeler:
+   *    BTC: %40
+   *    ETH: %25
+   *    ADA: %10
+   *    SOL: %10
+   *    LINK: %10
+   *    ARB: %2.5
+   *    OP : %2.5
+   *    TRY: %0
+   */
+  const targetPercentages1 = {
+    "BTC": 0.40,
+    "ETH": 0.25,
+    "ADA": 0.10,
+    "SOL": 0.10,
+    "LINK": 0.10,
+    "ARB": 0.025,
+    "OP": 0.025,
+    "TRY": 0.0
+  };
+
+  function calculateRebalance1() {
+    // 1. Form1 alanlarından değerleri al
+    const currentPortfolio1 = {
+      BTC: parseFloat(document.getElementById('btc').value) || 0,
+      ETH: parseFloat(document.getElementById('eth').value) || 0,
+      ADA: parseFloat(document.getElementById('ada').value) || 0,
+      SOL: parseFloat(document.getElementById('sol').value) || 0,
+      LINK: parseFloat(document.getElementById('link').value) || 0,
+      ARB: parseFloat(document.getElementById('arb').value) || 0,
+      OP : parseFloat(document.getElementById('op').value)   || 0,
+      TRY: parseFloat(document.getElementById('try1').value)|| 0
+    };
+    
+    // 2. Mevcut portföyün toplam değerini hesapla
+    const totalValue1 = Object.values(currentPortfolio1).reduce((a, b) => a + b, 0);
+    
+    // 3. Hedef değerleri yüzdelere göre hesapla
+    const targetValues1 = {};
+    for (let coin in targetPercentages1) {
+      targetValues1[coin] = totalValue1 * targetPercentages1[coin];
+    }
+    
+    // 4. Coin'lerin Al/Sat değerlerini bul
+    const difference1 = {};
+    for (let coin in currentPortfolio1) {
+      difference1[coin] = targetValues1[coin] - currentPortfolio1[coin];
+    }
+    
+    // 5. Sonuçları form1 için ekranda göster
+    const resultsDiv1 = document.getElementById('results1');
+    resultsDiv1.innerHTML = ""; // Önceki sonuçları temizle
+    
+    resultsDiv1.innerHTML += `<p><strong>Toplam Portföy Değeri:</strong> ${totalValue1.toFixed(2)}</p>`;
+    resultsDiv1.innerHTML += `<p><strong>Hedef Değerler (% cinsinden dağılım):</strong></p>`;
+    for (let coin in targetValues1) {
+      resultsDiv1.innerHTML += `<div class="coin-result">${coin}: ${targetValues1[coin].toFixed(2)}</div>`;
+    }
+    resultsDiv1.innerHTML += `<p><strong>Al/Sat Miktarları:</strong></p>`;
+    for (let coin in difference1) {
+      const diffValue1 = difference1[coin];
+      let actionText1 = diffValue1 > 0 
+        ? `+${diffValue1.toFixed(2)} (Al)` 
+        : `${diffValue1.toFixed(2)} (Sat)`;
+      
+      resultsDiv1.innerHTML += `<div class="coin-result">${coin}: ${actionText1}</div>`;
+    }
+  }
+
+  /*
+   * 3. Portföy (IIH, YKT, DBH, TRY)
+   *    Hedef yüzdeler:
+   *    IIH: %33.3
+   *    YKT: %33.3
+   *    DBH: %33.3
+   *    TRY: %0
+   */
+  const targetPercentages2 = {
+    "IIH": 0.333,
+    "YKT": 0.333,
+    "DBH": 0.333,
+    "TRY": 0.0
+  };
+
+  function calculateRebalance2() {
+    // 1. Form2 alanlarından değerleri al
+    const currentPortfolio2 = {
+      IIH: parseFloat(document.getElementById('iih').value) || 0,
+      YKT: parseFloat(document.getElementById('ykt').value) || 0,
+      DBH: parseFloat(document.getElementById('dbh').value) || 0,
+      TRY: parseFloat(document.getElementById('try2').value) || 0
+    };
+    
+    // 2. Mevcut portföyün toplam değerini hesapla
+    const totalValue2 = Object.values(currentPortfolio2).reduce((a, b) => a + b, 0);
+    
+    // 3. Hedef değerleri yüzdelere göre hesapla
+    const targetValues2 = {};
+    for (let coin in targetPercentages2) {
+      targetValues2[coin] = totalValue2 * targetPercentages2[coin];
+    }
+    
+    // 4. Coin'lerin Al/Sat değerlerini bul
+    const difference2 = {};
+    for (let coin in currentPortfolio2) {
+      difference2[coin] = targetValues2[coin] - currentPortfolio2[coin];
+    }
+    
+    // 5. Sonuçları form2 için ekranda göster
+    const resultsDiv2 = document.getElementById('results2');
+    resultsDiv2.innerHTML = ""; // Önceki sonuçları temizle
+    
+    resultsDiv2.innerHTML += `<p><strong>Toplam Portföy Değeri:</strong> ${totalValue2.toFixed(2)}</p>`;
+    resultsDiv2.innerHTML += `<p><strong>Hedef Değerler (% cinsinden dağılım):</strong></p>`;
+    for (let coin in targetValues2) {
+      resultsDiv2.innerHTML += `<div class="coin-result">${coin}: ${targetValues2[coin].toFixed(2)}</div>`;
+    }
+    resultsDiv2.innerHTML += `<p><strong>Al/Sat Miktarları:</strong></p>`;
+    for (let coin in difference2) {
+      const diffValue2 = difference2[coin];
+      let actionText2 = diffValue2 > 0 
+        ? `+${diffValue2.toFixed(2)} (Al)` 
+        : `${diffValue2.toFixed(2)} (Sat)`;
+      
+      resultsDiv2.innerHTML += `<div class="coin-result">${coin}: ${actionText2}</div>`;
+    }
+  }
+
+  /*
+   * 1. Portföy (Fonlar, Kripto, Nakit)
+   *    Hedef yüzdeler:
+   *    Fonlar: %60
+   *    Kripto: %40
+   *    Nakit : %0
+   */
+  const targetPercentages3 = {
+    "Fonlar": 0.60,
+    "Kripto": 0.40,
+    "Nakit": 0.0
+  };
+
+  function calculateRebalance3() {
+    // 1. Form3 alanlarından değerleri al
+    const currentPortfolio3 = {
+      Fonlar: parseFloat(document.getElementById('fonlar').value) || 0,
+      Kripto: parseFloat(document.getElementById('kripto').value) || 0,
+      Nakit: parseFloat(document.getElementById('nakit').value) || 0
+    };
+    
+    // 2. Mevcut portföyün toplam değerini hesapla
+    const totalValue3 = Object.values(currentPortfolio3).reduce((a, b) => a + b, 0);
+    
+    // 3. Hedef değerleri yüzdelere göre hesapla
+    const targetValues3 = {};
+    for (let item in targetPercentages3) {
+      targetValues3[item] = totalValue3 * targetPercentages3[item];
+    }
+    
+    // 4. Al/Sat değerlerini bul
+    const difference3 = {};
+    for (let item in currentPortfolio3) {
+      difference3[item] = targetValues3[item] - currentPortfolio3[item];
+    }
+    
+    // 5. Sonuçları form3 için ekranda göster
+    const resultsDiv3 = document.getElementById('results3');
+    resultsDiv3.innerHTML = ""; // Önceki sonuçları temizle
+    
+    resultsDiv3.innerHTML += `<p><strong>Toplam Portföy Değeri:</strong> ${totalValue3.toFixed(2)}</p>`;
+    resultsDiv3.innerHTML += `<p><strong>Hedef Değerler (% cinsinden dağılım):</strong></p>`;
+    for (let item in targetValues3) {
+      resultsDiv3.innerHTML += `<div class="coin-result">${item}: ${targetValues3[item].toFixed(2)}</div>`;
+    }
+    resultsDiv3.innerHTML += `<p><strong>Al/Sat Miktarları:</strong></p>`;
+    for (let item in difference3) {
+      const diffValue3 = difference3[item];
+      let actionText3 = diffValue3 > 0 
+        ? `+${diffValue3.toFixed(2)} (Al)` 
+        : `${diffValue3.toFixed(2)} (Sat)`;
+      
+      resultsDiv3.innerHTML += `<div class="coin-result">${item}: ${actionText3}</div>`;
+    }
+  }
+</script>
+
+</body>
+</html>
