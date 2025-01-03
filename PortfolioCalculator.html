@@ -14,7 +14,6 @@
       color: #f5f5f5;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-
     .container {
       max-width: 600px;
       margin: 40px auto;
@@ -24,24 +23,20 @@
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
       margin-bottom: 50px;
     }
-
     h1 {
       text-align: center;
       margin-bottom: 20px;
       color: #ffffff;
     }
-
     p {
       line-height: 1.4;
       margin-bottom: 15px;
     }
-
     label {
       display: inline-block;
       width: 100px;
       margin-bottom: 8px;
     }
-
     input[type="number"] {
       background-color: #3b3b3b;
       border: 1px solid #444;
@@ -52,7 +47,6 @@
       outline: none;
       margin-bottom: 12px;
     }
-
     .percent-input {
       width: 70px;
       margin-left: 10px;
@@ -62,11 +56,9 @@
       color: #ffffff;
       padding: 6px;
     }
-
     input[type="number"]:focus {
       border-color: #888;
     }
-
     button {
       background: linear-gradient(45deg, #4a60ff, #8f8fff);
       border-radius: 6px;
@@ -78,11 +70,9 @@
       transition: 0.3s;
       margin-top: 10px;
     }
-
     button:hover {
       opacity: 0.9;
     }
-
     #results1, #results2, #results3, #results4 {
       margin-top: 20px;
       padding: 15px;
@@ -90,91 +80,87 @@
       border-radius: 6px;
       border: 1px solid #444;
     }
-
     .coin-result {
       margin-bottom: 6px;
     }
-
     .portfolio-row {
       display: flex;
       align-items: center;
       gap: 10px;
       margin-bottom: 10px;
     }
-
     .validation-error {
       color: #ff4444;
       font-size: 14px;
       margin-top: 10px;
     }
-
     .section-title {
       font-size: 22px;
       margin-bottom: 10px;
       text-align: center;
       color: #ffffff;
     }
-
+    .icon-tick {
+      color: green;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    .icon-cross {
+      color: red;
+      font-weight: bold;
+      margin-left: 10px;
+    }
     @media (max-width: 767px) {
       body {
         font-size: 16px;
       }
-
       .container {
         width: 90%;
         margin: 20px auto;
         padding: 15px;
       }
-
       h1 {
         font-size: 1.5rem;
       }
-
       .portfolio-row {
         flex-direction: column;
         align-items: flex-start;
       }
-
       .portfolio-row label {
         margin-bottom: 5px;
         width: 100%;
       }
-
       input[type="number"] {
         width: 100%;
         box-sizing: border-box;
       }
-
       .percent-input {
         width: 100%;
         margin-left: 0;
         margin-top: 5px;
       }
-
       button {
         width: 100%;
         padding: 12px;
         font-size: 1rem;
       }
     }
-
     @media (max-width: 480px) {
       body {
         font-size: 14px;
       }
-
       h1 {
         font-size: 1.3rem;
       }
     }
   </style>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <body>
   <!-- 1. Portföy: Fonlar, Kripto, Nakit -->
 <div class="container" id="container3">
   <h1>Genel Portföy Dengesi Yöneticisi</h1>
-
   <form id="portfolioForm3">
     <div class="portfolio-row">
       <label for="fonlar">Fonlar:</label>
@@ -193,14 +179,11 @@
     </div>
     <button type="button" onclick="calculateRebalance3()">Hesapla</button>
   </form>
-
   <div id="results3"></div> 
 </div>
-
 <!-- 2. Portföy: BTC, ETH, ADA, SOL, LINK, ARB, OP, TRY -->
 <div class="container" id="container1">
   <h1>Kripto Portföy Yöneticisi</h1>
-
   <form id="portfolioForm1">
     <div class="portfolio-row">
       <label for="btc">BTC:</label>
@@ -244,14 +227,11 @@
     </div>
     <button type="button" onclick="calculateRebalance1()">Hesapla</button>
   </form>
-
   <div id="results1"></div> 
 </div>
-
 <!-- 3. Portföy: IIH, YKT, DBH, TRY -->
 <div class="container" id="container2">
   <h1>Fon Portföy Yöneticisi</h1>
-
   <form id="portfolioForm2">
     <div class="portfolio-row">
       <label for="iih">IIH:</label>
@@ -275,14 +255,11 @@
     </div>
     <button type="button" onclick="calculateRebalance2()">Hesapla</button>
   </form>
-
   <div id="results2"></div> 
 </div>
-
 <!-- 4. Portföy: GOAT, YOUSIM, WMM, CENTS, TRY -->
 <div class="container" id="container4">
   <h1>Altcoin Portföy Yöneticisi</h1>
-
   <form id="portfolioForm4">
     <div class="portfolio-row">
       <label for="goat">GOAT:</label>
@@ -311,7 +288,6 @@
     </div>
     <button type="button" onclick="calculateRebalance4()">Hesapla</button>
   </form>
-
   <div id="results4"></div> 
 </div>
 <script>
@@ -321,20 +297,60 @@ function validatePercentages(percentages) {
   return Math.abs(total - 1) <= 0.001; // Toleransı artırdık
 }
   
-  // 1. Portföy (Fonlar, Kripto, Nakit)
-  function calculateRebalance3() {
+// Binance API'den fiyatları almak için fetch fonksiyonları
+function getBTCPrice() {
+  return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT')
+    .then(data => parseFloat(data.price));
+}
+
+function getETHPrice() {
+  return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT')
+    .then(data => parseFloat(data.price));
+}
+
+function getADAPrice() {
+  return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=ADAUSDT')
+    .then(data => parseFloat(data.price));
+}
+ 
+function getSOLPrice() {
+  return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=SOLUSDT')
+    .then(data => parseFloat(data.price));
+}
+
+function getLINKPrice() {
+  return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=LINKUSDT')
+    .then(data => parseFloat(data.price));
+}
+
+function getARBPrice() {
+  return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=ARBUSDT')
+    .then(data => parseFloat(data.price));
+}
+
+function getOPPrice() {
+  return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=OPUSDT')
+    .then(data => parseFloat(data.price));
+}
+
+// TRY USD Döviz kuru almak için bir fonksiyon
+function getUSDTRYPrice() {
+  return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=USDTTRY')
+    .then(data => parseFloat(data.price));
+}
+
+// 1. Portföy (Fonlar, Kripto, Nakit)
+function calculateRebalance3() {
   const percentages = {
     Fonlar: Number(document.getElementById('fonlar_percent').value) / 100,
     Kripto: Number(document.getElementById('kripto_percent').value) / 100,
     Nakit: Number(document.getElementById('nakit_percent').value) / 100
   };
-
   console.log("Girilen yüzdeler:", {
     Fonlar: percentages.Fonlar * 100,
     Kripto: percentages.Kripto * 100,
     Nakit: percentages.Nakit * 100
   });
-
   if (!validatePercentages(percentages)) {
     document.getElementById('results3').innerHTML = 
       '<div class="validation-error">Hata: Yüzdelerin toplamı 100 olmalıdır! (Şu anki toplam: ' + 
@@ -368,17 +384,17 @@ function validatePercentages(percentages) {
       resultsDiv3.innerHTML += `<div class="coin-result">${item}: ${targetValues3[item].toFixed(2)}</div>`;
     }
     resultsDiv3.innerHTML += `<p><strong>Al/Sat Miktarları:</strong></p>`;
-    for (let item in difference3) {
-      const diffValue3 = difference3[item];
-      let actionText3 = diffValue3 > 0
-        ? `+${diffValue3.toFixed(2)} (Al)`
-        : `${diffValue3.toFixed(2)} (Sat)`;
-      resultsDiv3.innerHTML += `<div class="coin-result">${item}: ${actionText3}</div>`;
-    }
-  }
-  
-  // 2. Portföy (Kripto)
-  function calculateRebalance1() {
+for (let item in difference3) {
+  const diffValue3 = difference3[item];
+  let actionText3 = diffValue3 > 0
+    ? `+${diffValue3.toFixed(2)} (Al)`
+    : `${diffValue3.toFixed(2)} (Sat)`;
+  resultsDiv3.innerHTML += `<div class="coin-result">${item}: ${actionText3}</div>`;
+}
+}
+
+// 2. Portföy (Kripto)
+function calculateRebalance1() {
     const percentages = {
       BTC: parseFloat(document.getElementById('btc_percent').value) / 100 || 0,
       ETH: parseFloat(document.getElementById('eth_percent').value) / 100 || 0,
@@ -427,13 +443,78 @@ function validatePercentages(percentages) {
       resultsDiv1.innerHTML += `<div class="coin-result">${item}: ${targetValues1[item].toFixed(2)}</div>`;
     }
     resultsDiv1.innerHTML += `<p><strong>Al/Sat Miktarları:</strong></p>`;
-    for (let item in difference1) {
-      const diffValue1 = difference1[item];
-      let actionText1 = diffValue1 > 0
-        ? `+${diffValue1.toFixed(2)} (Al)`
-        : `${diffValue1.toFixed(2)} (Sat)`;
-      resultsDiv1.innerHTML += `<div class="coin-result">${item}: ${actionText1}</div>`;
-    }
+
+    // Kullanıcıya birden fazla API çağrısı yapmadan önce tüm fiyatları almak için bir dizi vaat (promise) oluşturalım
+    const pricePromises = [
+      getBTCPrice(),
+      getETHPrice(),
+      getADAPrice(),
+      getSOLPrice(),
+      getLINKPrice(),
+      getARBPrice(),
+      getOPPrice(),
+      getUSDTRYPrice(),
+    ];
+  
+    // Tüm fiyatların alınmasını bekleyelim ve ardından sonuçları işleyelim
+    Promise.all(pricePromises).then(prices => {
+      const [
+        btcPrice,
+        ethPrice,
+        adaPrice,
+        solPrice,
+        linkPrice,
+        arbPrice,
+        opPrice,
+        usdTryPrice
+      ] = prices;
+  
+      for (let item in difference1) {
+        const diffValue1 = difference1[item];
+        let actionText1 = diffValue1 > 0
+          ? `+${diffValue1.toFixed(2)} (Al)`
+          : `${diffValue1.toFixed(2)} (Sat)`;
+        let comparisonValue = 0;
+        if (item === 'BTC') {
+          const btcTryPrice = btcPrice / 100000 * usdTryPrice; // 0.00001 BTC fiyatını alın
+          actionText1 += ` (0.00001 BTC = ${btcTryPrice.toFixed(2)} TRY)`;
+          comparisonValue = 0.00001 * btcPrice * usdTryPrice;
+        } else if (item === 'ETH') {
+          const ethTryPrice = ethPrice / 10000 * usdTryPrice; // 0.0001 ETH fiyatını alın
+          actionText1 += ` (0.0001 ETH = ${ethTryPrice.toFixed(2)} TRY)`;
+          comparisonValue = 0.0001 * ethPrice * usdTryPrice;
+        } else if (item === 'ADA') {
+          const adaTryPrice = adaPrice / 10 * usdTryPrice; // 0.1 ADA fiyatını alın
+          actionText1 += ` (0.1 ADA = ${adaTryPrice.toFixed(2)} TRY)`;
+          comparisonValue = 0.1 * adaPrice * usdTryPrice;
+        } else if (item === 'SOL') {
+          const solTryPrice = solPrice * usdTryPrice / 1000; // 0.001 SOL fiyatını alın
+          actionText1 += ` (0.001 SOL = ${solTryPrice.toFixed(2)} TRY)`;
+          comparisonValue = 0.001 * solPrice * usdTryPrice;
+        } else if (item === 'LINK') {
+          const linkTryPrice = linkPrice / 100 * usdTryPrice; // 0.01 LINK fiyatını alın
+          actionText1 += ` (0.01 LINK = ${linkTryPrice.toFixed(2)} TRY)`;
+          comparisonValue = 0.01 * linkPrice * usdTryPrice;
+        } else if (item === 'ARB') {
+          const arbTryPrice = arbPrice / 10 * usdTryPrice; // 0.1 ARB fiyatını alın
+          actionText1 += ` (0.1 ARB = ${arbTryPrice.toFixed(2)} TRY)`;
+          comparisonValue = 0.1 * arbPrice * usdTryPrice;
+        } else if (item === 'OP') {
+          const opTryPrice = opPrice / 100 * usdTryPrice; // 0.01 OP fiyatını alın
+          actionText1 += ` (0.01 OP = ${opTryPrice.toFixed(2)} TRY)`;
+          comparisonValue = 0.01 * opPrice * usdTryPrice;
+        }
+        
+        let iconHtml;
+        if (Math.abs(diffValue1) < comparisonValue) {
+          iconHtml = '<span class="icon-cross">&#10007;</span>'; // Çarpı işareti
+        } else {
+          iconHtml = '<span class="icon-tick">&#10003;</span>'; // Tik işareti
+        }
+        
+        resultsDiv1.innerHTML += `<div class="coin-result">${item}: ${actionText1}${iconHtml}</div>`;
+      }
+    });
   }
   
   // 3. Portföy (Fonlar)
@@ -539,7 +620,6 @@ function validatePercentages(percentages) {
       resultsDiv4.innerHTML += `<div class="coin-result">${item}: ${actionText4}</div>`;
     }
   }
-  </script>
-  
-  </body>
-  </html>
+</script>
+</body>
+</html>
