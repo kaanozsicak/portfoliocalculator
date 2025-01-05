@@ -22,6 +22,7 @@
       border-radius: 10px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
       margin-bottom: 50px;
+      position: relative; /* Çarpı butonu için pozisyon referansı */
     }
     h1 {
       text-align: center;
@@ -153,6 +154,58 @@
         font-size: 1.3rem;
       }
     }
+    .delete-btn {
+      background: linear-gradient(45deg, #ff4444, #ff6666);
+      padding: 6px 12px;
+      font-size: 14px;
+      margin-top: 0;
+    }
+    .clear-all-btn {
+      background: linear-gradient(45deg, #ff4444, #ff6666);
+      padding: 10px 20px;
+      font-size: 16px;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .close-container {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 24px;
+      height: 24px;
+      background: rgba(255, 68, 68, 0.1);
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ff4444;
+      font-size: 18px;
+      border: 1px solid rgba(255, 68, 68, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .close-container:hover {
+      background: rgba(255, 68, 68, 0.2);
+      border-color: rgba(255, 68, 68, 0.3);
+      transform: scale(1.1);
+    }
+
+    .add-portfolio-btn {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    padding: 10px 20px;
+    font-size: 16px;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1000;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
   </style>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
@@ -160,22 +213,26 @@
 <body>
   <!-- 1. Portföy: Fonlar, Kripto, Nakit -->
 <div class="container" id="container3">
+  <button class="close-container" onclick="hideContainer('3')">&times;</button>
   <h1>Genel Portföy Dengesi Yöneticisi</h1>
   <form id="portfolioForm3">
     <div class="portfolio-row">
       <label for="fonlar">Fonlar:</label>
       <input type="number" id="fonlar" value="" step="any">
       <input type="number" id="fonlar_percent" value="60" min="0" max="100" step="1" class="percent-input" placeholder="%">
+      <button type="button" class="delete-btn" onclick="removeValue('3', 'fonlar')">Sil</button>
     </div>
     <div class="portfolio-row">
       <label for="kripto">Kripto:</label>
       <input type="number" id="kripto" value="" step="any">
       <input type="number" id="kripto_percent" value="40" min="0" max="100" step="1" class="percent-input" placeholder="%">
+      <button type="button" class="delete-btn" onclick="removeValue('3', 'kripto')">Sil</button>
     </div>
     <div class="portfolio-row">
       <label for="nakit">Nakit:</label>
       <input type="number" id="nakit" value="" step="any">
       <input type="number" id="nakit_percent" value="0" min="0" max="100" step="1" class="percent-input" placeholder="%">
+      <button type="button" class="delete-btn" onclick="removeValue('3', 'nakit')">Sil</button>
     </div>
     <button type="button" onclick="calculateRebalance3()">Hesapla</button>
   </form>
@@ -200,47 +257,56 @@
 
 <!-- 2. Portföy: BTC, ETH, ADA, SOL, LINK, ARB, OP, TRY -->
 <div class="container" id="container1">
+  <button class="close-container" onclick="hideContainer('1')">&times;</button>
   <h1>Kripto Portföy Yöneticisi</h1>
   <form id="portfolioForm1">
     <div class="portfolio-row">
       <label for="btc">BTC:</label>
       <input type="number" id="btc" value="" step="any">
       <input type="number" id="btc_percent" value="40" min="0" max="100" step="1" class="percent-input" placeholder="%">
+      <button type="button" class="delete-btn" onclick="removeValue('1', 'btc')">Sil</button>
     </div>
     <div class="portfolio-row">
       <label for="eth">ETH:</label>
       <input type="number" id="eth" value="" step="any">
       <input type="number" id="eth_percent" value="25" min="0" max="100" step="1" class="percent-input" placeholder="%">
+      <button type="button" class="delete-btn" onclick="removeValue('1', 'eth')">Sil</button>
     </div>
     <div class="portfolio-row">
       <label for="ada">ADA:</label>
       <input type="number" id="ada" value="" step="any">
       <input type="number" id="ada_percent" value="10" min="0" max="100" step="1" class="percent-input" placeholder="%">
+      <button type="button" class="delete-btn" onclick="removeValue('1', 'ada')">Sil</button>
     </div>
     <div class="portfolio-row">
       <label for="sol">SOL:</label>
       <input type="number" id="sol" value="" step="any">
       <input type="number" id="sol_percent" value="10" min="0" max="100" step="1" class="percent-input" placeholder="%">
+      <button type="button" class="delete-btn" onclick="removeValue('1', 'sol')">Sil</button>
     </div>
     <div class="portfolio-row">
       <label for="link">LINK:</label>
       <input type="number" id="link" value="" step="any">
       <input type="number" id="link_percent" value="10" min="0" max="100" step="1" class="percent-input" placeholder="%">
+      <button type="button" class="delete-btn" onclick="removeValue('1', 'link')">Sil</button>
     </div>
     <div class="portfolio-row">
       <label for="arb">ARB:</label>
       <input type="number" id="arb" value="" step="any">
       <input type="number" id="arb_percent" value="2.5" min="0" max="100" step="0.1" class="percent-input" placeholder="%">
+      <button type="button" class="delete-btn" onclick="removeValue('1', 'arb')">Sil</button>
     </div>
     <div class="portfolio-row">
       <label for="op">OP:</label>
       <input type="number" id="op" value="" step="any">
       <input type="number" id="op_percent" value="2.5" min="0" max="100" step="0.1" class="percent-input" placeholder="%">
+      <button type="button" class="delete-btn" onclick="removeValue('1', 'op')">Sil</button>
     </div>
     <div class="portfolio-row">
       <label for="try1">TRY:</label>
       <input type="number" id="try1" value="" step="any">
       <input type="number" id="try1_percent" value="0" min="0" max="100" step="1" class="percent-input" placeholder="%">
+      <button type="button" class="delete-btn" onclick="removeValue('1', 'try1')">Sil</button>
     </div>
     <button type="button" onclick="calculateRebalance1()">Hesapla</button>
   </form>
@@ -265,27 +331,32 @@
 
 <!-- 3. Portföy: IIH, YKT, DBH, TRY -->
 <div class="container" id="container2">
+  <button class="close-container" onclick="hideContainer('2')">&times;</button>
   <h1>Fon Portföy Yöneticisi</h1>
   <form id="portfolioForm2">
     <div class="portfolio-row">
       <label for="iih">IIH:</label>
       <input type="number" id="iih" value="" step="any">
       <input type="number" id="iih_percent" value="34" min="0" max="100" step="1" class="percent-input" placeholder="%">
+      <button type="button" class="delete-btn" onclick="removeValue('2', 'iih')">Sil</button>
     </div>
     <div class="portfolio-row">
       <label for="ykt">YKT:</label>
       <input type="number" id="ykt" value="" step="any">
       <input type="number" id="ykt_percent" value="33" min="0" max="100" step="1" class="percent-input" placeholder="%">
+      <button type="button" class="delete-btn" onclick="removeValue('2', 'ykt')">Sil</button>
     </div>
     <div class="portfolio-row">
       <label for="dbh">DBH:</label>
       <input type="number" id="dbh" value="" step="any">
       <input type="number" id="dbh_percent" value="33" min="0" max="100" step="1" class="percent-input" placeholder="%">
+      <button type="button" class="delete-btn" onclick="removeValue('2', 'dbh')">Sil</button>
     </div>
     <div class="portfolio-row">
       <label for="try2">TRY:</label>
       <input type="number" id="try2" value="" step="any">
       <input type="number" id="try2_percent" value="0" min="0" max="100" step="1" class="percent-input" placeholder="%">
+      <button type="button" class="delete-btn" onclick="removeValue('2', 'try2')">Sil</button>
     </div>
     <button type="button" onclick="calculateRebalance2()">Hesapla</button>
   </form>
@@ -310,37 +381,44 @@
 
 <!-- 4. Portföy: GOAT, YOUSIM, WMM, CENTS, BULLY, TRY -->
 <div class="container" id="container4">
+  <button class="close-container" onclick="hideContainer('4')">&times;</button>
   <h1>Altcoin Portföy Yöneticisi</h1>
   <form id="portfolioForm4">
     <div class="portfolio-row">
       <label for="goat">GOAT:</label>
       <input type="number" id="goat" value="" step="any">
       <input type="number" id="goat_percent" value="20" min="0" max="100" step="1" class="percent-input" placeholder="%">
+      <button type="button" class="delete-btn" onclick="removeValue('4', 'goat')">Sil</button>
     </div>
     <div class="portfolio-row">
       <label for="yousim">YOUSIM:</label>
       <input type="number" id="yousim" value="" step="any">
       <input type="number" id="yousim_percent" value="20" min="0" max="100" step="1" class="percent-input" placeholder="%">
+      <button type="button" class="delete-btn" onclick="removeValue('4', 'yousim')">Sil</button>
     </div>
     <div class="portfolio-row">
       <label for="wmm">WMM:</label>
       <input type="number" id="wmm" value="" step="any">
       <input type="number" id="wmm_percent" value="20" min="0" max="100" step="1" class="percent-input" placeholder="%">
+      <button type="button" class="delete-btn" onclick="removeValue('4', 'wmm')">Sil</button>
     </div>
     <div class="portfolio-row">
       <label for="cents">CENTS:</label>
       <input type="number" id="cents" value="" step="any">
       <input type="number" id="cents_percent" value="20" min="0" max="100" step="1" class="percent-input" placeholder="%">
+      <button type="button" class="delete-btn" onclick="removeValue('4', 'cents')">Sil</button>
     </div>
     <div class="portfolio-row">
       <label for="bully">BULLY:</label>
       <input type="number" id="bully" value="" step="any">
       <input type="number" id="bully_percent" value="20" min="0" max="100" step="1" class="percent-input" placeholder="%">
+      <button type="button" class="delete-btn" onclick="removeValue('4', 'bully')">Sil</button>
     </div>
     <div class="portfolio-row">
       <label for="try4">TRY:</label>
       <input type="number" id="try4" value="" step="any">
       <input type="number" id="try4_percent" value="0" min="0" max="100" step="1" class="percent-input" placeholder="%">
+      <button type="button" class="delete-btn" onclick="removeValue('4', 'try4')">Sil</button>
     </div>
     <button type="button" onclick="calculateRebalance4()">Hesapla</button>
   </form>
@@ -373,11 +451,11 @@ function addValue(portfolioId) {
   const valuePercent = parseFloat(document.getElementById(`valuePercent${portfolioId}`).value) / 100;
 
   if (!valueName || isNaN(valueValue) || isNaN(valuePercent)) {
-  alert('Lütfen tüm alanları doldurun');
-  return;
-}
- // Yeni değeri ilgili portföy listesine ekleyelim
- newValues[portfolioId].push({
+    alert('Lütfen tüm alanları doldurun');
+    return;
+  }
+  // Yeni değeri ilgili portföy listesine ekleyelim
+  newValues[portfolioId].push({
     name: valueName,
     value: valueValue,
     percent: valuePercent
@@ -387,10 +465,12 @@ function addValue(portfolioId) {
   const form = document.getElementById(`portfolioForm${portfolioId}`);
   const div = document.createElement('div');
   div.className = 'portfolio-row';
+  div.id = `row_${valueName}`;
   div.innerHTML = `
     <label for="${valueName}">${valueName}:</label>
     <input type="number" id="${valueName}" value="${valueValue}" step="any">
     <input type="number" id="${valueName}_percent" value="${valuePercent * 100}" min="0" max="100" step="1" class="percent-input" placeholder="%">
+    <button type="button" class="delete-btn" onclick="removeValue('${portfolioId}', '${valueName}')">Sil</button>
   `;
   form.insertBefore(div, form.lastElementChild);
 
@@ -400,34 +480,73 @@ function addValue(portfolioId) {
   document.getElementById(`valuePercent${portfolioId}`).value = '';
 }
 
+// Yeni Değer Silme Fonksiyonu
+function removeValue(portfolioId, valueName) {
+  const form = document.getElementById(`portfolioForm${portfolioId}`);
+  
+  // Silinen değerin yüzdesini al
+  const deletedPercent = parseFloat(document.getElementById(`${valueName}_percent`).value) || 0;
+  
+  // Değeri gizle (tamamen silmek yerine)
+  const rowElement = document.getElementById(`row_${valueName}`) || 
+                    document.querySelector(`[for="${valueName}"]`).parentElement;
+  rowElement.style.display = 'none';
+  
+  // Input değerlerini sıfırla
+  document.getElementById(valueName).value = '0';
+  document.getElementById(`${valueName}_percent`).value = '0';
+
+  // Kalan görünür değerlerin yüzdelerini yeniden hesapla
+  const visibleRows = Array.from(form.getElementsByClassName('portfolio-row'))
+    .filter(row => row.style.display !== 'none' && !row.querySelector('button[onclick^="calculate"]'));
+  
+  if (visibleRows.length > 0) {
+    const newPercent = (deletedPercent / visibleRows.length).toFixed(1);
+    
+    visibleRows.forEach(row => {
+      const percentInput = row.querySelector('.percent-input');
+      if (percentInput) {
+        const currentPercent = parseFloat(percentInput.value) || 0;
+        percentInput.value = (currentPercent + parseFloat(newPercent)).toFixed(1);
+      }
+    });
+  }
+}
+
+// Yüzdeleri yeniden hesaplama fonksiyonu
+function recalculatePercentages(portfolioId) {
+  const form = document.getElementById(`portfolioForm${portfolioId}`);
+  const percentInputs = form.querySelectorAll('.percent-input');
+  const totalElements = percentInputs.length;
+  const equalPercent = (100 / totalElements).toFixed(1);
+  
+  percentInputs.forEach(input => {
+    input.value = equalPercent;
+  });
+}
+
 // 1. Portföy (Fonlar, Kripto, Nakit)
 function calculateRebalance3() {
-  const percentages = {
-    Fonlar: parseFloat(document.getElementById('fonlar_percent').value) / 100 || 0,
-    Kripto: parseFloat(document.getElementById('kripto_percent').value) / 100 || 0,
-    Nakit: parseFloat(document.getElementById('nakit_percent').value) / 100 || 0
-  };
+  const form = document.getElementById('portfolioForm3');
+  const visibleRows = Array.from(form.getElementsByClassName('portfolio-row'))
+    .filter(row => row.style.display !== 'none' && !row.querySelector('button[onclick^="calculate"]'));
 
-  // Yeni eklenen değerlerin yüzde değerlerini percentages objesine ekleyelim
-  for (let value of newValues[3]) {
-    percentages[value.name] = parseFloat(document.getElementById(`${value.name}_percent`).value) / 100 || 0;
-  }
+  const percentages = {};
+  const currentPortfolio3 = {};
+
+  // Sadece görünür satırların değerlerini al
+  visibleRows.forEach(row => {
+    const label = row.querySelector('label');
+    const id = label.getAttribute('for');
+    const name = label.textContent.replace(':', '');
+    percentages[name] = parseFloat(document.getElementById(`${id}_percent`).value) / 100 || 0;
+    currentPortfolio3[name] = parseFloat(document.getElementById(id).value) || 0;
+  });
 
   if (!validatePercentages(percentages)) {
     document.getElementById('results3').innerHTML = 
       '<div class="validation-error">Hata: Yüzdelerin toplamı 100 olmalıdır!</div>';
     return;
-  }
-
-  const currentPortfolio3 = {
-    Fonlar: parseFloat(document.getElementById('fonlar').value) || 0,
-    Kripto: parseFloat(document.getElementById('kripto').value) || 0,
-    Nakit: parseFloat(document.getElementById('nakit').value) || 0
-  };
-
-  // Yeni eklenen değerlerin değerlerini currentPortfolio3 objesine ekleyelim
-  for (let value of newValues[3]) {
-    currentPortfolio3[value.name] = parseFloat(document.getElementById(value.name).value) || 0;
   }
 
   const totalValue3 = Object.values(currentPortfolio3).reduce((a, b) => a + b, 0);
@@ -461,16 +580,21 @@ function calculateRebalance3() {
 
 // 2. Portföy (Kripto)
 function calculateRebalance1() {
-  const percentages = {
-    BTC: parseFloat(document.getElementById('btc_percent').value) / 100 || 0,
-    ETH: parseFloat(document.getElementById('eth_percent').value) / 100 || 0,
-    ADA: parseFloat(document.getElementById('ada_percent').value) / 100 || 0,
-    SOL: parseFloat(document.getElementById('sol_percent').value) / 100 || 0,
-    LINK: parseFloat(document.getElementById('link_percent').value) / 100 || 0,
-    ARB: parseFloat(document.getElementById('arb_percent').value) / 100 || 0,
-    OP: parseFloat(document.getElementById('op_percent').value) / 100 || 0,
-    TRY: parseFloat(document.getElementById('try1_percent').value) / 100 || 0
-  };
+  const form = document.getElementById('portfolioForm1');
+  const visibleRows = Array.from(form.getElementsByClassName('portfolio-row'))
+    .filter(row => row.style.display !== 'none' && !row.querySelector('button[onclick^="calculate"]'));
+
+  const percentages = {};
+  const currentPortfolio1 = {};
+
+  // Sadece görünür satırların değerlerini al
+  visibleRows.forEach(row => {
+    const label = row.querySelector('label');
+    const id = label.getAttribute('for');
+    const name = label.textContent.replace(':', '');
+    percentages[name] = parseFloat(document.getElementById(`${id}_percent`).value) / 100 || 0;
+    currentPortfolio1[name] = parseFloat(document.getElementById(id).value) || 0;
+  });
 
   // Yeni eklenen değerlerin yüzde değerlerini percentages objesine ekleyelim
   for (let value of newValues[1]) {
@@ -482,17 +606,6 @@ function calculateRebalance1() {
       '<div class="validation-error">Hata: Yüzdelerin toplamı 100 olmalıdır!</div>';
     return;
   }
-
-  const currentPortfolio1 = {
-    BTC: parseFloat(document.getElementById('btc').value) || 0,
-    ETH: parseFloat(document.getElementById('eth').value) || 0,
-    ADA: parseFloat(document.getElementById('ada').value) || 0,
-    SOL: parseFloat(document.getElementById('sol').value) || 0,
-    LINK: parseFloat(document.getElementById('link').value) || 0,
-    ARB: parseFloat(document.getElementById('arb').value) || 0,
-    OP: parseFloat(document.getElementById('op').value) || 0,
-    TRY: parseFloat(document.getElementById('try1').value) || 0
-  };
 
   // Yeni eklenen değerlerin değerlerini currentPortfolio1 objesine ekleyelim
   for (let value of newValues[1]) {
@@ -551,41 +664,44 @@ function calculateRebalance1() {
         ? `+${diffValue1.toFixed(2)} (Al)`
         : `${diffValue1.toFixed(2)} (Sat)`;
       let comparisonValue = 0;
+      
+      // Her bir coinin minimum alım/satım miktarının TRY değerini hesapla
       if (item === 'BTC') {
         const btcTryPrice = btcPrice / 100000 * usdTryPrice; // 0.00001 BTC fiyatını alın
         actionText1 += ` (0.00001 BTC = ${btcTryPrice.toFixed(2)} TRY)`;
-        comparisonValue = 0.00001 * btcPrice * usdTryPrice;
+        comparisonValue = btcTryPrice;
       } else if (item === 'ETH') {
         const ethTryPrice = ethPrice / 10000 * usdTryPrice; // 0.0001 ETH fiyatını alın
         actionText1 += ` (0.0001 ETH = ${ethTryPrice.toFixed(2)} TRY)`;
-        comparisonValue = 0.0001 * ethPrice * usdTryPrice;
+        comparisonValue = ethTryPrice;
       } else if (item === 'ADA') {
         const adaTryPrice = adaPrice / 10 * usdTryPrice; // 0.1 ADA fiyatını alın
         actionText1 += ` (0.1 ADA = ${adaTryPrice.toFixed(2)} TRY)`;
-        comparisonValue = 0.1 * adaPrice * usdTryPrice;
+        comparisonValue = adaTryPrice;
       } else if (item === 'SOL') {
         const solTryPrice = solPrice * usdTryPrice / 1000; // 0.001 SOL fiyatını alın
         actionText1 += ` (0.001 SOL = ${solTryPrice.toFixed(2)} TRY)`;
-        comparisonValue = 0.001 * solPrice * usdTryPrice;
+        comparisonValue = solTryPrice;
       } else if (item === 'LINK') {
         const linkTryPrice = linkPrice / 100 * usdTryPrice; // 0.01 LINK fiyatını alın
         actionText1 += ` (0.01 LINK = ${linkTryPrice.toFixed(2)} TRY)`;
-        comparisonValue = 0.01 * linkPrice * usdTryPrice;
+        comparisonValue = linkTryPrice;
       } else if (item === 'ARB') {
         const arbTryPrice = arbPrice / 10 * usdTryPrice; // 0.1 ARB fiyatını alın
         actionText1 += ` (0.1 ARB = ${arbTryPrice.toFixed(2)} TRY)`;
-        comparisonValue = 0.1 * arbPrice * usdTryPrice;
+        comparisonValue = arbTryPrice;
       } else if (item === 'OP') {
         const opTryPrice = opPrice / 100 * usdTryPrice; // 0.01 OP fiyatını alın
         actionText1 += ` (0.01 OP = ${opTryPrice.toFixed(2)} TRY)`;
-        comparisonValue = 0.01 * opPrice * usdTryPrice;
+        comparisonValue = opTryPrice;
       }
       
       let iconHtml;
-      if (Math.abs(diffValue1) < comparisonValue) {
-        iconHtml = '<span class="icon-tick">&#10003;</span>'; // Tik işareti
+      // Eğer al/sat miktarının mutlak değeri minimum alım miktarının TRY değerinden büyükse tik işareti
+      if (Math.abs(diffValue1 * usdTryPrice) > comparisonValue) {
+        iconHtml = '<span class="icon-tick">&#10003;</span>'; // Tik işareti - işlem yapılabilir
       } else {
-        iconHtml = '<span class="icon-cross">&#10007;</span>'; // Çarpı işareti
+        iconHtml = '<span class="icon-cross">&#10007;</span>'; // Çarpı işareti - işlem yapılamaz
       }
       
       resultsDiv1.innerHTML += `<div class="coin-result">${item}: ${actionText1}${iconHtml}</div>`;
@@ -595,12 +711,21 @@ function calculateRebalance1() {
 
 // 3. Portföy (Fonlar)
 function calculateRebalance2() {
-  const percentages = {
-    IIH: parseFloat(document.getElementById('iih_percent').value) / 100 || 0,
-    YKT: parseFloat(document.getElementById('ykt_percent').value) / 100 || 0,
-    DBH: parseFloat(document.getElementById('dbh_percent').value) / 100 || 0,
-    TRY: parseFloat(document.getElementById('try2_percent').value) / 100 || 0
-  };
+  const form = document.getElementById('portfolioForm2');
+  const visibleRows = Array.from(form.getElementsByClassName('portfolio-row'))
+    .filter(row => row.style.display !== 'none' && !row.querySelector('button[onclick^="calculate"]'));
+
+  const percentages = {};
+  const currentPortfolio2 = {};
+
+  // Sadece görünür satırların değerlerini al
+  visibleRows.forEach(row => {
+    const label = row.querySelector('label');
+    const id = label.getAttribute('for');
+    const name = label.textContent.replace(':', '');
+    percentages[name] = parseFloat(document.getElementById(`${id}_percent`).value) / 100 || 0;
+    currentPortfolio2[name] = parseFloat(document.getElementById(id).value) || 0;
+  });
 
   // Yeni eklenen değerlerin yüzde değerlerini percentages objesine ekleyelim
   for (let value of newValues[2]) {
@@ -612,13 +737,6 @@ function calculateRebalance2() {
       '<div class="validation-error">Hata: Yüzdelerin toplamı 100 olmalıdır!</div>';
     return;
   }
-
-  const currentPortfolio2 = {
-    IIH: parseFloat(document.getElementById('iih').value) || 0,
-    YKT: parseFloat(document.getElementById('ykt').value) || 0,
-    DBH: parseFloat(document.getElementById('dbh').value) || 0,
-    TRY: parseFloat(document.getElementById('try2').value) || 0
-  };
 
   // Yeni eklenen değerlerin değerlerini currentPortfolio2 objesine ekleyelim
   for (let value of newValues[2]) {
@@ -656,14 +774,21 @@ function calculateRebalance2() {
 
 // 4. Portföy (Altcoin)
 function calculateRebalance4() {
-  const percentages = {
-    GOAT: parseFloat(document.getElementById('goat_percent').value) / 100 || 0,
-    YOUSIM: parseFloat(document.getElementById('yousim_percent').value) / 100 || 0,
-    WMM: parseFloat(document.getElementById('wmm_percent').value) / 100 || 0,
-    CENTS: parseFloat(document.getElementById('cents_percent').value) / 100 || 0,
-    BULLY: parseFloat(document.getElementById('bully_percent').value) / 100 || 0,
-    TRY: parseFloat(document.getElementById('try4_percent').value) / 100 || 0
-  };
+  const form = document.getElementById('portfolioForm4');
+  const visibleRows = Array.from(form.getElementsByClassName('portfolio-row'))
+    .filter(row => row.style.display !== 'none' && !row.querySelector('button[onclick^="calculate"]'));
+
+  const percentages = {};
+  const currentPortfolio4 = {};
+
+  // Sadece görünür satırların değerlerini al
+  visibleRows.forEach(row => {
+    const label = row.querySelector('label');
+    const id = label.getAttribute('for');
+    const name = label.textContent.replace(':', '');
+    percentages[name] = parseFloat(document.getElementById(`${id}_percent`).value) / 100 || 0;
+    currentPortfolio4[name] = parseFloat(document.getElementById(id).value) || 0;
+  });
 
   // Yeni eklenen altcoin'lerin yüzde değerlerini percentages objesine ekleyelim
   for (let value of newValues[4]) {
@@ -675,15 +800,6 @@ function calculateRebalance4() {
       '<div class="validation-error">Hata: Yüzdelerin toplamı 100 olmalıdır!</div>';
     return;
   }
-
-  const currentPortfolio4 = {
-    GOAT: parseFloat(document.getElementById('goat').value) || 0,
-    YOUSIM: parseFloat(document.getElementById('yousim').value) || 0,
-    WMM: parseFloat(document.getElementById('wmm').value) || 0,
-    CENTS: parseFloat(document.getElementById('cents').value) || 0,
-    BULLY: parseFloat(document.getElementById('bully').value) || 0,
-    TRY: parseFloat(document.getElementById('try4').value) || 0
-  };
 
   // Yeni eklenen altcoin'lerin değerlerini currentPortfolio4 objesine ekleyelim
   for (let value of newValues[4]) {
@@ -757,7 +873,7 @@ function getOPPrice() {
 
 // TRY USD Döviz kuru almak için bir fonksiyon
 function getUSDTRYPrice() {
-  return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=USDTRY')
+  return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=USDTTRY')
     .then(data => parseFloat(data.price));
 }
 
@@ -766,6 +882,135 @@ function validatePercentages(percentages) {
   console.log("Toplam yüzde:", total * 100); // Hata ayıklama için toplam değeri görelim
   return Math.abs(total - 1) <= 0.001; // Toleransı artırdık
 }
+
+// Konteynır silme fonksiyonu
+function hideContainer(containerId) {
+  if (confirm('Bu portföyü gizlemek istediğinizden emin misiniz?')) {
+    const container = document.getElementById(`container${containerId}`);
+    if (container) {
+      container.style.display = 'none';
+    }
+  }
+}
+// Portföy sayacı
+let portfolioCounter = 5; // Mevcut portföylerden sonra başlayacak
+
+// Yeni portföy oluşturma fonksiyonu
+function createNewPortfolio() {
+  const container = document.createElement('div');
+  container.className = 'container';
+  container.id = `container${portfolioCounter}`;
+
+  container.innerHTML = `
+    <button class="close-container" onclick="hideContainer('${portfolioCounter}')">&times;</button>
+    <h1 contenteditable="true">Yeni Portföy ${portfolioCounter}</h1>
+    <form id="portfolioForm${portfolioCounter}">
+      <button type="button" onclick="calculateRebalance${portfolioCounter}()">Hesapla</button>
+    </form>
+    <div id="results${portfolioCounter}"></div>
+    <h3>Yeni Değer Ekle</h3>
+    <form id="addValueForm${portfolioCounter}">
+      <div class="portfolio-row">
+        <label for="valueName${portfolioCounter}">Değer İsmi:</label>
+        <input type="text" id="valueName${portfolioCounter}" placeholder="Değer ismi">
+      </div>
+      <div class="portfolio-row">
+        <label for="valueValue${portfolioCounter}">Değer:</label>
+        <input type="number" id="valueValue${portfolioCounter}" value="" step="any" placeholder="Değer">
+      </div>
+      <div class="portfolio-row">
+        <label for="valuePercent${portfolioCounter}">Yüzde:</label>
+        <input type="number" id="valuePercent${portfolioCounter}" value="" step="any" min="0" max="100" placeholder="%">
+      </div>
+      <button type="button" onclick="addValue('${portfolioCounter}')">Ekle</button>
+    </form>
+  `;
+
+  // newValues objesine yeni portföy için boş array ekle
+  newValues[portfolioCounter] = [];
+
+  // Dinamik hesaplama fonksiyonu oluştur
+  window[`calculateRebalance${portfolioCounter}`] = createCalculateFunction(portfolioCounter);
+
+  // Container'ı sayfanın en üstüne ekle
+  document.body.insertBefore(container, document.body.firstChild);
+  
+  // Sayacı artır
+  portfolioCounter++;
+}
+
+// Yeni fonksiyon: Hesaplama fonksiyonu oluşturucu
+function createCalculateFunction(id) {
+  return function() {
+    const form = document.getElementById(`portfolioForm${id}`);
+    const visibleRows = Array.from(form.getElementsByClassName('portfolio-row'))
+      .filter(row => row.style.display !== 'none' && !row.querySelector('button[onclick^="calculate"]'));
+
+    const percentages = {};
+    const currentPortfolio = {};
+
+    // Değerleri topla
+    visibleRows.forEach(row => {
+      const label = row.querySelector('label');
+      if (label) {
+        const id = label.getAttribute('for');
+        const name = label.textContent.replace(':', '');
+        if (document.getElementById(id)) {
+          percentages[name] = parseFloat(document.getElementById(`${id}_percent`).value) / 100 || 0;
+          currentPortfolio[name] = parseFloat(document.getElementById(id).value) || 0;
+        }
+      }
+    });
+
+    // newValues arrayinden de değerleri ekle
+    if (newValues[id]) {
+      newValues[id].forEach(value => {
+        if (document.getElementById(value.name)) {
+          percentages[value.name] = parseFloat(document.getElementById(`${value.name}_percent`).value) / 100 || 0;
+          currentPortfolio[value.name] = parseFloat(document.getElementById(value.name).value) || 0;
+        }
+      });
+    }
+
+    if (!validatePercentages(percentages)) {
+      document.getElementById(`results${id}`).innerHTML = 
+        '<div class="validation-error">Hata: Yüzdelerin toplamı 100 olmalıdır!</div>';
+      return;
+    }
+
+    const totalValue = Object.values(currentPortfolio).reduce((a, b) => a + b, 0);
+
+    const targetValues = {};
+    const difference = {};
+
+    // Hedef değerleri ve farkları hesapla
+    for (let item in percentages) {
+      targetValues[item] = totalValue * percentages[item];
+      difference[item] = targetValues[item] - (currentPortfolio[item] || 0);
+    }
+
+    // Sonuçları göster
+    const resultsDiv = document.getElementById(`results${id}`);
+    resultsDiv.innerHTML = "";
+    resultsDiv.innerHTML += `<p><strong>Toplam Portföy Değeri:</strong> ${totalValue.toFixed(2)}</p>`;
+    resultsDiv.innerHTML += `<p><strong>Hedef Değerler (% cinsinden dağılım):</strong></p>`;
+    
+    for (let item in targetValues) {
+      resultsDiv.innerHTML += `<div class="coin-result">${item}: ${targetValues[item].toFixed(2)}</div>`;
+    }
+    
+    resultsDiv.innerHTML += `<p><strong>Al/Sat Miktarları:</strong></p>`;
+    
+    for (let item in difference) {
+      const diffValue = difference[item];
+      let actionText = diffValue > 0
+        ? `+${diffValue.toFixed(2)} (Al)`
+        : `${diffValue.toFixed(2)} (Sat)`;
+      resultsDiv.innerHTML += `<div class="coin-result">${item}: ${actionText}</div>`;
+    }
+  };
+}
 </script>
+<button type="button" class="add-portfolio-btn" onclick="createNewPortfolio()">Yeni Portföy Ekle</button>
 </body>
 </html>
