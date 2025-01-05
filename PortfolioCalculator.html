@@ -179,8 +179,25 @@
     </div>
     <button type="button" onclick="calculateRebalance3()">Hesapla</button>
   </form>
-  <div id="results3"></div> 
+  <div id="results3"></div>
+  <h3>Yeni Değer Ekle</h3>
+  <form id="addValueForm3">
+    <div class="portfolio-row">
+      <label for="valueName3">Değer İsmi:</label>
+      <input type="text" id="valueName3" placeholder="Değer ismi">
+    </div>
+    <div class="portfolio-row">
+      <label for="valueValue3">Değer:</label>
+      <input type="number" id="valueValue3" value="" step="any" placeholder="Değer">
+    </div>
+    <div class="portfolio-row">
+      <label for="valuePercent3">Yüzde:</label>
+      <input type="number" id="valuePercent3" value="" step="any" min="0" max="100" placeholder="%">
+    </div>
+    <button type="button" onclick="addValue('3')">Ekle</button>
+  </form>
 </div>
+
 <!-- 2. Portföy: BTC, ETH, ADA, SOL, LINK, ARB, OP, TRY -->
 <div class="container" id="container1">
   <h1>Kripto Portföy Yöneticisi</h1>
@@ -227,8 +244,25 @@
     </div>
     <button type="button" onclick="calculateRebalance1()">Hesapla</button>
   </form>
-  <div id="results1"></div> 
+  <div id="results1"></div>
+  <h3>Yeni Değer Ekle</h3>
+  <form id="addValueForm1">
+    <div class="portfolio-row">
+      <label for="valueName1">Değer İsmi:</label>
+      <input type="text" id="valueName1" placeholder="Değer ismi">
+    </div>
+    <div class="portfolio-row">
+      <label for="valueValue1">Değer:</label>
+      <input type="number" id="valueValue1" value="" step="any" placeholder="Değer">
+    </div>
+    <div class="portfolio-row">
+      <label for="valuePercent1">Yüzde:</label>
+      <input type="number" id="valuePercent1" value="" step="any" min="0" max="100" placeholder="%">
+    </div>
+    <button type="button" onclick="addValue('1')">Ekle</button>
+  </form>
 </div>
+
 <!-- 3. Portföy: IIH, YKT, DBH, TRY -->
 <div class="container" id="container2">
   <h1>Fon Portföy Yöneticisi</h1>
@@ -255,9 +289,26 @@
     </div>
     <button type="button" onclick="calculateRebalance2()">Hesapla</button>
   </form>
-  <div id="results2"></div> 
+  <div id="results2"></div>
+  <h3>Yeni Değer Ekle</h3>
+  <form id="addValueForm2">
+    <div class="portfolio-row">
+      <label for="valueName2">Değer İsmi:</label>
+      <input type="text" id="valueName2" placeholder="Değer ismi">
+    </div>
+    <div class="portfolio-row">
+      <label for="valueValue2">Değer:</label>
+      <input type="number" id="valueValue2" value="" step="any" placeholder="Değer">
+    </div>
+    <div class="portfolio-row">
+      <label for="valuePercent2">Yüzde:</label>
+      <input type="number" id="valuePercent2" value="" step="any" min="0" max="100" placeholder="%">
+    </div>
+    <button type="button" onclick="addValue('2')">Ekle</button>
+  </form>
 </div>
-<!-- 4. Portföy: GOAT, YOUSIM, WMM, CENTS, TRY -->
+
+<!-- 4. Portföy: GOAT, YOUSIM, WMM, CENTS, BULLY, TRY -->
 <div class="container" id="container4">
   <h1>Altcoin Portföy Yöneticisi</h1>
   <form id="portfolioForm4">
@@ -282,21 +333,392 @@
       <input type="number" id="cents_percent" value="25" min="0" max="100" step="1" class="percent-input" placeholder="%">
     </div>
     <div class="portfolio-row">
+      <label for="bully">BULLY:</label>
+      <input type="number" id="bully" value="0" step="any">
+      <input type="number" id="bully_percent" value="0" min="0" max="100" step="1" class="percent-input" placeholder="%">
+    </div>
+    <div class="portfolio-row">
       <label for="try4">TRY:</label>
       <input type="number" id="try4" value="" step="any">
       <input type="number" id="try4_percent" value="0" min="0" max="100" step="1" class="percent-input" placeholder="%">
     </div>
     <button type="button" onclick="calculateRebalance4()">Hesapla</button>
   </form>
-  <div id="results4"></div> 
+  <div id="results4"></div>
+  <h3>Yeni Değer Ekle</h3>
+  <form id="addValueForm4">
+    <div class="portfolio-row">
+      <label for="valueName4">Değer İsmi:</label>
+      <input type="text" id="valueName4" placeholder="Değer ismi">
+    </div>
+    <div class="portfolio-row">
+      <label for="valueValue4">Değer:</label>
+      <input type="number" id="valueValue4" value="" step="any" placeholder="Değer">
+    </div>
+    <div class="portfolio-row">
+      <label for="valuePercent4">Yüzde:</label>
+      <input type="number" id="valuePercent4" value="" step="any" min="0" max="100" placeholder="%">
+    </div>
+    <button type="button" onclick="addValue('4')">Ekle</button>
+  </form>
 </div>
+
 <script>
-function validatePercentages(percentages) {
-  const total = Object.values(percentages).reduce((a, b) => a + b, 0);
-  console.log("Toplam yüzde:", total * 100); // Hata ayıklama için toplam değeri görelim
-  return Math.abs(total - 1) <= 0.001; // Toleransı artırdık
+let newValues = { 1: [], 2: [], 3: [], 4: [] };
+
+// Genel Değer Ekleme Fonksiyonu
+function addValue(portfolioId) {
+  const valueName = document.getElementById(`valueName${portfolioId}`).value;
+  const valueValue = parseFloat(document.getElementById(`valueValue${portfolioId}`).value);
+  const valuePercent = parseFloat(document.getElementById(`valuePercent${portfolioId}`).value) / 100;
+
+  if (!valueName || isNaN(valueValue) || isNaN(valuePercent)) {
+  alert('Lütfen tüm alanları doldurun');
+  return;
 }
-  
+ // Yeni değeri ilgili portföy listesine ekleyelim
+ newValues[portfolioId].push({
+    name: valueName,
+    value: valueValue,
+    percent: valuePercent
+  });
+
+  // Yeni değerin form alanlarını portföy formuna ekleyelim
+  const form = document.getElementById(`portfolioForm${portfolioId}`);
+  const div = document.createElement('div');
+  div.className = 'portfolio-row';
+  div.innerHTML = `
+    <label for="${valueName}">${valueName}:</label>
+    <input type="number" id="${valueName}" value="${valueValue}" step="any">
+    <input type="number" id="${valueName}_percent" value="${valuePercent * 100}" min="0" max="100" step="1" class="percent-input" placeholder="%">
+  `;
+  form.insertBefore(div, form.lastElementChild);
+
+  // Eklenen değerin form alanlarını temizleyelim
+  document.getElementById(`valueName${portfolioId}`).value = '';
+  document.getElementById(`valueValue${portfolioId}`).value = '';
+  document.getElementById(`valuePercent${portfolioId}`).value = '';
+}
+
+// 1. Portföy (Fonlar, Kripto, Nakit)
+function calculateRebalance3() {
+  const percentages = {
+    Fonlar: parseFloat(document.getElementById('fonlar_percent').value) / 100 || 0,
+    Kripto: parseFloat(document.getElementById('kripto_percent').value) / 100 || 0,
+    Nakit: parseFloat(document.getElementById('nakit_percent').value) / 100 || 0
+  };
+
+  // Yeni eklenen değerlerin yüzde değerlerini percentages objesine ekleyelim
+  for (let value of newValues[3]) {
+    percentages[value.name] = parseFloat(document.getElementById(`${value.name}_percent`).value) / 100 || 0;
+  }
+
+  if (!validatePercentages(percentages)) {
+    document.getElementById('results3').innerHTML = 
+      '<div class="validation-error">Hata: Yüzdelerin toplamı 100 olmalıdır!</div>';
+    return;
+  }
+
+  const currentPortfolio3 = {
+    Fonlar: parseFloat(document.getElementById('fonlar').value) || 0,
+    Kripto: parseFloat(document.getElementById('kripto').value) || 0,
+    Nakit: parseFloat(document.getElementById('nakit').value) || 0
+  };
+
+  // Yeni eklenen değerlerin değerlerini currentPortfolio3 objesine ekleyelim
+  for (let value of newValues[3]) {
+    currentPortfolio3[value.name] = parseFloat(document.getElementById(value.name).value) || 0;
+  }
+
+  const totalValue3 = Object.values(currentPortfolio3).reduce((a, b) => a + b, 0);
+
+  const targetValues3 = {};
+  for (let item in percentages) {
+    targetValues3[item] = totalValue3 * percentages[item];
+  }
+
+  const difference3 = {};
+  for (let item in currentPortfolio3) {
+    difference3[item] = targetValues3[item] - currentPortfolio3[item];
+  }
+
+  const resultsDiv3 = document.getElementById('results3');
+  resultsDiv3.innerHTML = "";
+  resultsDiv3.innerHTML += `<p><strong>Toplam Portföy Değeri:</strong> ${totalValue3.toFixed(2)}</p>`;
+  resultsDiv3.innerHTML += `<p><strong>Hedef Değerler (% cinsinden dağılım):</strong></p>`;
+  for (let item in targetValues3) {
+    resultsDiv3.innerHTML += `<div class="coin-result">${item}: ${targetValues3[item].toFixed(2)}</div>`;
+  }
+  resultsDiv3.innerHTML += `<p><strong>Al/Sat Miktarları:</strong></p>`;
+  for (let item in difference3) {
+    const diffValue3 = difference3[item];
+    let actionText3 = diffValue3 > 0
+      ? `+${diffValue3.toFixed(2)} (Al)`
+      : `${diffValue3.toFixed(2)} (Sat)`;
+    resultsDiv3.innerHTML += `<div class="coin-result">${item}: ${actionText3}</div>`;
+  }
+}
+
+// 2. Portföy (Kripto)
+function calculateRebalance1() {
+  const percentages = {
+    BTC: parseFloat(document.getElementById('btc_percent').value) / 100 || 0,
+    ETH: parseFloat(document.getElementById('eth_percent').value) / 100 || 0,
+    ADA: parseFloat(document.getElementById('ada_percent').value) / 100 || 0,
+    SOL: parseFloat(document.getElementById('sol_percent').value) / 100 || 0,
+    LINK: parseFloat(document.getElementById('link_percent').value) / 100 || 0,
+    ARB: parseFloat(document.getElementById('arb_percent').value) / 100 || 0,
+    OP: parseFloat(document.getElementById('op_percent').value) / 100 || 0,
+    TRY: parseFloat(document.getElementById('try1_percent').value) / 100 || 0
+  };
+
+  // Yeni eklenen değerlerin yüzde değerlerini percentages objesine ekleyelim
+  for (let value of newValues[1]) {
+    percentages[value.name] = parseFloat(document.getElementById(`${value.name}_percent`).value) / 100 || 0;
+  }
+
+  if (!validatePercentages(percentages)) {
+    document.getElementById('results1').innerHTML = 
+      '<div class="validation-error">Hata: Yüzdelerin toplamı 100 olmalıdır!</div>';
+    return;
+  }
+
+  const currentPortfolio1 = {
+    BTC: parseFloat(document.getElementById('btc').value) || 0,
+    ETH: parseFloat(document.getElementById('eth').value) || 0,
+    ADA: parseFloat(document.getElementById('ada').value) || 0,
+    SOL: parseFloat(document.getElementById('sol').value) || 0,
+    LINK: parseFloat(document.getElementById('link').value) || 0,
+    ARB: parseFloat(document.getElementById('arb').value) || 0,
+    OP: parseFloat(document.getElementById('op').value) || 0,
+    TRY: parseFloat(document.getElementById('try1').value) || 0
+  };
+
+  // Yeni eklenen değerlerin değerlerini currentPortfolio1 objesine ekleyelim
+  for (let value of newValues[1]) {
+    currentPortfolio1[value.name] = parseFloat(document.getElementById(value.name).value) || 0;
+  }
+
+  const totalValue1 = Object.values(currentPortfolio1).reduce((a, b) => a + b, 0);
+
+  const targetValues1 = {};
+  for (let item in percentages) {
+    targetValues1[item] = totalValue1 * percentages[item];
+  }
+
+  const difference1 = {};
+  for (let item in currentPortfolio1) {
+    difference1[item] = targetValues1[item] - currentPortfolio1[item];
+  }
+
+  const resultsDiv1 = document.getElementById('results1');
+  resultsDiv1.innerHTML = "";
+  resultsDiv1.innerHTML += `<p><strong>Toplam Portföy Değeri:</strong> ${totalValue1.toFixed(2)}</p>`;
+  resultsDiv1.innerHTML += `<p><strong>Hedef Değerler (% cinsinden dağılım):</strong></p>`;
+  for (let item in targetValues1) {
+    resultsDiv1.innerHTML += `<div class="coin-result">${item}: ${targetValues1[item].toFixed(2)}</div>`;
+  }
+  resultsDiv1.innerHTML += `<p><strong>Al/Sat Miktarları:</strong></p>`;
+
+  // Kullanıcıya birden fazla API çağrısı yapmadan önce tüm fiyatları almak için bir dizi vaat (promise) oluşturalım
+  const pricePromises = [
+    getBTCPrice(),
+    getETHPrice(),
+    getADAPrice(),
+    getSOLPrice(),
+    getLINKPrice(),
+    getARBPrice(),
+    getOPPrice(),
+    getUSDTRYPrice(),
+  ];
+
+  // Tüm fiyatların alınmasını bekleyelim ve ardından sonuçları işleyelim
+  Promise.all(pricePromises).then(prices => {
+    const [
+      btcPrice,
+      ethPrice,
+      adaPrice,
+      solPrice,
+      linkPrice,
+      arbPrice,
+      opPrice,
+      usdTryPrice
+    ] = prices;
+
+    for (let item in difference1) {
+      const diffValue1 = difference1[item];
+      let actionText1 = diffValue1 > 0
+        ? `+${diffValue1.toFixed(2)} (Al)`
+        : `${diffValue1.toFixed(2)} (Sat)`;
+      let comparisonValue = 0;
+      if (item === 'BTC') {
+        const btcTryPrice = btcPrice / 100000 * usdTryPrice; // 0.00001 BTC fiyatını alın
+        actionText1 += ` (0.00001 BTC = ${btcTryPrice.toFixed(2)} TRY)`;
+        comparisonValue = 0.00001 * btcPrice * usdTryPrice;
+      } else if (item === 'ETH') {
+        const ethTryPrice = ethPrice / 10000 * usdTryPrice; // 0.0001 ETH fiyatını alın
+        actionText1 += ` (0.0001 ETH = ${ethTryPrice.toFixed(2)} TRY)`;
+        comparisonValue = 0.0001 * ethPrice * usdTryPrice;
+      } else if (item === 'ADA') {
+        const adaTryPrice = adaPrice / 10 * usdTryPrice; // 0.1 ADA fiyatını alın
+        actionText1 += ` (0.1 ADA = ${adaTryPrice.toFixed(2)} TRY)`;
+        comparisonValue = 0.1 * adaPrice * usdTryPrice;
+      } else if (item === 'SOL') {
+        const solTryPrice = solPrice * usdTryPrice / 1000; // 0.001 SOL fiyatını alın
+        actionText1 += ` (0.001 SOL = ${solTryPrice.toFixed(2)} TRY)`;
+        comparisonValue = 0.001 * solPrice * usdTryPrice;
+      } else if (item === 'LINK') {
+        const linkTryPrice = linkPrice / 100 * usdTryPrice; // 0.01 LINK fiyatını alın
+        actionText1 += ` (0.01 LINK = ${linkTryPrice.toFixed(2)} TRY)`;
+        comparisonValue = 0.01 * linkPrice * usdTryPrice;
+      } else if (item === 'ARB') {
+        const arbTryPrice = arbPrice / 10 * usdTryPrice; // 0.1 ARB fiyatını alın
+        actionText1 += ` (0.1 ARB = ${arbTryPrice.toFixed(2)} TRY)`;
+        comparisonValue = 0.1 * arbPrice * usdTryPrice;
+      } else if (item === 'OP') {
+        const opTryPrice = opPrice / 100 * usdTryPrice; // 0.01 OP fiyatını alın
+        actionText1 += ` (0.01 OP = ${opTryPrice.toFixed(2)} TRY)`;
+        comparisonValue = 0.01 * opPrice * usdTryPrice;
+      }
+      
+      let iconHtml;
+      if (Math.abs(diffValue1) < comparisonValue) {
+        iconHtml = '<span class="icon-tick">&#10003;</span>'; // Tik işareti
+      } else {
+        iconHtml = '<span class="icon-cross">&#10007;</span>'; // Çarpı işareti
+      }
+      
+      resultsDiv1.innerHTML += `<div class="coin-result">${item}: ${actionText1}${iconHtml}</div>`;
+    }
+  });
+}
+
+// 3. Portföy (Fonlar)
+function calculateRebalance2() {
+  const percentages = {
+    IIH: parseFloat(document.getElementById('iih_percent').value) / 100 || 0,
+    YKT: parseFloat(document.getElementById('ykt_percent').value) / 100 || 0,
+    DBH: parseFloat(document.getElementById('dbh_percent').value) / 100 || 0,
+    TRY: parseFloat(document.getElementById('try2_percent').value) / 100 || 0
+  };
+
+  // Yeni eklenen değerlerin yüzde değerlerini percentages objesine ekleyelim
+  for (let value of newValues[2]) {
+    percentages[value.name] = parseFloat(document.getElementById(`${value.name}_percent`).value) / 100 || 0;
+  }
+
+  if (!validatePercentages(percentages)) {
+    document.getElementById('results2').innerHTML = 
+      '<div class="validation-error">Hata: Yüzdelerin toplamı 100 olmalıdır!</div>';
+    return;
+  }
+
+  const currentPortfolio2 = {
+    IIH: parseFloat(document.getElementById('iih').value) || 0,
+    YKT: parseFloat(document.getElementById('ykt').value) || 0,
+    DBH: parseFloat(document.getElementById('dbh').value) || 0,
+    TRY: parseFloat(document.getElementById('try2').value) || 0
+  };
+
+  // Yeni eklenen değerlerin değerlerini currentPortfolio2 objesine ekleyelim
+  for (let value of newValues[2]) {
+    currentPortfolio2[value.name] = parseFloat(document.getElementById(value.name).value) || 0;
+  }
+
+  const totalValue2 = Object.values(currentPortfolio2).reduce((a, b) => a + b, 0);
+
+  const targetValues2 = {};
+  for (let item in percentages) {
+    targetValues2[item] = totalValue2 * percentages[item];
+  }
+
+  const difference2 = {};
+  for (let item in currentPortfolio2) {
+    difference2[item] = targetValues2[item] - currentPortfolio2[item];
+  }
+
+  const resultsDiv2 = document.getElementById('results2');
+  resultsDiv2.innerHTML = "";
+  resultsDiv2.innerHTML += `<p><strong>Toplam Portföy Değeri:</strong> ${totalValue2.toFixed(2)}</p>`;
+  resultsDiv2.innerHTML += `<p><strong>Hedef Değerler (% cinsinden dağılım):</strong></p>`;
+  for (let item in targetValues2) {
+    resultsDiv2.innerHTML += `<div class="coin-result">${item}: ${targetValues2[item].toFixed(2)}</div>`;
+  }
+  resultsDiv2.innerHTML += `<p><strong>Al/Sat Miktarları:</strong></p>`;
+  for (let item in difference2) {
+    const diffValue2 = difference2[item];
+    let actionText2 = diffValue2 > 0
+      ? `+${diffValue2.toFixed(2)} (Al)`
+      : `${diffValue2.toFixed(2)} (Sat)`;
+    resultsDiv2.innerHTML += `<div class="coin-result">${item}: ${actionText2}</div>`;
+  }
+}
+
+// 4. Portföy (Altcoin)
+function calculateRebalance4() {
+  const percentages = {
+    GOAT: parseFloat(document.getElementById('goat_percent').value) / 100 || 0,
+    YOUSIM: parseFloat(document.getElementById('yousim_percent').value) / 100 || 0,
+    WMM: parseFloat(document.getElementById('wmm_percent').value) / 100 || 0,
+    CENTS: parseFloat(document.getElementById('cents_percent').value) / 100 || 0,
+    BULLY: parseFloat(document.getElementById('bully_percent').value) / 100 || 0,
+    TRY: parseFloat(document.getElementById('try4_percent').value) / 100 || 0
+  };
+
+  // Yeni eklenen altcoin'lerin yüzde değerlerini percentages objesine ekleyelim
+  for (let value of newValues[4]) {
+    percentages[value.name] = parseFloat(document.getElementById(`${value.name}_percent`).value) / 100 || 0;
+  }
+
+  if (!validatePercentages(percentages)) {
+    document.getElementById('results4').innerHTML = 
+      '<div class="validation-error">Hata: Yüzdelerin toplamı 100 olmalıdır!</div>';
+    return;
+  }
+
+  const currentPortfolio4 = {
+    GOAT: parseFloat(document.getElementById('goat').value) || 0,
+    YOUSIM: parseFloat(document.getElementById('yousim').value) || 0,
+    WMM: parseFloat(document.getElementById('wmm').value) || 0,
+    CENTS: parseFloat(document.getElementById('cents').value) || 0,
+    BULLY: parseFloat(document.getElementById('bully').value) || 0,
+    TRY: parseFloat(document.getElementById('try4').value) || 0
+  };
+
+  // Yeni eklenen altcoin'lerin değerlerini currentPortfolio4 objesine ekleyelim
+  for (let value of newValues[4]) {
+    currentPortfolio4[value.name] = parseFloat(document.getElementById(value.name).value) || 0;
+  }
+
+  const totalValue4 = Object.values(currentPortfolio4).reduce((a, b) => a + b, 0);
+
+  const targetValues4 = {};
+  for (let item in percentages) {
+    targetValues4[item] = totalValue4 * percentages[item];
+  }
+
+  const difference4 = {};
+  for (let item in currentPortfolio4) {
+    difference4[item] = targetValues4[item] - currentPortfolio4[item];
+  }
+
+  const resultsDiv4 = document.getElementById('results4');
+  resultsDiv4.innerHTML = "";
+  resultsDiv4.innerHTML += `<p><strong>Toplam Portföy Değeri:</strong> ${totalValue4.toFixed(2)}</p>`;
+  resultsDiv4.innerHTML += `<p><strong>Hedef Değerler (% cinsinden dağılım):</strong></p>`;
+  for (let item in targetValues4) {
+    resultsDiv4.innerHTML += `<div class="coin-result">${item}: ${targetValues4[item].toFixed(2)}</div>`;
+  }
+  resultsDiv4.innerHTML += `<p><strong>Al/Sat Miktarları:</strong></p>`;
+  for (let item   in difference4) {
+    const diffValue4 = difference4[item];
+    let actionText4 = diffValue4 > 0
+      ? `+${diffValue4.toFixed(2)} (Al)`
+      : `${diffValue4.toFixed(2)} (Sat)`;
+    resultsDiv4.innerHTML += `<div class="coin-result">${item}: ${actionText4}</div>`;
+  }
+}
+
 // Binance API'den fiyatları almak için fetch fonksiyonları
 function getBTCPrice() {
   return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT')
@@ -312,7 +734,7 @@ function getADAPrice() {
   return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=ADAUSDT')
     .then(data => parseFloat(data.price));
 }
- 
+
 function getSOLPrice() {
   return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=SOLUSDT')
     .then(data => parseFloat(data.price));
@@ -335,291 +757,15 @@ function getOPPrice() {
 
 // TRY USD Döviz kuru almak için bir fonksiyon
 function getUSDTRYPrice() {
-  return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=USDTTRY')
+  return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=USDTRY')
     .then(data => parseFloat(data.price));
 }
 
-// 1. Portföy (Fonlar, Kripto, Nakit)
-function calculateRebalance3() {
-  const percentages = {
-    Fonlar: Number(document.getElementById('fonlar_percent').value) / 100,
-    Kripto: Number(document.getElementById('kripto_percent').value) / 100,
-    Nakit: Number(document.getElementById('nakit_percent').value) / 100
-  };
-  console.log("Girilen yüzdeler:", {
-    Fonlar: percentages.Fonlar * 100,
-    Kripto: percentages.Kripto * 100,
-    Nakit: percentages.Nakit * 100
-  });
-  if (!validatePercentages(percentages)) {
-    document.getElementById('results3').innerHTML = 
-      '<div class="validation-error">Hata: Yüzdelerin toplamı 100 olmalıdır! (Şu anki toplam: ' + 
-      (Object.values(percentages).reduce((a, b) => a + b, 0) * 100).toFixed(2) + '%)</div>';
-    return;
-  }
-  
-    const currentPortfolio3 = {
-      Fonlar: parseFloat(document.getElementById('fonlar').value) || 0,
-      Kripto: parseFloat(document.getElementById('kripto').value) || 0,
-      Nakit: parseFloat(document.getElementById('nakit').value) || 0
-    };
-  
-    const totalValue3 = Object.values(currentPortfolio3).reduce((a, b) => a + b, 0);
-  
-    const targetValues3 = {};
-    for (let item in percentages) {
-      targetValues3[item] = totalValue3 * percentages[item];
-    }
-  
-    const difference3 = {};
-    for (let item in currentPortfolio3) {
-      difference3[item] = targetValues3[item] - currentPortfolio3[item];
-    }
-  
-    const resultsDiv3 = document.getElementById('results3');
-    resultsDiv3.innerHTML = "";
-    resultsDiv3.innerHTML += `<p><strong>Toplam Portföy Değeri:</strong> ${totalValue3.toFixed(2)}</p>`;
-    resultsDiv3.innerHTML += `<p><strong>Hedef Değerler (% cinsinden dağılım):</strong></p>`;
-    for (let item in targetValues3) {
-      resultsDiv3.innerHTML += `<div class="coin-result">${item}: ${targetValues3[item].toFixed(2)}</div>`;
-    }
-    resultsDiv3.innerHTML += `<p><strong>Al/Sat Miktarları:</strong></p>`;
-for (let item in difference3) {
-  const diffValue3 = difference3[item];
-  let actionText3 = diffValue3 > 0
-    ? `+${diffValue3.toFixed(2)} (Al)`
-    : `${diffValue3.toFixed(2)} (Sat)`;
-  resultsDiv3.innerHTML += `<div class="coin-result">${item}: ${actionText3}</div>`;
+function validatePercentages(percentages) {
+  const total = Object.values(percentages).reduce((a, b) => a + b, 0);
+  console.log("Toplam yüzde:", total * 100); // Hata ayıklama için toplam değeri görelim
+  return Math.abs(total - 1) <= 0.001; // Toleransı artırdık
 }
-}
-
-// 2. Portföy (Kripto)
-function calculateRebalance1() {
-    const percentages = {
-      BTC: parseFloat(document.getElementById('btc_percent').value) / 100 || 0,
-      ETH: parseFloat(document.getElementById('eth_percent').value) / 100 || 0,
-      ADA: parseFloat(document.getElementById('ada_percent').value) / 100 || 0,
-      SOL: parseFloat(document.getElementById('sol_percent').value) / 100 || 0,
-      LINK: parseFloat(document.getElementById('link_percent').value) / 100 || 0,
-      ARB: parseFloat(document.getElementById('arb_percent').value) / 100 || 0,
-      OP: parseFloat(document.getElementById('op_percent').value) / 100 || 0,
-      TRY: parseFloat(document.getElementById('try1_percent').value) / 100 || 0
-    };
-  
-    if (!validatePercentages(percentages)) {
-      document.getElementById('results1').innerHTML = 
-        '<div class="validation-error">Hata: Yüzdelerin toplamı 100 olmalıdır!</div>';
-      return;
-    }
-  
-    const currentPortfolio1 = {
-      BTC: parseFloat(document.getElementById('btc').value) || 0,
-      ETH: parseFloat(document.getElementById('eth').value) || 0,
-      ADA: parseFloat(document.getElementById('ada').value) || 0,
-      SOL: parseFloat(document.getElementById('sol').value) || 0,
-      LINK: parseFloat(document.getElementById('link').value) || 0,
-      ARB: parseFloat(document.getElementById('arb').value) || 0,
-      OP: parseFloat(document.getElementById('op').value) || 0,
-      TRY: parseFloat(document.getElementById('try1').value) || 0
-    };
-  
-    const totalValue1 = Object.values(currentPortfolio1).reduce((a, b) => a + b, 0);
-  
-    const targetValues1 = {};
-    for (let item in percentages) {
-      targetValues1[item] = totalValue1 * percentages[item];
-    }
-  
-    const difference1 = {};
-    for (let item in currentPortfolio1) {
-      difference1[item] = targetValues1[item] - currentPortfolio1[item];
-    }
-  
-    const resultsDiv1 = document.getElementById('results1');
-    resultsDiv1.innerHTML = "";
-    resultsDiv1.innerHTML += `<p><strong>Toplam Portföy Değeri:</strong> ${totalValue1.toFixed(2)}</p>`;
-    resultsDiv1.innerHTML += `<p><strong>Hedef Değerler (% cinsinden dağılım):</strong></p>`;
-    for (let item in targetValues1) {
-      resultsDiv1.innerHTML += `<div class="coin-result">${item}: ${targetValues1[item].toFixed(2)}</div>`;
-    }
-    resultsDiv1.innerHTML += `<p><strong>Al/Sat Miktarları:</strong></p>`;
-
-    // Kullanıcıya birden fazla API çağrısı yapmadan önce tüm fiyatları almak için bir dizi vaat (promise) oluşturalım
-    const pricePromises = [
-      getBTCPrice(),
-      getETHPrice(),
-      getADAPrice(),
-      getSOLPrice(),
-      getLINKPrice(),
-      getARBPrice(),
-      getOPPrice(),
-      getUSDTRYPrice(),
-    ];
-  
-    // Tüm fiyatların alınmasını bekleyelim ve ardından sonuçları işleyelim
-    Promise.all(pricePromises).then(prices => {
-      const [
-        btcPrice,
-        ethPrice,
-        adaPrice,
-        solPrice,
-        linkPrice,
-        arbPrice,
-        opPrice,
-        usdTryPrice
-      ] = prices;
-  
-      for (let item in difference1) {
-        const diffValue1 = difference1[item];
-        let actionText1 = diffValue1 > 0
-          ? `+${diffValue1.toFixed(2)} (Al)`
-          : `${diffValue1.toFixed(2)} (Sat)`;
-        let comparisonValue = 0;
-        if (item === 'BTC') {
-          const btcTryPrice = btcPrice / 100000 * usdTryPrice; // 0.00001 BTC fiyatını alın
-          actionText1 += ` (0.00001 BTC = ${btcTryPrice.toFixed(2)} TRY)`;
-          comparisonValue = 0.00001 * btcPrice * usdTryPrice;
-        } else if (item === 'ETH') {
-          const ethTryPrice = ethPrice / 10000 * usdTryPrice; // 0.0001 ETH fiyatını alın
-          actionText1 += ` (0.0001 ETH = ${ethTryPrice.toFixed(2)} TRY)`;
-          comparisonValue = 0.0001 * ethPrice * usdTryPrice;
-        } else if (item === 'ADA') {
-          const adaTryPrice = adaPrice / 10 * usdTryPrice; // 0.1 ADA fiyatını alın
-          actionText1 += ` (0.1 ADA = ${adaTryPrice.toFixed(2)} TRY)`;
-          comparisonValue = 0.1 * adaPrice * usdTryPrice;
-        } else if (item === 'SOL') {
-          const solTryPrice = solPrice * usdTryPrice / 1000; // 0.001 SOL fiyatını alın
-          actionText1 += ` (0.001 SOL = ${solTryPrice.toFixed(2)} TRY)`;
-          comparisonValue = 0.001 * solPrice * usdTryPrice;
-        } else if (item === 'LINK') {
-          const linkTryPrice = linkPrice / 100 * usdTryPrice; // 0.01 LINK fiyatını alın
-          actionText1 += ` (0.01 LINK = ${linkTryPrice.toFixed(2)} TRY)`;
-          comparisonValue = 0.01 * linkPrice * usdTryPrice;
-        } else if (item === 'ARB') {
-          const arbTryPrice = arbPrice / 10 * usdTryPrice; // 0.1 ARB fiyatını alın
-          actionText1 += ` (0.1 ARB = ${arbTryPrice.toFixed(2)} TRY)`;
-          comparisonValue = 0.1 * arbPrice * usdTryPrice;
-        } else if (item === 'OP') {
-          const opTryPrice = opPrice / 100 * usdTryPrice; // 0.01 OP fiyatını alın
-          actionText1 += ` (0.01 OP = ${opTryPrice.toFixed(2)} TRY)`;
-          comparisonValue = 0.01 * opPrice * usdTryPrice;
-        }
-        
-        let iconHtml;
-        if (Math.abs(diffValue1) < comparisonValue) {
-          iconHtml = '<span class="icon-cross">&#10007;</span>'; // Çarpı işareti
-        } else {
-          iconHtml = '<span class="icon-tick">&#10003;</span>'; // Tik işareti
-        }
-        
-        resultsDiv1.innerHTML += `<div class="coin-result">${item}: ${actionText1}${iconHtml}</div>`;
-      }
-    });
-  }
-  
-  // 3. Portföy (Fonlar)
-  function calculateRebalance2() {
-    const percentages = {
-      IIH: parseFloat(document.getElementById('iih_percent').value) / 100 || 0,
-      YKT: parseFloat(document.getElementById('ykt_percent').value) / 100 || 0,
-      DBH: parseFloat(document.getElementById('dbh_percent').value) / 100 || 0,
-      TRY: parseFloat(document.getElementById('try2_percent').value) / 100 || 0
-    };
-  
-    if (!validatePercentages(percentages)) {
-      document.getElementById('results2').innerHTML = 
-        '<div class="validation-error">Hata: Yüzdelerin toplamı 100 olmalıdır!</div>';
-      return;
-    }
-  
-    const currentPortfolio2 = {
-      IIH: parseFloat(document.getElementById('iih').value) || 0,
-      YKT: parseFloat(document.getElementById('ykt').value) || 0,
-      DBH: parseFloat(document.getElementById('dbh').value) || 0,
-      TRY: parseFloat(document.getElementById('try2').value) || 0
-    };
-  
-    const totalValue2 = Object.values(currentPortfolio2).reduce((a, b) => a + b, 0);
-  
-    const targetValues2 = {};
-    for (let item in percentages) {
-      targetValues2[item] = totalValue2 * percentages[item];
-    }
-  
-    const difference2 = {};
-    for (let item in currentPortfolio2) {
-      difference2[item] = targetValues2[item] - currentPortfolio2[item];
-    }
-  
-    const resultsDiv2 = document.getElementById('results2');
-    resultsDiv2.innerHTML = "";
-    resultsDiv2.innerHTML += `<p><strong>Toplam Portföy Değeri:</strong> ${totalValue2.toFixed(2)}</p>`;
-    resultsDiv2.innerHTML += `<p><strong>Hedef Değerler (% cinsinden dağılım):</strong></p>`;
-    for (let item in targetValues2) {
-      resultsDiv2.innerHTML += `<div class="coin-result">${item}: ${targetValues2[item].toFixed(2)}</div>`;
-    }
-    resultsDiv2.innerHTML += `<p><strong>Al/Sat Miktarları:</strong></p>`;
-    for (let item in difference2) {
-      const diffValue2 = difference2[item];
-      let actionText2 = diffValue2 > 0
-        ? `+${diffValue2.toFixed(2)} (Al)`
-        : `${diffValue2.toFixed(2)} (Sat)`;
-      resultsDiv2.innerHTML += `<div class="coin-result">${item}: ${actionText2}</div>`;
-    }
-  }
-  
-  // 4. Portföy (Altcoin)
-  function calculateRebalance4() {
-    const percentages = {
-      GOAT: parseFloat(document.getElementById('goat_percent').value) / 100 || 0,
-      YOUSIM: parseFloat(document.getElementById('yousim_percent').value) / 100 || 0,
-      WMM: parseFloat(document.getElementById('wmm_percent').value) / 100 || 0,
-      CENTS: parseFloat(document.getElementById('cents_percent').value) / 100 || 0,
-      TRY: parseFloat(document.getElementById('try4_percent').value) / 100 || 0
-    };
-  
-    if (!validatePercentages(percentages)) {
-      document.getElementById('results4').innerHTML = 
-        '<div class="validation-error">Hata: Yüzdelerin toplamı 100 olmalıdır!</div>';
-      return;
-    }
-  
-    const currentPortfolio4 = {
-      GOAT: parseFloat(document.getElementById('goat').value) || 0,
-      YOUSIM: parseFloat(document.getElementById('yousim').value) || 0,
-      WMM: parseFloat(document.getElementById('wmm').value) || 0,
-      CENTS: parseFloat(document.getElementById('cents').value) || 0,
-      TRY: parseFloat(document.getElementById('try4').value) || 0
-    };
-  
-    const totalValue4 = Object.values(currentPortfolio4).reduce((a, b) => a + b, 0);
-  
-    const targetValues4 = {};
-    for (let item in percentages) {
-      targetValues4[item] = totalValue4 * percentages[item];
-    }
-  
-    const difference4 = {};
-    for (let item in currentPortfolio4) {
-      difference4[item] = targetValues4[item] - currentPortfolio4[item];
-    }
-  
-    const resultsDiv4 = document.getElementById('results4');
-    resultsDiv4.innerHTML = "";
-    resultsDiv4.innerHTML += `<p><strong>Toplam Portföy Değeri:</strong> ${totalValue4.toFixed(2)}</p>`;
-    resultsDiv4.innerHTML += `<p><strong>Hedef Değerler (% cinsinden dağılım):</strong></p>`;
-    for (let item in targetValues4) {
-      resultsDiv4.innerHTML += `<div class="coin-result">${item}: ${targetValues4[item].toFixed(2)}</div>`;
-    }
-    resultsDiv4.innerHTML += `<p><strong>Al/Sat Miktarları:</strong></p>`;
-    for (let item in difference4) {
-      const diffValue4 = difference4[item];
-      let actionText4 = diffValue4 > 0
-        ? `+${diffValue4.toFixed(2)} (Al)`
-        : `${diffValue4.toFixed(2)} (Sat)`;
-      resultsDiv4.innerHTML += `<div class="coin-result">${item}: ${actionText4}</div>`;
-    }
-  }
 </script>
 </body>
 </html>
