@@ -1,9 +1,1061 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="refresh" content="0; url=PortfolioCalculator.html">
+  <meta charset="utf-8">
+  <title>Portföy Yöneticisi</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-image: url('https://d.pusulahaber.com.tr/news/553733.jpg');
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+      color: #f5f5f5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: #2c2c2c;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+      margin-bottom: 50px;
+      position: relative; /* Çarpı butonu için pozisyon referansı */
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #ffffff;
+    }
+    p {
+      line-height: 1.4;
+      margin-bottom: 15px;
+    }
+    label {
+      display: inline-block;
+      width: 100px;
+      margin-bottom: 8px;
+    }
+    input[type="number"] {
+      background-color: #3b3b3b;
+      border: 1px solid #444;
+      border-radius: 4px;
+      color: #ffffff;
+      padding: 6px;
+      width: 150px;
+      outline: none;
+      margin-bottom: 12px;
+    }
+    .percent-input {
+      width: 70px;
+      margin-left: 10px;
+      background-color: #3b3b3b;
+      border: 1px solid #444;
+      border-radius: 4px;
+      color: #ffffff;
+      padding: 6px;
+    }
+    input[type="number"]:focus {
+      border-color: #888;
+    }
+    button {
+      background: linear-gradient(45deg, #4a60ff, #8f8fff);
+      border-radius: 6px;
+      border: none;
+      color: #ffffff;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 10px;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    #results1, #results2, #results3, #results4 {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #1f1f1f;
+      border-radius: 6px;
+      border: 1px solid #444;
+    }
+    .coin-result {
+      margin-bottom: 6px;
+    }
+    .portfolio-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .validation-error {
+      color: #ff4444;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    .section-title {
+      font-size: 22px;
+      margin-bottom: 10px;
+      text-align: center;
+      color: #ffffff;
+    }
+    .icon-tick {
+      color: green;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    .icon-cross {
+      color: red;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    @media (max-width: 767px) {
+      body {
+        font-size: 16px;
+      }
+      .container {
+        width: 90%;
+        margin: 20px auto;
+        padding: 15px;
+      }
+      h1 {
+        font-size: 1.5rem;
+      }
+      .portfolio-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .portfolio-row label {
+        margin-bottom: 5px;
+        width: 100%;
+      }
+      input[type="number"] {
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .percent-input {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 5px;
+      }
+      button {
+        width: 100%;
+        padding: 12px;
+        font-size: 1rem;
+      }
+    }
+    @media (max-width: 480px) {
+      body {
+        font-size: 14px;
+      }
+      h1 {
+        font-size: 1.3rem;
+      }
+    }
+    .delete-btn {
+      background: linear-gradient(45deg, #ff4444, #ff6666);
+      padding: 6px 12px;
+      font-size: 14px;
+      margin-top: 0;
+    }
+    .clear-all-btn {
+      background: linear-gradient(45deg, #ff4444, #ff6666);
+      padding: 10px 20px;
+      font-size: 16px;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .close-container {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 24px;
+      height: 24px;
+      background: rgba(255, 68, 68, 0.1);
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ff4444;
+      font-size: 18px;
+      border: 1px solid rgba(255, 68, 68, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .close-container:hover {
+      background: rgba(255, 68, 68, 0.2);
+      border-color: rgba(255, 68, 68, 0.3);
+      transform: scale(1.1);
+    }
+
+    .add-portfolio-btn {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    padding: 10px 20px;
+    font-size: 16px;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1000;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+  .top-menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    padding: 20px;
+    z-index: 1000;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .user-info {
+    color: white;
+    background: rgba(0,0,0,0.5);
+    padding: 8px 15px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .logout-btn {
+    background: linear-gradient(45deg, #ff4444, #ff6666);
+    border: none;
+    padding: 8px 15px;
+    color: white;
+    border-radius: 20px;
+    cursor: pointer;
+    margin: 0;
+  }
+  .save-btn {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    border: none;
+    padding: 8px 15px;
+    color: white;
+    border-radius: 20px;
+    cursor: pointer;
+    margin: 0 10px;
+  }
+  </style>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <body>
-    Yönlendiriliyorsunuz...
+  <div class="top-menu">
+    <div class="user-info">
+      <span id="userEmail"></span>
+      <button id="saveBtn" class="save-btn">Kaydet</button>
+      <button id="logoutBtn" class="logout-btn">Çıkış Yap</button>
+    </div>
+  </div>
+
+  <!-- Tüm varsayılan portföy konteynerleri kaldırıldı -->
+
+<script>
+let newValues = { 1: [], 2: [], 3: [], 4: [] };
+
+// Genel Değer Ekleme Fonksiyonu
+function addValue(portfolioId, valueName = null, valueValue = null, valuePercent = null) {
+  valueName = valueName || document.getElementById(`valueName${portfolioId}`).value;
+  valueValue = valueValue !== null ? parseFloat(valueValue) : parseFloat(document.getElementById(`valueValue${portfolioId}`).value);
+  valuePercent = valuePercent !== null ? parseFloat(valuePercent) / 100 : parseFloat(document.getElementById(`valuePercent${portfolioId}`).value) / 100;
+
+  if (!valueName || isNaN(valueValue) || isNaN(valuePercent)) {
+    alert('Lütfen tüm alanları doldurun');
+    return;
+  }
+  // Yeni değeri ilgili portföy listesine ekleyelim
+  newValues[portfolioId].push({
+    name: valueName,
+    value: valueValue,
+    percent: valuePercent
+  });
+
+  // Yeni değerin form alanlarını portföy formuna ekleyelim
+  const form = document.getElementById(`portfolioForm${portfolioId}`);
+  const div = document.createElement('div');
+  div.className = 'portfolio-row';
+  div.id = `row_${valueName}`;
+  div.innerHTML = `
+    <label for="${valueName}">${valueName}:</label>
+    <input type="number" id="${valueName}" value="${valueValue}" step="any">
+    <input type="number" id="${valueName}_percent" value="${valuePercent * 100}" min="0" max="100" step="1" class="percent-input" placeholder="%">
+    <button type="button" class="delete-btn" onclick="removeValue('${portfolioId}', '${valueName}')">Sil</button>
+  `;
+  form.insertBefore(div, form.lastElementChild);
+
+  // Eklenen değerin form alanlarını temizleyelim
+  document.getElementById(`valueName${portfolioId}`).value = '';
+  document.getElementById(`valueValue${portfolioId}`).value = '';
+  document.getElementById(`valuePercent${portfolioId}`).value = '';
+}
+
+// Yeni Değer Silme Fonksiyonu
+function removeValue(portfolioId, valueName) {
+  const form = document.getElementById(`portfolioForm${portfolioId}`);
+  
+  // Silinen değerin yüzdesini al
+  const deletedPercent = parseFloat(document.getElementById(`${valueName}_percent`).value) || 0;
+  
+  // Değeri gizle (tamamen silmek yerine)
+  const rowElement = document.getElementById(`row_${valueName}`) || 
+                    document.querySelector(`[for="${valueName}"]`).parentElement;
+  rowElement.style.display = 'none';
+  
+  // Input değerlerini sıfırla
+  document.getElementById(valueName).value = '0';
+  document.getElementById(`${valueName}_percent`).value = '0';
+
+  // Kalan görünür değerlerin yüzdelerini yeniden hesapla
+  const visibleRows = Array.from(form.getElementsByClassName('portfolio-row'))
+    .filter(row => row.style.display !== 'none' && !row.querySelector('button[onclick^="calculate"]'));
+  
+  if (visibleRows.length > 0) {
+    const newPercent = (deletedPercent / visibleRows.length).toFixed(1);
+    
+    visibleRows.forEach(row => {
+      const percentInput = row.querySelector('.percent-input');
+      if (percentInput) {
+        const currentPercent = parseFloat(percentInput.value) || 0;
+        percentInput.value = (currentPercent + parseFloat(newPercent)).toFixed(1);
+      }
+    });
+  }
+}
+
+// Yüzdeleri yeniden hesaplama fonksiyonu
+function recalculatePercentages(portfolioId) {
+  const form = document.getElementById(`portfolioForm${portfolioId}`);
+  const percentInputs = form.querySelectorAll('.percent-input');
+  const totalElements = percentInputs.length;
+  const equalPercent = (100 / totalElements).toFixed(1);
+  
+  percentInputs.forEach(input => {
+    input.value = equalPercent;
+  });
+}
+
+// 1. Portföy (Fonlar, Kripto, Nakit)
+function calculateRebalance3() {
+  const form = document.getElementById('portfolioForm3');
+  const visibleRows = Array.from(form.getElementsByClassName('portfolio-row'))
+    .filter(row => row.style.display !== 'none' && !row.querySelector('button[onclick^="calculate"]'));
+
+  const percentages = {};
+  const currentPortfolio3 = {};
+
+  // Sadece görünür satırların değerlerini al
+  visibleRows.forEach(row => {
+    const label = row.querySelector('label');
+    const id = label.getAttribute('for');
+    const name = label.textContent.replace(':', '');
+    percentages[name] = parseFloat(document.getElementById(`${id}_percent`).value) / 100 || 0;
+    currentPortfolio3[name] = parseFloat(document.getElementById(id).value) || 0;
+  });
+
+  if (!validatePercentages(percentages)) {
+    document.getElementById('results3').innerHTML = 
+      '<div class="validation-error">Hata: Yüzdelerin toplamı 100 olmalıdır!</div>';
+    return;
+  }
+
+  const totalValue3 = Object.values(currentPortfolio3).reduce((a, b) => a + b, 0);
+
+  const targetValues3 = {};
+  for (let item in percentages) {
+    targetValues3[item] = totalValue3 * percentages[item];
+  }
+
+  const difference3 = {};
+  for (let item in currentPortfolio3) {
+    difference3[item] = targetValues3[item] - currentPortfolio3[item];
+  }
+
+  const resultsDiv3 = document.getElementById('results3');
+  resultsDiv3.innerHTML = "";
+  resultsDiv3.innerHTML += `<p><strong>Toplam Portföy Değeri:</strong> ${totalValue3.toFixed(2)}</p>`;
+  resultsDiv3.innerHTML += `<p><strong>Hedef Değerler (% cinsinden dağılım):</strong></p>`;
+  for (let item in targetValues3) {
+    resultsDiv3.innerHTML += `<div class="coin-result">${item}: ${targetValues3[item].toFixed(2)}</div>`;
+  }
+  resultsDiv3.innerHTML += `<p><strong>Al/Sat Miktarları:</strong></p>`;
+  for (let item in difference3) {
+    const diffValue3 = difference3[item];
+    let actionText3 = diffValue3 > 0
+      ? `+${diffValue3.toFixed(2)} (Al)`
+      : `${diffValue3.toFixed(2)} (Sat)`;
+    resultsDiv3.innerHTML += `<div class="coin-result">${item}: ${actionText3}</div>`;
+  }
+}
+
+// 2. Portföy (Kripto)
+function calculateRebalance1() {
+  const form = document.getElementById('portfolioForm1');
+  const visibleRows = Array.from(form.getElementsByClassName('portfolio-row'))
+    .filter(row => row.style.display !== 'none' && !row.querySelector('button[onclick^="calculate"]'));
+
+  const percentages = {};
+  const currentPortfolio1 = {};
+
+  // Sadece görünür satırların değerlerini al
+  visibleRows.forEach(row => {
+    const label = row.querySelector('label');
+    const id = label.getAttribute('for');
+    const name = label.textContent.replace(':', '');
+    percentages[name] = parseFloat(document.getElementById(`${id}_percent`).value) / 100 || 0;
+    currentPortfolio1[name] = parseFloat(document.getElementById(id).value) || 0;
+  });
+
+  // Yeni eklenen değerlerin yüzde değerlerini percentages objesine ekleyelim
+  for (let value of newValues[1]) {
+    percentages[value.name] = parseFloat(document.getElementById(`${value.name}_percent`).value) / 100 || 0;
+  }
+
+  if (!validatePercentages(percentages)) {
+    document.getElementById('results1').innerHTML = 
+      '<div class="validation-error">Hata: Yüzdelerin toplamı 100 olmalıdır!</div>';
+    return;
+  }
+
+  // Yeni eklenen değerlerin değerlerini currentPortfolio1 objesine ekleyelim
+  for (let value of newValues[1]) {
+    currentPortfolio1[value.name] = parseFloat(document.getElementById(value.name).value) || 0;
+  }
+
+  const totalValue1 = Object.values(currentPortfolio1).reduce((a, b) => a + b, 0);
+
+  const targetValues1 = {};
+  for (let item in percentages) {
+    targetValues1[item] = totalValue1 * percentages[item];
+  }
+
+  const difference1 = {};
+  for (let item in currentPortfolio1) {
+    difference1[item] = targetValues1[item] - currentPortfolio1[item];
+  }
+
+  const resultsDiv1 = document.getElementById('results1');
+  resultsDiv1.innerHTML = "";
+  resultsDiv1.innerHTML += `<p><strong>Toplam Portföy Değeri:</strong> ${totalValue1.toFixed(2)}</p>`;
+  resultsDiv1.innerHTML += `<p><strong>Hedef Değerler (% cinsinden dağılım):</strong></p>`;
+  for (let item in targetValues1) {
+    resultsDiv1.innerHTML += `<div class="coin-result">${item}: ${targetValues1[item].toFixed(2)}</div>`;
+  }
+  resultsDiv1.innerHTML += `<p><strong>Al/Sat Miktarları:</strong></p>`;
+
+  // Kullanıcıya birden fazla API çağrısı yapmadan önce tüm fiyatları almak için bir dizi vaat (promise) oluşturalım
+  const pricePromises = [
+    getBTCPrice(),
+    getETHPrice(),
+    getADAPrice(),
+    getSOLPrice(),
+    getLINKPrice(),
+    getARBPrice(),
+    getOPPrice(),
+    getUSDTRYPrice(),
+  ];
+
+  // Tüm fiyatların alınmasını bekleyelim ve ardından sonuçları işleyelim
+  Promise.all(pricePromises).then(prices => {
+    const [
+      btcPrice,
+      ethPrice,
+      adaPrice,
+      solPrice,
+      linkPrice,
+      arbPrice,
+      opPrice,
+      usdTryPrice
+    ] = prices;
+
+    for (let item in difference1) {
+      const diffValue1 = difference1[item];
+      let actionText1 = diffValue1 > 0
+        ? `+${diffValue1.toFixed(2)} (Al)`
+        : `${diffValue1.toFixed(2)} (Sat)`;
+      let comparisonValue = 0;
+      
+      // Her bir coinin minimum alım/satım miktarının TRY değerini hesapla
+      if (item === 'BTC') {
+        const btcTryPrice = btcPrice / 100000 * usdTryPrice; // 0.00001 BTC fiyatını alın
+        actionText1 += ` (0.00001 BTC = ${btcTryPrice.toFixed(2)} TRY)`;
+        comparisonValue = btcTryPrice;
+      } else if (item === 'ETH') {
+        const ethTryPrice = ethPrice / 10000 * usdTryPrice; // 0.0001 ETH fiyatını alın
+        actionText1 += ` (0.0001 ETH = ${ethTryPrice.toFixed(2)} TRY)`;
+        comparisonValue = ethTryPrice;
+      } else if (item === 'ADA') {
+        const adaTryPrice = adaPrice / 10 * usdTryPrice; // 0.1 ADA fiyatını alın
+        actionText1 += ` (0.1 ADA = ${adaTryPrice.toFixed(2)} TRY)`;
+        comparisonValue = adaTryPrice;
+      } else if (item === 'SOL') {
+        const solTryPrice = solPrice * usdTryPrice / 1000; // 0.001 SOL fiyatını alın
+        actionText1 += ` (0.001 SOL = ${solTryPrice.toFixed(2)} TRY)`;
+        comparisonValue = solTryPrice;
+      } else if (item === 'LINK') {
+        const linkTryPrice = linkPrice / 100 * usdTryPrice; // 0.01 LINK fiyatını alın
+        actionText1 += ` (0.01 LINK = ${linkTryPrice.toFixed(2)} TRY)`;
+        comparisonValue = linkTryPrice;
+      } else if (item === 'ARB') {
+        const arbTryPrice = arbPrice / 10 * usdTryPrice; // 0.1 ARB fiyatını alın
+        actionText1 += ` (0.1 ARB = ${arbTryPrice.toFixed(2)} TRY)`;
+        comparisonValue = arbTryPrice;
+      } else if (item === 'OP') {
+        const opTryPrice = opPrice / 100 * usdTryPrice; // 0.01 OP fiyatını alın
+        actionText1 += ` (0.01 OP = ${opTryPrice.toFixed(2)} TRY)`;
+        comparisonValue = opTryPrice;
+      }
+      
+      let iconHtml;
+      // Eğer al/sat miktarının mutlak değeri minimum alım miktarının TRY değerinden büyükse tik işareti
+      if (Math.abs(diffValue1 * usdTryPrice) > comparisonValue) {
+        iconHtml = '<span class="icon-tick">&#10003;</span>'; // Tik işareti - işlem yapılabilir
+      } else {
+        iconHtml = '<span class="icon-cross">&#10007;</span>'; // Çarpı işareti - işlem yapılamaz
+      }
+      
+      resultsDiv1.innerHTML += `<div class="coin-result">${item}: ${actionText1}${iconHtml}</div>`;
+    }
+  });
+}
+
+// 3. Portföy (Fonlar)
+function calculateRebalance2() {
+  const form = document.getElementById('portfolioForm2');
+  const visibleRows = Array.from(form.getElementsByClassName('portfolio-row'))
+    .filter(row => row.style.display !== 'none' && !row.querySelector('button[onclick^="calculate"]'));
+
+  const percentages = {};
+  const currentPortfolio2 = {};
+
+  // Sadece görünür satırların değerlerini al
+  visibleRows.forEach(row => {
+    const label = row.querySelector('label');
+    const id = label.getAttribute('for');
+    const name = label.textContent.replace(':', '');
+    percentages[name] = parseFloat(document.getElementById(`${id}_percent`).value) / 100 || 0;
+    currentPortfolio2[name] = parseFloat(document.getElementById(id).value) || 0;
+  });
+
+  // Yeni eklenen değerlerin yüzde değerlerini percentages objesine ekleyelim
+  for (let value of newValues[2]) {
+    percentages[value.name] = parseFloat(document.getElementById(`${value.name}_percent`).value) / 100 || 0;
+  }
+
+  if (!validatePercentages(percentages)) {
+    document.getElementById('results2').innerHTML = 
+      '<div class="validation-error">Hata: Yüzdelerin toplamı 100 olmalıdır!</div>';
+    return;
+  }
+
+  // Yeni eklenen değerlerin değerlerini currentPortfolio2 objesine ekleyelim
+  for (let value of newValues[2]) {
+    currentPortfolio2[value.name] = parseFloat(document.getElementById(value.name).value) || 0;
+  }
+
+  const totalValue2 = Object.values(currentPortfolio2).reduce((a, b) => a + b, 0);
+
+  const targetValues2 = {};
+  for (let item in percentages) {
+    targetValues2[item] = totalValue2 * percentages[item];
+  }
+
+  const difference2 = {};
+  for (let item in currentPortfolio2) {
+    difference2[item] = targetValues2[item] - currentPortfolio2[item];
+  }
+
+  const resultsDiv2 = document.getElementById('results2');
+  resultsDiv2.innerHTML = "";
+  resultsDiv2.innerHTML += `<p><strong>Toplam Portföy Değeri:</strong> ${totalValue2.toFixed(2)}</p>`;
+  resultsDiv2.innerHTML += `<p><strong>Hedef Değerler (% cinsinden dağılım):</strong></p>`;
+  for (let item in targetValues2) {
+    resultsDiv2.innerHTML += `<div class="coin-result">${item}: ${targetValues2[item].toFixed(2)}</div>`;
+  }
+  resultsDiv2.innerHTML += `<p><strong>Al/Sat Miktarları:</strong></p>`;
+  for (let item in difference2) {
+    const diffValue2 = difference2[item];
+    let actionText2 = diffValue2 > 0
+      ? `+${diffValue2.toFixed(2)} (Al)`
+      : `${diffValue2.toFixed(2)} (Sat)`;
+    resultsDiv2.innerHTML += `<div class="coin-result">${item}: ${actionText2}</div>`;
+  }
+}
+
+// 4. Portföy (Altcoin)
+function calculateRebalance4() {
+  const form = document.getElementById('portfolioForm4');
+  const visibleRows = Array.from(form.getElementsByClassName('portfolio-row'))
+    .filter(row => row.style.display !== 'none' && !row.querySelector('button[onclick^="calculate"]'));
+
+  const percentages = {};
+  const currentPortfolio4 = {};
+
+  // Sadece görünür satırların değerlerini al
+  visibleRows.forEach(row => {
+    const label = row.querySelector('label');
+    const id = label.getAttribute('for');
+    const name = label.textContent.replace(':', '');
+    percentages[name] = parseFloat(document.getElementById(`${id}_percent`).value) / 100 || 0;
+    currentPortfolio4[name] = parseFloat(document.getElementById(id).value) || 0;
+  });
+
+  // Yeni eklenen altcoin'lerin yüzde değerlerini percentages objesine ekleyelim
+  for (let value of newValues[4]) {
+    percentages[value.name] = parseFloat(document.getElementById(`${value.name}_percent`).value) / 100 || 0;
+  }
+
+  if (!validatePercentages(percentages)) {
+    document.getElementById('results4').innerHTML = 
+      '<div class="validation-error">Hata: Yüzdelerin toplamı 100 olmalıdır!</div>';
+    return;
+  }
+
+  // Yeni eklenen altcoin'lerin değerlerini currentPortfolio4 objesine ekleyelim
+  for (let value of newValues[4]) {
+    currentPortfolio4[value.name] = parseFloat(document.getElementById(value.name).value) || 0;
+  }
+
+  const totalValue4 = Object.values(currentPortfolio4).reduce((a, b) => a + b, 0);
+
+  const targetValues4 = {};
+  for (let item in percentages) {
+    targetValues4[item] = totalValue4 * percentages[item];
+  }
+
+  const difference4 = {};
+  for (let item in currentPortfolio4) {
+    difference4[item] = targetValues4[item] - currentPortfolio4[item];
+  }
+
+  const resultsDiv4 = document.getElementById('results4');
+  resultsDiv4.innerHTML = "";
+  resultsDiv4.innerHTML += `<p><strong>Toplam Portföy Değeri:</strong> ${totalValue4.toFixed(2)}</p>`;
+  resultsDiv4.innerHTML += `<p><strong>Hedef Değerler (% cinsinden dağılım):</strong></p>`;
+  for (let item in targetValues4) {
+    resultsDiv4.innerHTML += `<div class="coin-result">${item}: ${targetValues4[item].toFixed(2)}</div>`;
+  }
+  resultsDiv4.innerHTML += `<p><strong>Al/Sat Miktarları:</strong></p>`;
+  for (let item   in difference4) {
+    const diffValue4 = difference4[item];
+    let actionText4 = diffValue4 > 0
+      ? `+${diffValue4.toFixed(2)} (Al)`
+      : `${diffValue4.toFixed(2)} (Sat)`;
+    resultsDiv4.innerHTML += `<div class="coin-result">${item}: ${actionText4}</div>`;
+  }
+}
+
+// Binance API'den fiyatları almak için fetch fonksiyonları
+function getBTCPrice() {
+  return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT')
+    .then(data => parseFloat(data.price));
+}
+
+function getETHPrice() {
+  return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT')
+    .then(data => parseFloat(data.price));
+}
+
+function getADAPrice() {
+  return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=ADAUSDT')
+    .then(data => parseFloat(data.price));
+}
+
+function getSOLPrice() {
+  return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=SOLUSDT')
+    .then(data => parseFloat(data.price));
+}
+
+function getLINKPrice() {
+  return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=LINKUSDT')
+    .then(data => parseFloat(data.price));
+}
+
+function getARBPrice() {
+  return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=ARBUSDT')
+    .then(data => parseFloat(data.price));
+}
+
+function getOPPrice() {
+  return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=OPUSDT')
+    .then(data => parseFloat(data.price));
+}
+
+// TRY USD Döviz kuru almak için bir fonksiyon
+function getUSDTRYPrice() {
+  return $.getJSON('https://api.binance.com/api/v3/ticker/price?symbol=USDTTRY')
+    .then(data => parseFloat(data.price));
+}
+
+function validatePercentages(percentages) {
+  const total = Object.values(percentages).reduce((a, b) => a + b, 0);
+  console.log("Toplam yüzde:", total * 100); // Hata ayıklama için toplam değeri görelim
+  return Math.abs(total - 1) <= 0.001; // Toleransı artırdık
+}
+
+// Konteynır silme fonksiyonu
+function hideContainer(containerId) {
+  if (confirm('Bu portföyü gizlemek istediğinizden emin misiniz?')) {
+    const container = document.getElementById(`container${containerId}`);
+    if (container) {
+      container.style.display = 'none';
+    }
+  }
+}
+// Portföy sayacı
+let portfolioCounter = 1; // Mevcut portföylerden sonra başlayacak
+
+// Yeni portföy oluşturma fonksiyonu
+function createNewPortfolio(id = null) {
+  const portfolioId = id || portfolioCounter;
+  const container = document.createElement('div');
+  container.className = 'container';
+  container.id = `container${portfolioId}`;
+
+  container.innerHTML = `
+    <button class="close-container" onclick="hideContainer('${portfolioId}')">&times;</button>
+    <h1 contenteditable="true">Yeni Portföy ${portfolioId}</h1>
+    <form id="portfolioForm${portfolioId}">
+      <button type="button" onclick="calculateRebalance${portfolioId}()">Hesapla</button>
+    </form>
+    <div id="results${portfolioId}"></div>
+    <h3>Yeni Değer Ekle</h3>
+    <form id="addValueForm${portfolioId}">
+      <div class="portfolio-row">
+        <label for="valueName${portfolioId}">Değer İsmi:</label>
+        <input type="text" id="valueName${portfolioId}" placeholder="Değer ismi">
+      </div>
+      <div class="portfolio-row">
+        <label for="valueValue${portfolioId}">Değer:</label>
+        <input type="number" id="valueValue${portfolioId}" value="" step="any" placeholder="Değer">
+      </div>
+      <div class="portfolio-row">
+        <label for="valuePercent${portfolioId}">Yüzde:</label>
+        <input type="number" id="valuePercent${portfolioId}" value="" step="any" min="0" max="100" placeholder="%">
+      </div>
+      <button type="button" onclick="addValue('${portfolioId}')">Ekle</button>
+    </form>
+  `;
+
+  // newValues objesine yeni portföy için boş array ekle
+  newValues[portfolioId] = [];
+
+  // Dinamik hesaplama fonksiyonu oluştur
+  window[`calculateRebalance${portfolioId}`] = createCalculateFunction(portfolioId);
+
+  // Container'ı sayfanın en üstüne ekle
+  document.body.insertBefore(container, document.body.firstChild);
+  
+  // Sayacı artır
+  if (!id) {
+    portfolioCounter++;
+  }
+  return portfolioId;
+}
+
+// Yeni fonksiyon: Hesaplama fonksiyonu oluşturucu
+function createCalculateFunction(id) {
+  return function() {
+    const form = document.getElementById(`portfolioForm${id}`);
+    const visibleRows = Array.from(form.getElementsByClassName('portfolio-row'))
+      .filter(row => row.style.display !== 'none' && !row.querySelector('button[onclick^="calculate"]'));
+
+    const percentages = {};
+    const currentPortfolio = {};
+
+    // Değerleri topla
+    visibleRows.forEach(row => {
+      const label = row.querySelector('label');
+      if (label) {
+        const id = label.getAttribute('for');
+        const name = label.textContent.replace(':', '');
+        if (document.getElementById(id)) {
+          percentages[name] = parseFloat(document.getElementById(`${id}_percent`).value) / 100 || 0;
+          currentPortfolio[name] = parseFloat(document.getElementById(id).value) || 0;
+        }
+      }
+    });
+
+    // newValues arrayinden de değerleri ekle
+    if (newValues[id]) {
+      newValues[id].forEach(value => {
+        if (document.getElementById(value.name)) {
+          percentages[value.name] = parseFloat(document.getElementById(`${value.name}_percent`).value) / 100 || 0;
+          currentPortfolio[value.name] = parseFloat(document.getElementById(value.name).value) || 0;
+        }
+      });
+    }
+
+    if (!validatePercentages(percentages)) {
+      document.getElementById(`results${id}`).innerHTML = 
+        '<div class="validation-error">Hata: Yüzdelerin toplamı 100 olmalıdır!</div>';
+      return;
+    }
+
+    const totalValue = Object.values(currentPortfolio).reduce((a, b) => a + b, 0);
+
+    const targetValues = {};
+    const difference = {};
+
+    // Hedef değerleri ve farkları hesapla
+    for (let item in percentages) {
+      targetValues[item] = totalValue * percentages[item];
+      difference[item] = targetValues[item] - (currentPortfolio[item] || 0);
+    }
+
+    // Sonuçları göster
+    const resultsDiv = document.getElementById(`results${id}`);
+    resultsDiv.innerHTML = "";
+    resultsDiv.innerHTML += `<p><strong>Toplam Portföy Değeri:</strong> ${totalValue.toFixed(2)}</p>`;
+    resultsDiv.innerHTML += `<p><strong>Hedef Değerler (% cinsinden dağılım):</strong></p>`;
+    
+    for (let item in targetValues) {
+      resultsDiv.innerHTML += `<div class="coin-result">${item}: ${targetValues[item].toFixed(2)}</div>`;
+    }
+    
+    resultsDiv.innerHTML += `<p><strong>Al/Sat Miktarları:</strong></p>`;
+    
+    for (let item in difference) {
+      const diffValue = difference[item];
+      let actionText = diffValue > 0
+        ? `+${diffValue.toFixed(2)} (Al)`
+        : `${diffValue.toFixed(2)} (Sat)`;
+      resultsDiv.innerHTML += `<div class="coin-result">${item}: ${actionText}</div>`;
+    }
+  };
+}
+
+// Add this function to detect unsaved changes
+function hasUnsavedChanges() {
+    // Add your logic here to check for unsaved changes
+    // For now, return false to prevent the warning on navigation
+    return false;
+}
+
+// Replace the existing beforeunload handler
+window.addEventListener('beforeunload', function beforeUnloadHandler(e) {
+    if (hasUnsavedChanges()) {
+        e.preventDefault();
+        e.returnValue = '';
+        return '';
+    }
+});
+</script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyC5wZS1gZWWFcmxy1eTvgmQtkynK5HA3F4",
+        authDomain: "portfoilocalculator.firebaseapp.com",
+        projectId: "portfoilocalculator",
+        storageBucket: "portfoilocalculator.firebasestorage.app",
+        messagingSenderId: "597327926950",
+        appId: "1:597327926950:web:6077b172b0c6d68dd44667"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Tüm portföy verilerini toplama fonksiyonu
+    function getAllPortfolioData() {
+        const portfolios = {};
+        document.querySelectorAll('.container').forEach(container => {
+            const id = container.id.replace('container', '');
+            
+            // Her portföyü kaydet
+            portfolios[id] = {
+                title: container.querySelector('h1').textContent,
+                visible: container.style.display !== 'none',
+                values: {}
+            };
+
+            const form = document.getElementById(`portfolioForm${id}`);
+            if (form) {
+                form.querySelectorAll('.portfolio-row').forEach(row => {
+                    const label = row.querySelector('label');
+                    if (label) {
+                        const name = label.textContent.replace(':', '');
+                        const valueInput = row.querySelector('input[type="number"]:not(.percent-input)');
+                        const percentInput = row.querySelector('.percent-input');
+                        
+                        if (valueInput && percentInput) {
+                            portfolios[id].values[name] = {
+                                value: valueInput.value || '0',
+                                percent: percentInput.value || '0',
+                                visible: row.style.display !== 'none'
+                            };
+                        }
+                    }
+                });
+            }
+        });
+        return portfolios;
+    }
+
+    // Portföy verilerini yükleme fonksiyonu
+    function loadUserPortfolios(portfolioData) {
+        // Önce tüm mevcut portföyleri temizle
+        document.querySelectorAll('.container').forEach(container => {
+            container.remove();
+        });
+
+        // Portföyleri yükle
+        Object.entries(portfolioData).forEach(([id, portfolio]) => {
+            // Her portföy için yeni bir portföy oluştur
+            createNewPortfolio(parseInt(id));
+            const container = document.getElementById(`container${id}`);
+            
+            if (container) {
+                // Görünürlük durumunu ayarla
+                container.style.display = portfolio.visible ? '' : 'none';
+                
+                // Başlığı ayarla
+                if (portfolio.title) {
+                    container.querySelector('h1').textContent = portfolio.title;
+                }
+
+                // Değerleri yükle
+                if (portfolio.values) {
+                    const form = document.getElementById(`portfolioForm${id}`);
+                    if (form) {
+                        Object.entries(portfolio.values).forEach(([name, data]) => {
+                            if (data.visible) {
+                                addValue(id, name, data.value, data.percent);
+                            }
+                        });
+                    }
+                }
+            }
+        });
+
+        // En yüksek portföy ID'sini bul ve sayacı güncelle
+        const maxId = Math.max(...Object.keys(portfolioData).map(id => parseInt(id)), 0);
+        portfolioCounter = maxId + 1;
+    }
+
+    // Yeni portföy oluşturma yardımcı fonksiyonu
+    function createNewPortfolio(id = null) {
+        const portfolioId = id || portfolioCounter;
+        const container = document.createElement('div');
+  container.className = 'container';
+  container.id = `container${portfolioId}`;
+
+  container.innerHTML = `
+    <button class="close-container" onclick="hideContainer('${portfolioId}')">&times;</button>
+    <h1 contenteditable="true">Yeni Portföy ${portfolioId}</h1>
+    <form id="portfolioForm${portfolioId}">
+      <button type="button" onclick="calculateRebalance${portfolioId}()">Hesapla</button>
+    </form>
+    <div id="results${portfolioId}"></div>
+    <h3>Yeni Değer Ekle</h3>
+    <form id="addValueForm${portfolioId}">
+      <div class="portfolio-row">
+        <label for="valueName${portfolioId}">Değer İsmi:</label>
+        <input type="text" id="valueName${portfolioId}" placeholder="Değer ismi">
+      </div>
+      <div class="portfolio-row">
+        <label for="valueValue${portfolioId}">Değer:</label>
+        <input type="number" id="valueValue${portfolioId}" value="" step="any" placeholder="Değer">
+      </div>
+      <div class="portfolio-row">
+        <label for="valuePercent${portfolioId}">Yüzde:</label>
+        <input type="number" id="valuePercent${portfolioId}" value="" step="any" min="0" max="100" placeholder="%">
+      </div>
+      <button type="button" onclick="addValue('${portfolioId}')">Ekle</button>
+    </form>
+  `;
+
+  // newValues objesine yeni portföy için boş array ekle
+  newValues[portfolioId] = [];
+
+  // Dinamik hesaplama fonksiyonu oluştur
+  window[`calculateRebalance${portfolioId}`] = createCalculateFunction(portfolioId);
+
+  // Container'ı sayfanın en üstüne ekle
+  document.body.insertBefore(container, document.body.firstChild);
+  
+  // Sayacı artır
+        if (!id) {
+            portfolioCounter++;
+        }
+        return portfolioId;
+    }
+
+    // Kaydet butonu işleyicisi
+    document.getElementById('saveBtn').addEventListener('click', async () => {
+        try {
+            const user = auth.currentUser;
+            if (user) {
+                const portfolioData = getAllPortfolioData();
+                await setDoc(doc(db, "users", user.uid), {
+                    portfolios: portfolioData
+                }, { merge: true });
+                alert("Portföy verileri başarıyla kaydedildi");
+            }
+        } catch (error) {
+            console.error("Kaydetme hatası:", error);
+            alert("Kaydetme başarısız oldu");
+        }
+    });
+
+    // Çıkış yapma işleyicisi
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+        try {
+            const user = auth.currentUser;
+            if (user) {
+                const shouldSave = confirm('Çıkış yapmadan önce değişiklikleri kaydetmek istiyor musunuz?');
+                if (shouldSave) {
+                    try {
+                        const portfolioData = getAllPortfolioData();
+                        await setDoc(doc(db, "users", user.uid), {
+                            portfolios: portfolioData
+                        }, { merge: true });
+                        alert("Portföy verileri başarıyla kaydedildi");
+                    } catch (saveError) {
+                        console.error("Veriler kaydedilemedi:", saveError);
+                        alert("Veriler kaydedilemedi!");
+                        return; // Kaydetme başarısız olursa çıkış yapma
+                    }
+                }
+            }
+            await signOut(auth);
+            window.location.replace('login.html');
+        } catch (error) {
+            console.error("Çıkış yaparken hata:", error);
+            alert("Çıkış yapılırken bir hata oluştu!");
+        }
+    });
+
+    // Kullanıcı oturum kontrolü
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            document.getElementById('userEmail').textContent = user.email;
+            try {
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists() && userDoc.data().portfolios) {
+                    loadUserPortfolios(userDoc.data().portfolios);
+                }
+            } catch (error) {
+                console.warn("Veriler yüklenemedi:", error);
+            }
+        } else {
+            window.location.replace('login.html');
+        }
+    });
+</script>
+<button type="button" class="add-portfolio-btn" onclick="createNewPortfolio()">Yeni Portföy Ekle</button>
 </body>
 </html>
+
