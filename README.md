@@ -4,4 +4,4 @@ Burada kendi yatırımlarım için kullandığım bir hesaplama aracını görü
 Belirli bir hosting hizmetine de sahip oldukları için istediğim her yerden erişebiliyorum.
 Siteye erişebilmek için : https://portfoliocalculator.netlify.app/portfoliocalculator
 
--- IN PROGRESS
+-- THE PROJECT IS STILL UNDER DEVELOPMENT.
