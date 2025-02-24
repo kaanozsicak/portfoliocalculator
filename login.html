@@ -58,6 +58,31 @@
             margin-top: 10px;
             text-align: center;
         }
+        .login-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .corporate-btn {
+            width: 48%;
+            padding: 12px;
+            background: linear-gradient(45deg, #ff9900, #ffbb33);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .regular-btn {
+            width: 48%;
+            padding: 12px;
+            background: linear-gradient(45deg, #4a60ff, #8f8fff);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -72,7 +97,10 @@
                 <label>Şifre</label>
                 <input type="password" id="loginPassword" required>
             </div>
-            <button type="submit">Giriş Yap</button>
+            <div class="login-options">
+                <button type="submit" class="regular-btn">Giriş Yap</button>
+                <button type="button" class="corporate-btn" id="corporateLoginBtn">Kurumsal Giriş</button>
+            </div>
             <div id="loginError" class="error"></div>
         </form>
         <div class="switch-form">
@@ -96,18 +124,37 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
+        // Kurumsal giriş butonu için olay dinleyicisi
+        document.getElementById('corporateLoginBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                if (userCredential.user.email === 'admin@admin.com') {
+                    window.location.href = 'admin.html';
+                } else {
+                    document.getElementById('loginError').textContent = 'Kurumsal giriş yetkiniz bulunmamaktadır.';
+                }
+            } catch (error) {
+                document.getElementById('loginError').textContent = 'Giriş başarısız. Email veya şifre hatalı.';
+            }
+        });
+
+        // Normal giriş formu için mevcut olay dinleyicisini güncelle
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
 
             try {
-                await signInWithEmailAndPassword(auth, email, password);
-                // Remove any existing beforeunload listeners
-                const oldHandler = window.onbeforeunload;
-                window.onbeforeunload = null;
-                // Use replace to prevent back navigation
-                window.location.replace('index.html');
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                if (userCredential.user.email === 'admin@admin.com') {
+                    document.getElementById('loginError').textContent = 'Lütfen Kurumsal Giriş butonunu kullanın.';
+                    return;
+                }
+                window.location.href = 'index.html';
             } catch (error) {
                 document.getElementById('loginError').textContent = 'Giriş başarısız. Email veya şifre hatalı.';
             }

@@ -245,6 +245,159 @@
     cursor: pointer;
     margin: 0 10px;
   }
+  .admin-btn {
+    background: linear-gradient(45deg, #ff9900, #ffbb33);
+    border: none;
+    padding: 8px 15px;
+    color: white;
+    border-radius: 20px;
+    cursor: pointer;
+    text-decoration: none;
+    margin: 0 10px;
+  }
+  .add-btn {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    border: none;
+    padding: 8px 15px;
+    color: white;
+    border-radius: 20px;
+    cursor: pointer;
+    margin: 0 10px;
+  }
+  
+  .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.7);
+        z-index: 1001;
+    }
+    
+    .modal-content {
+        background-color: #2c2c2c;
+        margin: 10% auto;
+        padding: 20px;
+        border-radius: 10px;
+        width: 80%;
+        max-width: 500px;
+        color: #fff;
+    }
+    
+    .modal .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .modal select, .modal input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        background-color: #3b3b3b;
+        border: 1px solid #444;
+        border-radius: 4px;
+        color: #fff;
+    }
+    
+    .modal button {
+        width: 100%;
+        margin-top: 15px;
+    }
+    
+    .close {
+        float: right;
+        cursor: pointer;
+        font-size: 28px;
+        font-weight: bold;
+        color: #aaa;
+    }
+    
+    .close:hover {
+        color: #fff;
+    }
+    .info-panel {
+        max-width: 1200px;
+        margin: 80px auto 20px;
+        background: rgba(44, 44, 44, 0.95);
+        border-radius: 10px;
+        padding: 20px;
+    }
+
+    .info-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .info-tab {
+        background: none;
+        border: none;
+        color: #fff;
+        padding: 10px 20px;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: all 0.3s;
+    }
+
+    .info-tab.active {
+        opacity: 1;
+        border-bottom: 2px solid #4a60ff;
+    }
+
+    .info-content {
+        display: none;
+    }
+
+    .info-content.active {
+        display: block;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .info-card {
+        background: #3b3b3b;
+        border-radius: 8px;
+        padding: 15px;
+        transition: transform 0.3s;
+    }
+
+    .info-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .info-card h3 {
+        margin: 0 0 10px 0;
+        color: #4a60ff;
+    }
+
+    .info-card p {
+        margin: 5px 0;
+        font-size: 14px;
+    }
+
+    .info-label {
+        color: #888;
+        font-size: 12px;
+    }
+    .info-btn {
+        background: linear-gradient(45deg, #4CAF50, #45a049);
+        border: none;
+        padding: 8px 15px;
+        color: white;
+        border-radius: 20px;
+        cursor: pointer;
+        text-decoration: none;
+        margin: 0 10px;
+    }
+    
+    .info-btn:hover {
+        opacity: 0.9;
+    }
   </style>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
@@ -252,11 +405,13 @@
 <body>
   <div class="top-menu">
     <div class="user-info">
-      <span id="userEmail"></span>
-      <button id="saveBtn" class="save-btn">Kaydet</button>
-      <button id="logoutBtn" class="logout-btn">Çıkış Yap</button>
+        <a href="info.html" class="info-btn">Yatırım Bilgileri</a>
+        <span id="userEmail"></span>
+        <button id="saveBtn" class="save-btn">Kaydet</button>
+        <a href="admin.html" id="adminLink" style="display: none;" class="admin-btn">Admin Panel</a>
+        <button id="logoutBtn" class="logout-btn">Çıkış Yap</button>
     </div>
-  </div>
+</div>
 
   <!-- Tüm varsayılan portföy konteynerleri kaldırıldı -->
 
@@ -725,14 +880,35 @@ function createNewPortfolio(id = null) {
     <button class="close-container" onclick="hideContainer('${portfolioId}')">&times;</button>
     <h1 contenteditable="true">Yeni Portföy ${portfolioId}</h1>
     <form id="portfolioForm${portfolioId}">
-      <button type="button" onclick="calculateRebalance${portfolioId}()">Hesapla</button>
-    </form>
-    <div id="results${portfolioId}"></div>
-    <h3>Yeni Değer Ekle</h3>
-    <form id="addValueForm${portfolioId}">
       <div class="portfolio-row">
-        <label for="valueName${portfolioId}">Değer İsmi:</label>
-        <input type="text" id="valueName${portfolioId}" placeholder="Değer ismi">
+        <label>Değer Tipi:</label>
+        <select id="valueType${portfolioId}" onchange="handleValueTypeChange('${portfolioId}')">
+          <option value="manual">Manuel Giriş</option>
+          <option value="stock">Hisse Senedi</option>
+          <option value="fund">Fon</option>
+        </select>
+      </div>
+      <div id="manualInput${portfolioId}">
+        <div class="portfolio-row">
+          <label for="valueName${portfolioId}">Değer İsmi:</label>
+          <input type="text" id="valueName${portfolioId}" placeholder="Değer ismi">
+        </div>
+      </div>
+      <div id="stockInput${portfolioId}" style="display:none">
+        <div class="portfolio-row">
+          <label>Hisse Seç:</label>
+          <select id="stockSelect${portfolioId}" onchange="updateValueName('${portfolioId}', 'stock')">
+            <option value="">Seçiniz...</option>
+          </select>
+        </div>
+      </div>
+      <div id="fundInput${portfolioId}" style="display:none">
+        <div class="portfolio-row">
+          <label>Fon Seç:</label>
+          <select id="fundSelect${portfolioId}" onchange="updateValueName('${portfolioId}', 'fund')">
+            <option value="">Seçiniz...</option>
+          </select>
+        </div>
       </div>
       <div class="portfolio-row">
         <label for="valueValue${portfolioId}">Değer:</label>
@@ -743,7 +919,9 @@ function createNewPortfolio(id = null) {
         <input type="number" id="valuePercent${portfolioId}" value="" step="any" min="0" max="100" placeholder="%">
       </div>
       <button type="button" onclick="addValue('${portfolioId}')">Ekle</button>
+      <button type="button" onclick="calculateRebalance${portfolioId}()">Hesapla</button>
     </form>
+    <div id="results${portfolioId}"></div>
   `;
 
   // newValues objesine yeni portföy için boş array ekle
@@ -759,6 +937,10 @@ function createNewPortfolio(id = null) {
   if (!id) {
     portfolioCounter++;
   }
+
+  // Hisse ve fon listelerini yükle
+  loadStocksAndFunds(portfolioId);
+
   return portfolioId;
 }
 
@@ -849,11 +1031,171 @@ window.addEventListener('beforeunload', function beforeUnloadHandler(e) {
         return '';
     }
 });
+
+// loadStocksAndFunds fonksiyonunu güncelleyin
+async function loadStocksAndFunds(portfolioId) {
+    try {
+        const stockSelect = document.getElementById(`stockSelect${portfolioId}`);
+        if (!stockSelect) {
+            console.warn(`stockSelect${portfolioId} bulunamadı`);
+            return;
+        }
+        stockSelect.innerHTML = '<option value="">Seçiniz...</option>';
+
+        const fundSelect = document.getElementById(`fundSelect${portfolioId}`);
+        if (!fundSelect) {
+            console.warn(`fundSelect${portfolioId} bulunamadı`);
+            return;
+        }
+        fundSelect.innerHTML = '<option value="">Seçiniz...</option>';
+
+        // window.db yerine direkt olarak modül seviyesinde tanımlanan db'yi kullan
+        const stocksSnapshot = await getDocs(collection(db, "stocks"));
+        stocksSnapshot.forEach(doc => {
+            const stock = doc.data();
+            const option = document.createElement('option');
+            option.value = stock.symbol;
+            option.textContent = `${stock.symbol} - ${stock.name}`;
+            stockSelect.appendChild(option);
+        });
+        
+        const fundsSnapshot = await getDocs(collection(db, "funds"));
+        fundsSnapshot.forEach(doc => {
+            const fund = doc.data();
+            const option = document.createElement('option');
+            option.value = fund.code;
+            option.textContent = `${fund.code} - ${fund.name}`;
+            fundSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Hisse ve fon listesi yüklenirken hata:", error);
+        console.error("Hata detayı:", error.message);
+    }
+}
+
+// Hisse ve fonları yüklemek için fonksiyon
+async function loadStocksAndFunds(portfolioId) {
+    try {
+        // Hisseleri yükle
+        const stockSelect = document.getElementById(`stockSelect${portfolioId}`);
+        if (!stockSelect) {
+            console.warn(`stockSelect${portfolioId} bulunamadı`);
+            return;
+        }
+        stockSelect.innerHTML = '<option value="">Seçiniz...</option>'; // Seçenekleri temizle
+
+        // Fonları yükle
+        const fundSelect = document.getElementById(`fundSelect${portfolioId}`);
+        if (!fundSelect) {
+            console.warn(`fundSelect${portfolioId} bulunamadı`);
+            return;
+        }
+        fundSelect.innerHTML = '<option value="">Seçiniz...</option>'; // Seçenekleri temizle
+
+        // Firebase koleksiyonlarını sorgula
+        const db = firebase.firestore();
+        
+        // Hisseleri yükle
+        const stocksSnapshot = await db.collection("stocks").get();
+        stocksSnapshot.forEach(doc => {
+            const stock = doc.data();
+            const option = document.createElement('option');
+            option.value = stock.symbol;
+            option.textContent = `${stock.symbol} - ${stock.name}`;
+            stockSelect.appendChild(option);
+        });
+        
+        // Fonları yükle
+        const fundsSnapshot = await db.collection("funds").get();
+        fundsSnapshot.forEach(doc => {
+            const fund = doc.data();
+            const option = document.createElement('option');
+            option.value = fund.code;
+            option.textContent = `${fund.code} - ${fund.name}`;
+            fundSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Hisse ve fon listesi yüklenirken hata:", error);
+    }
+}
+
+// Değer tipi değiştiğinde inputları güncelle
+function handleValueTypeChange(portfolioId) {
+  const valueType = document.getElementById(`valueType${portfolioId}`).value;
+  const manualInput = document.getElementById(`manualInput${portfolioId}`);
+  const stockInput = document.getElementById(`stockInput${portfolioId}`);
+  const fundInput = document.getElementById(`fundInput${portfolioId}`);
+  
+  manualInput.style.display = valueType === 'manual' ? 'block' : 'none';
+  stockInput.style.display = valueType === 'stock' ? 'block' : 'none';
+  fundInput.style.display = valueType === 'fund' ? 'block' : 'none';
+}
+
+// Seçilen hisse/fon değerini value name'e aktar
+function updateValueName(portfolioId, type) {
+  const valueNameInput = document.getElementById(`valueName${portfolioId}`);
+  const select = document.getElementById(`${type}Select${portfolioId}`);
+  valueNameInput.value = select.value;
+}
+
+async function loadDetailedInfo() {
+    try {
+        // Hisseleri yükle
+        const stocksSnapshot = await getDocs(collection(db, "stocks"));
+        const stocksGrid = document.getElementById('stocksGrid');
+        stocksGrid.innerHTML = '';
+
+        stocksSnapshot.forEach(doc => {
+            const stock = doc.data();
+            stocksGrid.innerHTML += `
+                <div class="info-card">
+                    <h3>${stock.symbol} - ${stock.name}</h3>
+                    <p>${stock.description || 'Açıklama bulunmuyor'}</p>
+                    <p><span class="info-label">Sektör:</span> ${stock.sector || 'Belirtilmemiş'}</p>
+                    <p><span class="info-label">Website:</span> 
+                        ${stock.website ? `<a href="${stock.website}" target="_blank">${stock.website}</a>` : 'Belirtilmemiş'}
+                    </p>
+                </div>
+            `;
+        });
+
+        // Fonları yükle
+        const fundsSnapshot = await getDocs(collection(db, "funds"));
+        const fundsGrid = document.getElementById('fundsGrid');
+        fundsGrid.innerHTML = '';
+
+        fundsSnapshot.forEach(doc => {
+            const fund = doc.data();
+            fundsGrid.innerHTML += `
+                <div class="info-card">
+                    <h3>${fund.code} - ${fund.name}</h3>
+                    <p>${fund.description || 'Açıklama bulunmuyor'}</p>
+                    <p><span class="info-label">Tür:</span> ${fund.type || 'Belirtilmemiş'}</p>
+                    <p><span class="info-label">Şirket:</span> ${fund.company || 'Belirtilmemiş'}</p>
+                    <p><span class="info-label">Risk Seviyesi:</span> ${fund.risk || 'Belirtilmemiş'}</p>
+                </div>
+            `;
+        });
+    } catch (error) {
+        console.error("Detaylı bilgi yüklenirken hata:", error);
+    }
+}
+
+function showInfoTab(tabName) {
+    document.querySelectorAll('.info-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    document.querySelectorAll('.info-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.getElementById(`${tabName}Info`).classList.add('active');
+    document.querySelector(`.info-tab[onclick="showInfoTab('${tabName}')"]`).classList.add('active');
+}
 </script>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyC5wZS1gZWWFcmxy1eTvgmQtkynK5HA3F4",
@@ -868,13 +1210,130 @@ window.addEventListener('beforeunload', function beforeUnloadHandler(e) {
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // Global değişkenleri tanımla
+    window.auth = auth;
+    window.db = db;
+    window.getDoc = getDoc;
+    window.doc = doc;
+    window.collection = collection;
+    window.getDocs = getDocs;
+    window.setDoc = setDoc;
+    window.signOut = signOut;
+    window.onAuthStateChanged = onAuthStateChanged;
+
+    // Sadece bir tane loadStocksAndFunds fonksiyonu tanımla
+    window.loadStocksAndFunds = async function(portfolioId) {
+        try {
+            console.log('loadStocksAndFunds başladı - Portfolio ID:', portfolioId);
+            
+            const stockSelect = document.getElementById(`stockSelect${portfolioId}`);
+            const fundSelect = document.getElementById(`fundSelect${portfolioId}`);
+            
+            if (!stockSelect || !fundSelect) {
+                console.error('Select elementleri bulunamadı:', portfolioId);
+                return;
+            }
+
+            // Seçicileri temizle
+            stockSelect.innerHTML = '<option value="">Seçiniz...</option>';
+            fundSelect.innerHTML = '<option value="">Seçiniz...</option>';
+
+            // Hisseleri yükle
+            const stocksSnapshot = await getDocs(collection(db, "stocks"));
+            stocksSnapshot.forEach(doc => {
+                const stock = doc.data();
+                if (stock.symbol && stock.name) {
+                    const option = document.createElement('option');
+                    option.value = stock.symbol;
+                    option.textContent = `${stock.symbol} - ${stock.name}`;
+                    stockSelect.appendChild(option);
+                }
+            });
+
+            // Fonları yükle
+            const fundsSnapshot = await getDocs(collection(db, "funds"));
+            fundsSnapshot.forEach(doc => {
+                const fund = doc.data();
+                if (fund.code && fund.name) {
+                    const option = document.createElement('option');
+                    option.value = fund.code;
+                    option.textContent = `${fund.code} - ${fund.name}`;
+                    fundSelect.appendChild(option);
+                }
+            });
+
+        } catch (error) {
+            console.error("Hisse ve fon yükleme hatası:", error);
+        }
+    };
+
+    // loadUserPortfolios fonksiyonunu global scope'a ekle
+    window.loadUserPortfolios = function(portfolioData) {
+        // Önce tüm mevcut portföyleri temizle
+        document.querySelectorAll('.container').forEach(container => {
+            container.remove();
+        });
+
+        // Portföyleri yükle
+        Object.entries(portfolioData).forEach(([id, portfolio]) => {
+            createNewPortfolio(parseInt(id));
+            const container = document.getElementById(`container${id}`);
+            
+            if (container) {
+                container.style.display = portfolio.visible ? '' : 'none';
+                
+                if (portfolio.title) {
+                    container.querySelector('h1').textContent = portfolio.title;
+                }
+
+                // Değerleri yüklerken yüzdeleri olduğu gibi kullan
+                if (portfolio.values) {
+                    const form = document.getElementById(`portfolioForm${id}`);
+                    if (form) {
+                        Object.entries(portfolio.values).forEach(([name, data]) => {
+                            if (data.visible) {
+                                // percent değerini tekrar 100 ile çarp çünkü addValue fonksiyonu 100'e bölecek
+                                addValue(id, name, data.value, data.percent * 100);
+                            }
+                        });
+                    }
+                }
+            }
+        });
+
+        const maxId = Math.max(...Object.keys(portfolioData).map(id => parseInt(id)), 0);
+        portfolioCounter = maxId + 1;
+    };
+
+    // Auth listener
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            document.getElementById('userEmail').textContent = user.email;
+            if (user.email === 'admin@admin.com') {
+                document.getElementById('adminLink').style.display = 'inline-block';
+            }
+            try {
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists() && userDoc.data().portfolios) {
+                    loadUserPortfolios(userDoc.data().portfolios);
+                } else {
+                    createNewPortfolio();
+                }
+            } catch (error) {
+                console.error("Veriler yüklenemedi:", error);
+            }
+            await loadDetailedInfo(); // Detaylı bilgileri yükle
+        } else {
+            window.location.replace('login.html');
+        }
+    });
+
     // Tüm portföy verilerini toplama fonksiyonu
     function getAllPortfolioData() {
         const portfolios = {};
         document.querySelectorAll('.container').forEach(container => {
             const id = container.id.replace('container', '');
             
-            // Her portföyü kaydet
             portfolios[id] = {
                 title: container.querySelector('h1').textContent,
                 visible: container.style.display !== 'none',
@@ -884,18 +1343,20 @@ window.addEventListener('beforeunload', function beforeUnloadHandler(e) {
             const form = document.getElementById(`portfolioForm${id}`);
             if (form) {
                 form.querySelectorAll('.portfolio-row').forEach(row => {
-                    const label = row.querySelector('label');
-                    if (label) {
-                        const name = label.textContent.replace(':', '');
-                        const valueInput = row.querySelector('input[type="number"]:not(.percent-input)');
-                        const percentInput = row.querySelector('.percent-input');
-                        
-                        if (valueInput && percentInput) {
-                            portfolios[id].values[name] = {
-                                value: valueInput.value || '0',
-                                percent: percentInput.value || '0',
-                                visible: row.style.display !== 'none'
-                            };
+                    if (row.style.display !== 'none') {
+                        const label = row.querySelector('label');
+                        if (label && !label.textContent.includes('Değer Tipi:')) {
+                            const name = label.textContent.replace(':', '');
+                            const valueInput = row.querySelector('input[type="number"]:not(.percent-input)');
+                            const percentInput = row.querySelector('.percent-input');
+                            
+                            if (valueInput && percentInput) {
+                                portfolios[id].values[name] = {
+                                    value: valueInput.value || '0',
+                                    percent: parseFloat(percentInput.value) / 100, // Yüzdeyi 0-1 aralığında kaydet
+                                    visible: true
+                                };
+                            }
                         }
                     }
                 });
@@ -904,154 +1365,45 @@ window.addEventListener('beforeunload', function beforeUnloadHandler(e) {
         return portfolios;
     }
 
-    // Portföy verilerini yükleme fonksiyonu
-    function loadUserPortfolios(portfolioData) {
-        // Önce tüm mevcut portföyleri temizle
-        document.querySelectorAll('.container').forEach(container => {
-            container.remove();
-        });
-
-        // Portföyleri yükle
-        Object.entries(portfolioData).forEach(([id, portfolio]) => {
-            // Her portföy için yeni bir portföy oluştur
-            createNewPortfolio(parseInt(id));
-            const container = document.getElementById(`container${id}`);
-            
-            if (container) {
-                // Görünürlük durumunu ayarla
-                container.style.display = portfolio.visible ? '' : 'none';
-                
-                // Başlığı ayarla
-                if (portfolio.title) {
-                    container.querySelector('h1').textContent = portfolio.title;
-                }
-
-                // Değerleri yükle
-                if (portfolio.values) {
-                    const form = document.getElementById(`portfolioForm${id}`);
-                    if (form) {
-                        Object.entries(portfolio.values).forEach(([name, data]) => {
-                            if (data.visible) {
-                                addValue(id, name, data.value, data.percent);
-                            }
-                        });
-                    }
-                }
-            }
-        });
-
-        // En yüksek portföy ID'sini bul ve sayacı güncelle
-        const maxId = Math.max(...Object.keys(portfolioData).map(id => parseInt(id)), 0);
-        portfolioCounter = maxId + 1;
-    }
-
-    // Yeni portföy oluşturma yardımcı fonksiyonu
-    function createNewPortfolio(id = null) {
-        const portfolioId = id || portfolioCounter;
-        const container = document.createElement('div');
-  container.className = 'container';
-  container.id = `container${portfolioId}`;
-
-  container.innerHTML = `
-    <button class="close-container" onclick="hideContainer('${portfolioId}')">&times;</button>
-    <h1 contenteditable="true">Yeni Portföy ${portfolioId}</h1>
-    <form id="portfolioForm${portfolioId}">
-      <button type="button" onclick="calculateRebalance${portfolioId}()">Hesapla</button>
-    </form>
-    <div id="results${portfolioId}"></div>
-    <h3>Yeni Değer Ekle</h3>
-    <form id="addValueForm${portfolioId}">
-      <div class="portfolio-row">
-        <label for="valueName${portfolioId}">Değer İsmi:</label>
-        <input type="text" id="valueName${portfolioId}" placeholder="Değer ismi">
-      </div>
-      <div class="portfolio-row">
-        <label for="valueValue${portfolioId}">Değer:</label>
-        <input type="number" id="valueValue${portfolioId}" value="" step="any" placeholder="Değer">
-      </div>
-      <div class="portfolio-row">
-        <label for="valuePercent${portfolioId}">Yüzde:</label>
-        <input type="number" id="valuePercent${portfolioId}" value="" step="any" min="0" max="100" placeholder="%">
-      </div>
-      <button type="button" onclick="addValue('${portfolioId}')">Ekle</button>
-    </form>
-  `;
-
-  // newValues objesine yeni portföy için boş array ekle
-  newValues[portfolioId] = [];
-
-  // Dinamik hesaplama fonksiyonu oluştur
-  window[`calculateRebalance${portfolioId}`] = createCalculateFunction(portfolioId);
-
-  // Container'ı sayfanın en üstüne ekle
-  document.body.insertBefore(container, document.body.firstChild);
-  
-  // Sayacı artır
-        if (!id) {
-            portfolioCounter++;
-        }
-        return portfolioId;
-    }
-
     // Kaydet butonu işleyicisi
     document.getElementById('saveBtn').addEventListener('click', async () => {
         try {
             const user = auth.currentUser;
-            if (user) {
-                const portfolioData = getAllPortfolioData();
-                await setDoc(doc(db, "users", user.uid), {
-                    portfolios: portfolioData
-                }, { merge: true });
-                alert("Portföy verileri başarıyla kaydedildi");
+            if (!user) {
+                alert("Lütfen önce giriş yapın!");
+                return;
             }
+
+            const portfolioData = getAllPortfolioData();
+            await setDoc(doc(db, "users", user.uid), {
+                portfolios: portfolioData
+            }, { merge: true });
+            
+            alert("Portföy verileri başarıyla kaydedildi!");
         } catch (error) {
             console.error("Kaydetme hatası:", error);
-            alert("Kaydetme başarısız oldu");
+            alert("Kaydetme başarısız oldu: " + error.message);
         }
     });
 
-    // Çıkış yapma işleyicisi
+    // Çıkış yapma butonu işleyicisi
     document.getElementById('logoutBtn').addEventListener('click', async () => {
         try {
             const user = auth.currentUser;
             if (user) {
                 const shouldSave = confirm('Çıkış yapmadan önce değişiklikleri kaydetmek istiyor musunuz?');
                 if (shouldSave) {
-                    try {
-                        const portfolioData = getAllPortfolioData();
-                        await setDoc(doc(db, "users", user.uid), {
-                            portfolios: portfolioData
-                        }, { merge: true });
-                        alert("Portföy verileri başarıyla kaydedildi");
-                    } catch (saveError) {
-                        console.error("Veriler kaydedilemedi:", saveError);
-                        alert("Veriler kaydedilemedi!");
-                        return; // Kaydetme başarısız olursa çıkış yapma
-                    }
+                    const portfolioData = getAllPortfolioData();
+                    await setDoc(doc(db, "users", user.uid), {
+                        portfolios: portfolioData
+                    }, { merge: true });
                 }
             }
             await signOut(auth);
-            window.location.replace('login.html');
+            window.location.href = 'login.html';
         } catch (error) {
-            console.error("Çıkış yaparken hata:", error);
-            alert("Çıkış yapılırken bir hata oluştu!");
-        }
-    });
-
-    // Kullanıcı oturum kontrolü
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            document.getElementById('userEmail').textContent = user.email;
-            try {
-                const userDoc = await getDoc(doc(db, "users", user.uid));
-                if (userDoc.exists() && userDoc.data().portfolios) {
-                    loadUserPortfolios(userDoc.data().portfolios);
-                }
-            } catch (error) {
-                console.warn("Veriler yüklenemedi:", error);
-            }
-        } else {
-            window.location.replace('login.html');
+            console.error("Çıkış hatası:", error);
+            alert("Çıkış yapılırken bir hata oluştu: " + error.message);
         }
     });
 </script>

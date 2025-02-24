@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Admin Panel - Portföy Yöneticisi</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('https://d.pusulahaber.com.tr/news/553733.jpg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .admin-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #2c2c2c;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #444;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+        }
+        .tab.active {
+            border-bottom: 2px solid #4a60ff;
+            color: #4a60ff;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            background-color: #3b3b3b;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #fff;
+        }
+        button {
+            background: linear-gradient(45deg, #4a60ff, #8f8fff);
+            border: none;
+            padding: 10px 20px;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .item-list {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: #2c2c2c;
+            padding: 15px;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: #333333; /* Daha koyu arka plan */
+            margin-bottom: 8px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(74, 96, 255, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+            box-sizing: border-box;
+            gap: 10px; /* Span ve butonlar arası boşluk */
+            width: 100%;
+        }
+        .item:hover {
+            background-color: #3a3a3a; /* Hover durumunda biraz daha açık */
+            border-color: rgba(74, 96, 255, 0.3);
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .item span {
+            flex: 1;
+            min-width: 0; /* Taşmayı önler */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 0.95em; /* Yazı boyutunu biraz küçült */
+            margin-right: 10px;
+            padding-right: 15px;
+        }
+        .item-buttons {
+            display: flex;
+            gap: 8px; /* Butonlar arası boşluğu azalt */
+            flex-shrink: 0; /* Butonların sıkışmasını önle */
+            margin-left: auto;
+        }
+        .edit-btn, .delete-btn {
+            padding: 6px 12px; /* Buton padding'ini azalt */
+            border-radius: 4px;
+            min-width: 60px; /* Minimum genişliği azalt */
+            font-size: 0.9em; /* Buton yazı boyutunu küçült */
+            white-space: nowrap; /* Buton metninin satır atlamasını engelle */
+        }
+        .delete-btn {
+            background: linear-gradient(45deg, #ff4444, #ff6666);
+            padding: 5px 10px;
+        }
+        #loginSection {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            background-color: #2c2c2c;
+            border-radius: 10px;
+            text-align: center;
+        }
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            background-color: #3b3b3b;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #fff;
+            min-height: 100px;
+            resize: vertical;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #2c2c2c;
+            margin: 5% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: #333333; /* Daha koyu arka plan */
+            margin-bottom: 8px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(74, 96, 255, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+            box-sizing: border-box;
+            gap: 10px; /* Span ve butonlar arası boşluk */
+        }
+
+        .item:hover {
+            background-color: #3a3a3a; /* Hover durumunda biraz daha açık */
+            border-color: rgba(74, 96, 255, 0.3);
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .item-buttons {
+            display: flex;
+            gap: 8px; /* Butonlar arası boşluğu azalt */
+            flex-shrink: 0; /* Butonların sıkışmasını önle */
+        }
+
+        .edit-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            padding: 6px 12px; /* Buton padding'ini azalt */
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            min-width: 60px; /* Minimum genişliği azalt */
+            font-size: 0.9em; /* Buton yazı boyutunu küçült */
+            white-space: nowrap; /* Buton metninin satır atlamasını engelle */
+        }
+
+        .close {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .close:hover {
+            color: #fff;
+        }
+
+        .login-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #loginSection.hidden {
+            display: none;
+        }
+
+        .form-container {
+            background-color: rgba(59, 59, 59, 0.95);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 700px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .form-container h2 {
+            color: #4a60ff;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-container .form-group {
+            margin-bottom: 15px;
+            max-width: 100%;
+        }
+
+        .form-container button {
+            margin: 10px 0 20px;
+            width: auto;
+            min-width: 150px;
+        }
+
+        .form-container .item-list {
+            background-color: #2c2c2c; /* Liste container'ının arka planı */
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 576px) {
+            .item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .item span {
+                margin-bottom: 5px;
+            }
+
+            .item-buttons {
+                justify-content: flex-end;
+            }
+        }
+
+        .home-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border: none;
+            z-index: 1000;
+        }
+
+        .home-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="home-btn">← Ana Sayfa</a>
+    <div id="loginSection" class="login-section">
+        <h2>Admin Girişi</h2>
+        <div class="form-group">
+            <input type="email" id="adminEmail" placeholder="Email" required>
+        </div>
+        <div class="form-group">
+            <input type="password" id="adminPassword" placeholder="Şifre" required>
+        </div>
+        <button onclick="adminLogin()">Giriş Yap</button>
+    </div>
+
+    <div id="adminPanel" style="display: none;" class="admin-container">
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('stocks')">Hisseler</button>
+            <button class="tab" onclick="showTab('funds')">Fonlar</button>
+        </div>
+
+        <div id="stocks" class="tab-content active">
+            <div class="form-container">
+                <h2 style="text-align: center;">Hisse Ekle</h2>
+                <div class="form-group">
+                    <input type="text" id="stockSymbol" placeholder="Hisse Kodu (örn: THYAO)">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="stockName" placeholder="Hisse Adı">
+                </div>
+                <div class="form-group">
+                    <textarea id="stockDescription" placeholder="Hisse hakkında detaylı bilgi"></textarea>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="stockSector" placeholder="Sektör">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="stockWebsite" placeholder="Şirket Web Sitesi">
+                </div>
+                <div style="text-align: center;">
+                    <button onclick="addStock()">Hisse Ekle</button>
+                </div>
+                <div id="stocksList" class="item-list"></div>
+            </div>
+        </div>
+
+        <!-- Hisse düzenleme modalını ekleyin, funds tab'ından önce -->
+        <div id="editStockModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeEditModal('stock')">&times;</span>
+                <h2>Hisse Düzenle</h2>
+                <input type="hidden" id="editStockId">
+                <div class="form-group">
+                    <input type="text" id="editStockSymbol" placeholder="Hisse Kodu">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="editStockName" placeholder="Hisse Adı">
+                </div>
+                <div class="form-group">
+                    <textarea id="editStockDescription" placeholder="Hisse hakkında detaylı bilgi"></textarea>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="editStockSector" placeholder="Sektör">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="editStockWebsite" placeholder="Şirket Web Sitesi">
+                </div>
+                <button onclick="updateStock()">Güncelle</button>
+            </div>
+        </div>
+
+        <div id="funds" class="tab-content">
+            <div class="form-container">
+                <h2 style="text-align: center;">Fon Ekle</h2>
+                <div class="form-group">
+                    <input type="text" id="fundCode" placeholder="Fon Kodu">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="fundName" placeholder="Fon Adı">
+                </div>
+                <div class="form-group">
+                    <textarea id="fundDescription" placeholder="Fon hakkında detaylı bilgi"></textarea>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="fundType" placeholder="Fon Türü">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="fundCompany" placeholder="Fon Şirketi">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="fundRisk" placeholder="Risk Seviyesi (1-5)">
+                </div>
+                <div style="text-align: center;">
+                    <button onclick="addFund()">Fon Ekle</button>
+                </div>
+                <div id="fundsList" class="item-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC5wZS1gZWWFcmxy1eTvgmQtkynK5HA3F4",
+            authDomain: "portfoilocalculator.firebaseapp.com",
+            projectId: "portfoilocalculator",
+            storageBucket: "portfoilocalculator.firebasestorage.app",
+            messagingSenderId: "597327926950",
+            appId: "1:597327926950:web:6077b172b0c6d68dd44667"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Sayfa yüklendiğinde güvenlik kontrolü
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                // Ekstra güvenlik kontrolü
+                if (user.email !== 'admin@admin.com') {
+                    alert("Bu sayfaya erişim yetkiniz yok!");
+                    await auth.signOut();
+                    window.location.href = 'index.html';
+                    return;
+                }
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('adminPanel').style.display = 'block';
+                await loadStocks();
+                await loadFunds();
+            }
+        });
+
+        // Admin doğrulama güvenliği artırıldı
+        window.adminLogin = async () => {
+            try {
+                const email = document.getElementById('adminEmail').value;
+                const password = document.getElementById('adminPassword').value;
+
+                if (email !== 'admin@admin.com') {
+                    throw new Error("Bu sayfaya erişim yetkiniz yok!");
+                }
+
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                
+                // Ekstra email doğrulaması
+                if (userCredential.user.email !== 'admin@admin.com') {
+                    await auth.signOut();
+                    throw new Error("Admin yetkisine sahip değilsiniz!");
+                }
+
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('adminPanel').style.display = 'block';
+                await loadStocks();
+                await loadFunds();
+            } catch (error) {
+                console.error("Giriş hatası:", error);
+                alert(error.message || "Giriş başarısız!");
+            }
+        };
+
+        // Hisse ekleme güvenliği artırıldı
+        window.addStock = async () => {
+            try {
+                const user = auth.currentUser;
+                
+                // Kullanıcı ve yetki kontrolü
+                if (!user) throw new Error("Oturum açmanız gerekiyor!");
+                if (user.email !== 'admin@admin.com') throw new Error("Admin yetkisine sahip değilsiniz!");
+
+                const symbol = document.getElementById('stockSymbol').value.trim().toUpperCase();
+                const name = document.getElementById('stockName').value.trim();
+                const description = document.getElementById('stockDescription').value.trim();
+                const sector = document.getElementById('stockSector').value.trim();
+                const website = document.getElementById('stockWebsite').value.trim();
+
+                if (!symbol || !name || !description || !sector || !website) throw new Error("Lütfen tüm alanları doldurun!");
+
+                const stockData = {
+                    symbol,
+                    name,
+                    description,
+                    sector,
+                    website,
+                    createdAt: new Date().toISOString(),
+                    createdBy: user.email,
+                    updatedAt: new Date().toISOString()
+                };
+
+                await addDoc(collection(db, "stocks"), stockData);
+                
+                document.getElementById('stockSymbol').value = '';
+                document.getElementById('stockName').value = '';
+                document.getElementById('stockDescription').value = '';
+                document.getElementById('stockSector').value = '';
+                document.getElementById('stockWebsite').value = '';
+                await loadStocks();
+                
+                alert("Hisse başarıyla eklendi!");
+            } catch (error) {
+                console.error("Hisse ekleme hatası:", error);
+                alert(error.message || "Hisse eklenirken bir hata oluştu!");
+            }
+        };
+
+        // Fon ekleme güvenliği artırıldı
+        window.addFund = async () => {
+            try {
+                const user = auth.currentUser;
+                
+                // Kullanıcı ve yetki kontrolü
+                if (!user) throw new Error("Oturum açmanız gerekiyor!");
+                if (user.email !== 'admin@admin.com') throw new Error("Admin yetkisine sahip değilsiniz!");
+
+                const code = document.getElementById('fundCode').value.trim().toUpperCase();
+                const name = document.getElementById('fundName').value.trim();
+                const description = document.getElementById('fundDescription').value.trim();
+                const type = document.getElementById('fundType').value.trim();
+                const company = document.getElementById('fundCompany').value.trim();
+                const risk = document.getElementById('fundRisk').value.trim();
+
+                if (!code || !name || !description || !type || !company || !risk) throw new Error("Lütfen tüm alanları doldurun!");
+
+                const fundData = {
+                    code,
+                    name,
+                    description,
+                    type,
+                    company,
+                    risk,
+                    createdAt: new Date().toISOString(),
+                    createdBy: user.email,
+                    updatedAt: new Date().toISOString()
+                };
+
+                await addDoc(collection(db, "funds"), fundData);
+                
+                document.getElementById('fundCode').value = '';
+                document.getElementById('fundName').value = '';
+                document.getElementById('fundDescription').value = '';
+                document.getElementById('fundType').value = '';
+                document.getElementById('fundCompany').value = '';
+                document.getElementById('fundRisk').value = '';
+                await loadFunds();
+                
+                alert("Fon başarıyla eklendi!");
+            } catch (error) {
+                console.error("Fon ekleme hatası:", error);
+                alert(error.message || "Fon eklenirken bir hata oluştu!");
+            }
+        };
+
+        // Hisseleri yükleme
+        async function loadStocks() {
+            const stocksList = document.getElementById('stocksList');
+            stocksList.innerHTML = '';
+            
+            const querySnapshot = await getDocs(collection(db, "stocks"));
+            querySnapshot.forEach((doc) => {
+                const stock = doc.data();
+                const div = document.createElement('div');
+                div.className = 'item';
+                div.innerHTML = `
+                    <span>${stock.symbol} - ${stock.name}</span>
+                    <div class="item-buttons">
+                        <button class="edit-btn" onclick="openEditModal('stock', '${doc.id}', ${JSON.stringify(stock).replace(/"/g, '&quot;')})">Düzenle</button>
+                        <button class="delete-btn" onclick="deleteStock('${doc.id}')">Sil</button>
+                    </div>
+                `;
+                stocksList.appendChild(div);
+            });
+        }
+
+        // Fonları yükleme
+        async function loadFunds() {
+            const fundsList = document.getElementById('fundsList');
+            fundsList.innerHTML = '';
+            
+            const querySnapshot = await getDocs(collection(db, "funds"));
+            querySnapshot.forEach((doc) => {
+                const fund = doc.data();
+                const div = document.createElement('div');
+                div.className = 'item';
+                div.innerHTML = `
+                    <span>${fund.code} - ${fund.name}</span>
+                    <div class="item-buttons">
+                        <button class="edit-btn" onclick="openEditModal('fund', '${doc.id}', ${JSON.stringify(fund).replace(/"/g, '&quot;')})">Düzenle</button>
+                        <button class="delete-btn" onclick="deleteFund('${doc.id}')">Sil</button>
+                    </div>
+                `;
+                fundsList.appendChild(div);
+            });
+        }
+
+        // Hisse silme
+        window.deleteStock = async (id) => {
+            try {
+                const user = auth.currentUser;
+                if (!user || user.email !== 'admin@admin.com') {
+                    throw new Error("Bu işlem için yetkiniz yok!");
+                }
+                
+                if (!confirm('Bu hisseyi silmek istediğinizden emin misiniz?')) return;
+                
+                await deleteDoc(doc(db, "stocks", id));
+                await loadStocks();
+                alert("Hisse başarıyla silindi!");
+            } catch (error) {
+                console.error("Silme hatası:", error);
+                alert(error.message || "Hisse silinirken hata oluştu!");
+            }
+        };
+
+        // Fon silme
+        window.deleteFund = async (id) => {
+            try {
+                const user = auth.currentUser;
+                if (!user || user.email !== 'admin@admin.com') {
+                    throw new Error("Bu işlem için yetkiniz yok!");
+                }
+                
+                if (!confirm('Bu fonu silmek istediğinizden emin misiniz?')) return;
+                
+                await deleteDoc(doc(db, "funds", id));
+                await loadFunds();
+                alert("Fon başarıyla silindi!");
+            } catch (error) {
+                console.error("Silme hatası:", error);
+                alert(error.message || "Fon silinirken hata oluştu!");
+            }
+        };
+
+        // Modal açma fonksiyonu
+        window.openEditModal = (type, id, data) => {
+            const modal = document.getElementById(`edit${type.charAt(0).toUpperCase() + type.slice(1)}Modal`);
+            document.getElementById(`edit${type.charAt(0).toUpperCase() + type.slice(1)}Id`).value = id;
+            
+            // Form alanlarını doldur
+            if (type === 'stock') {
+                document.getElementById('editStockSymbol').value = data.symbol;
+                document.getElementById('editStockName').value = data.name;
+                document.getElementById('editStockDescription').value = data.description;
+                document.getElementById('editStockSector').value = data.sector;
+                document.getElementById('editStockWebsite').value = data.website;
+            }
+            
+            if (type === 'fund') {
+                document.getElementById('editFundCode').value = data.code;
+                document.getElementById('editFundName').value = data.name;
+                document.getElementById('editFundDescription').value = data.description;
+                document.getElementById('editFundType').value = data.type;
+                document.getElementById('editFundCompany').value = data.company;
+                document.getElementById('editFundRisk').value = data.risk;
+            }
+            
+            modal.style.display = 'block';
+        };
+
+        // Modal kapatma fonksiyonu
+        window.closeEditModal = (type) => {
+            document.getElementById(`edit${type.charAt(0).toUpperCase() + type.slice(1)}Modal`).style.display = 'none';
+        };
+
+        // Hisse güncelleme fonksiyonu
+        window.updateStock = async () => {
+            try {
+                const user = auth.currentUser;
+                if (!user || user.email !== 'admin@admin.com') {
+                    throw new Error("Bu işlem için yetkiniz yok!");
+                }
+
+                const id = document.getElementById('editStockId').value;
+                const stockRef = doc(db, "stocks", id);
+
+                const updatedData = {
+                    symbol: document.getElementById('editStockSymbol').value.trim().toUpperCase(),
+                    name: document.getElementById('editStockName').value.trim(),
+                    description: document.getElementById('editStockDescription').value.trim(),
+                    sector: document.getElementById('editStockSector').value.trim(),
+                    website: document.getElementById('editStockWebsite').value.trim(),
+                    updatedAt: new Date().toISOString(),
+                    updatedBy: user.email
+                };
+
+                await updateDoc(stockRef, updatedData);
+                closeEditModal('stock');
+                await loadStocks();
+                alert("Hisse başarıyla güncellendi!");
+            } catch (error) {
+                console.error("Güncelleme hatası:", error);
+                alert(error.message || "Güncelleme sırasında bir hata oluştu!");
+            }
+        };
+
+        // Fon güncelleme fonksiyonu
+        window.updateFund = async () => {
+            try {
+                const user = auth.currentUser;
+                if (!user || user.email !== 'admin@admin.com') {
+                    throw new Error("Bu işlem için yetkiniz yok!");
+                }
+
+                const id = document.getElementById('editFundId').value;
+                const fundRef = doc(db, "funds", id);
+
+                const updatedData = {
+                    code: document.getElementById('editFundCode').value.trim().toUpperCase(),
+                    name: document.getElementById('editFundName').value.trim(),
+                    description: document.getElementById('editFundDescription').value.trim(),
+                    type: document.getElementById('editFundType').value.trim(),
+                    company: document.getElementById('editFundCompany').value.trim(),
+                    risk: document.getElementById('editFundRisk').value.trim(),
+                    updatedAt: new Date().toISOString(),
+                    updatedBy: user.email
+                };
+
+                await updateDoc(fundRef, updatedData);
+                closeEditModal('fund');
+                await loadFunds();
+                alert("Fon başarıyla güncellendi!");
+            } catch (error) {
+                console.error("Güncelleme hatası:", error);
+                alert(error.message || "Güncelleme sırasında bir hata oluştu!");
+            }
+        };
+
+        // Tab değiştirme
+        window.showTab = (tabName) => {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+            document.querySelector(`.tab[onclick="showTab('${tabName}')"]`).classList.add('active');
+        };
+
+        // Fon düzenleme modalı HTML'i
+        const fundModalHtml = `
+            <div id="editFundModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeEditModal('fund')">&times;</span>
+                    <h2>Fon Düzenle</h2>
+                    <input type="hidden" id="editFundId">
+                    <div class="form-group">
+                        <input type="text" id="editFundCode" placeholder="Fon Kodu">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="editFundName" placeholder="Fon Adı">
+                    </div>
+                    <div class="form-group">
+                        <textarea id="editFundDescription" placeholder="Fon hakkında detaylı bilgi"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="editFundType" placeholder="Fon Türü">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="editFundCompany" placeholder="Fon Şirketi">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="editFundRisk" placeholder="Risk Seviyesi (1-5)">
+                    </div>
+                    <button onclick="updateFund()">Güncelle</button>
+                </div>
+            </div>
+        `;
+
+        // Modal HTML'ini sayfaya ekle
+        document.body.insertAdjacentHTML('beforeend', fundModalHtml);
+    </script>
+</body>
+</html>

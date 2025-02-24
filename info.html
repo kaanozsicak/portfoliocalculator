@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Yatırım Araçları Bilgi Merkezi</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('https://d.pusulahaber.com.tr/news/553733.jpg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .info-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .info-tabs {
+            display: flex;
+            gap: 20px;  /* Arttırıldı */
+            margin-bottom: 30px;  /* Arttırıldı */
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-tab {
+            background: rgba(74, 96, 255, 0.1);
+            border: 2px solid rgba(74, 96, 255, 0.3);  /* Kalınlık arttırıldı */
+            color: #fff;
+            padding: 12px 40px;  /* Padding arttırıldı */
+            cursor: pointer;
+            opacity: 0.7;
+            transition: all 0.3s;
+            border-radius: 25px;
+            font-size: 16px;  /* Değiştirildi */
+            font-weight: 500;  /* Font kalınlığı arttırıldı */
+            letter-spacing: 0.5px;
+            text-transform: none;  /* Kaldırıldı */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  /* Eklendi */
+        }
+
+        .info-tab:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(74, 96, 255, 0.2);
+        }
+
+        .info-tab.active {
+            opacity: 1;
+            background: rgba(74, 96, 255, 0.3);
+            border-color: rgba(74, 96, 255, 0.8);
+            box-shadow: 0 4px 20px rgba(74, 96, 255, 0.3);
+            font-weight: 600;
+        }
+
+        .info-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .info-content.active {
+            display: block;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 kolon */
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        .info-card {
+            background: rgba(59, 59, 59, 0.95);
+            border-radius: 12px;
+            padding: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            box-sizing: border-box;
+            width: 100%; /* Genişlik sınırlaması */
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-card h3 {
+            margin: 0 0 15px 0;
+            color: #4a60ff;
+            font-size: 1.2em;
+        }
+
+        .info-card p {
+            margin: 10px 0;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .info-label {
+            color: #888;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-card a {
+            color: #4a60ff;
+            text-decoration: none;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .info-card a:hover {
+            color: #8f8fff;
+        }
+
+        .info-card a:visited {
+            color: #4a60ff;  /* Ziyaret edilmiş linkler için de aynı renk */
+        }
+
+        .info-card a:after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            bottom: -2px;
+            left: 0;
+            background-color: #8f8fff;
+            transform: scaleX(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s;
+        }
+
+        .info-card a:hover:after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(45deg, #4a60ff, #8f8fff);
+            border: none;
+            padding: 10px 20px;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fund-details {
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: grid;
+            gap: 8px;
+        }
+
+        .fund-details p {
+            margin: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 20px;
+        }
+
+        .fund-details .info-label {
+            color: #888;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+            min-width: 80px;
+        }
+
+        /* Tablet için responsive tasarım */
+        @media (max-width: 1024px) {
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr); /* 2 kolon */
+            }
+        }
+
+        /* Mobil için responsive tasarım */
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr; /* 1 kolon */
+                padding: 10px;
+            }
+            
+            .info-card {
+                min-height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← Ana Sayfaya Dön</a>
+    
+    <div class="info-container">
+        <div class="info-tabs">
+            <button class="info-tab active" onclick="showInfoTab('stocks')">Hisseler</button>
+            <button class="info-tab" onclick="showInfoTab('funds')">Fonlar</button>
+        </div>
+
+        <div id="stocksInfo" class="info-content active">
+            <div class="info-grid" id="stocksGrid"></div>
+        </div>
+
+        <div id="fundsInfo" class="info-content">
+            <div class="info-grid" id="fundsGrid"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC5wZS1gZWWFcmxy1eTvgmQtkynK5HA3F4",
+            authDomain: "portfoilocalculator.firebaseapp.com",
+            projectId: "portfoilocalculator",
+            storageBucket: "portfoilocalculator.firebasestorage.app",
+            messagingSenderId: "597327926950",
+            appId: "1:597327926950:web:6077b172b0c6d68dd44667"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Sayfa yüklendiğinde bilgileri getir
+        window.addEventListener('DOMContentLoaded', loadDetailedInfo);
+
+        async function loadDetailedInfo() {
+            try {
+                await Promise.all([loadStocks(), loadFunds()]);
+            } catch (error) {
+                console.error("Bilgiler yüklenirken hata:", error);
+            }
+        }
+
+        async function loadStocks() {
+            const stocksGrid = document.getElementById('stocksGrid');
+            const snapshot = await getDocs(collection(db, "stocks"));
+            
+            stocksGrid.innerHTML = '';
+            snapshot.forEach(doc => {
+                const stock = doc.data();
+                let cardContent = `
+                    <div class="info-card">
+                        <h3>${stock.symbol} - ${stock.name}</h3>`;
+                
+                if (stock.description) {
+                    cardContent += `<p>${stock.description}</p>`;
+                }
+                
+                if (stock.sector) {
+                    cardContent += `<p><span class="info-label">Sektör:</span> ${stock.sector}</p>`;
+                }
+                
+                if (stock.website) {
+                    cardContent += `<p><span class="info-label">Website:</span> 
+                        <a href="${stock.website}" target="_blank">${stock.website}</a>
+                    </p>`;
+                }
+                
+                cardContent += `</div>`;
+                stocksGrid.innerHTML += cardContent;
+            });
+        }
+
+        async function loadFunds() {
+            const fundsGrid = document.getElementById('fundsGrid');
+            const snapshot = await getDocs(collection(db, "funds"));
+            
+            fundsGrid.innerHTML = '';
+            snapshot.forEach(doc => {
+                const fund = doc.data();
+                let cardContent = `
+                    <div class="info-card">
+                        <h3>${fund.code} - ${fund.name}</h3>`;
+                
+                if (fund.description) {
+                    cardContent += `<p>${fund.description}</p>`;
+                }
+                
+                let details = '';
+                if (fund.type || fund.company || fund.risk) {
+                    details += '<div class="fund-details">';
+                    if (fund.type) details += `<p><span class="info-label">Tür:</span> ${fund.type}</p>`;
+                    if (fund.company) details += `<p><span class="info-label">Şirket:</span> ${fund.company}</p>`;
+                    if (fund.risk) details += `<p><span class="info-label">Risk:</span> ${fund.risk}/5</p>`;
+                    details += '</div>';
+                    cardContent += details;
+                }
+                
+                cardContent += `</div>`;
+                fundsGrid.innerHTML += cardContent;
+            });
+        }
+
+        window.showInfoTab = function(tabName) {
+            document.querySelectorAll('.info-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.info-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(`${tabName}Info`).classList.add('active');
+            document.querySelector(`.info-tab[onclick="showInfoTab('${tabName}')"]`).classList.add('active');
+        };
+    </script>
+</body>
+</html>
