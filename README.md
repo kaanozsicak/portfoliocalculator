@@ -1,104 +1,97 @@
-# 💼 Portföy Hesaplayıcı
+# 🚧 Proje geliştirme aşamasındadır!
 
-📊 Bu proje, yatırımcıların portföylerini yönetmelerine ve dengelemelerine yardımcı olan web tabanlı bir uygulamadır.
+# 💼 Portföy Hesaplayıcı  
 
-## ⭐ Özellikler
+Bu proje, yatırımcıların portföylerini yönetmelerine ve dengelemelerine yardımcı olan web tabanlı bir uygulamadır.  
 
-### Kullanıcı Yönetimi
-- 👤 Kullanıcı kaydı ve girişi
-- 🔑 Admin / Normal kullanıcı ayrımı
-- 🔒 Güvenli oturum yönetimi
+## ⭐ Özellikler  
 
-### Portföy Yönetimi
-1. **Dinamik Portföy Oluşturma**
-   - ➕ Sınırsız sayıda portföy ekleme
-   - 📝 Özelleştirilebilir portföy başlıkları
-   - 👁️‍🗨️ Portföyleri gizleme/gösterme özelliği
+### 🔑 Kullanıcı Yönetimi  
+- Kullanıcı kaydı ve girişi  
+- Admin / Normal kullanıcı ayrımı  
+- Güvenli oturum yönetimi  
 
-2. **Varlık Yönetimi**
-   - ✍️ Manuel varlık girişi
-   - 📈 Hazır hisse senedi seçimi
-   - 📊 Hazır fon seçimi
-   - Her varlık için:
-     - 💵 Değer girişi
-     - 📉 Yüzde ayarlama
-     - 🗑️ Silme özelliği
+### 📊 Portföy Yönetimi  
 
-3. **Portföy Dengeleme**
-   - 🔄 Otomatik dengeleme hesaplaması
-   - 💡 Al/Sat önerileri
-   - 💸 Minimum işlem tutarı kontrolü (Kripto için)
-   - 📊 Toplam portföy değeri hesaplama
+#### 1️⃣ Dinamik Portföy Oluşturma  
+- Sınırsız sayıda portföy ekleme  
+- Özelleştirilebilir portföy başlıkları  
+- Portföyleri gizleme/gösterme özelliği  
 
-### Admin Paneli
-1. **Hisse Senedi Yönetimi**
-   - ➕ Hisse ekleme
-   - 📝 Hisse düzenleme
-   - 🗑️ Hisse silme
-   - 📋 Detaylı hisse bilgileri (kod, isim, açıklama, sektör, website)
+#### 2️⃣ Varlık Yönetimi  
+- Manuel varlık girişi  
+- Hazır hisse senedi & fon seçimi  
+- Her varlık için:  
+  - Değer girişi  
+  - Yüzde ayarlama  
+  - Silme özelliği  
 
-2. **Fon Yönetimi**
-   - ➕ Fon ekleme
-   - 📝 Fon düzenleme
-   - 🗑️ Fon silme
-   - 📋 Detaylı fon bilgileri (kod, isim, açıklama, tür, şirket, risk seviyesi)
+#### 3️⃣ Portföy Dengeleme  
+- Otomatik dengeleme hesaplaması  
+- Al/Sat önerileri  
+- Minimum işlem tutarı kontrolü (Kripto için)  
+- Toplam portföy değeri hesaplama  
 
-### Yatırım Bilgileri Sayfası
-- 📈 Hisse senetleri hakkında detaylı bilgiler
-- 📊 Fonlar hakkında detaylı bilgiler
-- 🔄 Düzenli güncellenen içerik
-- 🖥️ Kullanıcı dostu arayüz
+### ⚙️ Admin Paneli  
 
-### Teknik Özellikler
-- 🔐 Firebase Authentication ile güvenli giriş sistemi
-- 🔥 Firestore veritabanı ile gerçek zamanlı veri yönetimi
-- 📱 Responsive tasarım (mobil uyumlu)
-- 🎨 Modern UI/UX
-- 📉 Binance API entegrasyonu ile kripto fiyat verileri
-- 💾 Otomatik veri kaydetme
-- 🌐 Cross-browser uyumluluğu
+#### 📌 Hisse Senedi Yönetimi  
+- Hisse ekleme, düzenleme, silme  
+- Detaylı hisse bilgileri (kod, isim, açıklama, sektör, website)  
 
-## 🚀 Son Güncellemeler
+#### 📌 Fon Yönetimi  
+- Fon ekleme, düzenleme, silme  
+- Detaylı fon bilgileri (kod, isim, açıklama, tür, şirket, risk seviyesi)  
 
-1. 🏠 Admin paneline ana sayfa butonu eklendi
-2. 📋 Portföy listelerinde taşma sorunları giderildi
-3. 🎨 Liste öğelerinin arka plan renkleri daha belirgin hale getirildi
-4. 🛠️ Hisse düzenleme modalı düzeltildi
-5. 📝 Veri giriş formlarının düzeni iyileştirildi
-6. 📱 Responsive tasarım geliştirmeleri yapıldı
+### 📈 Yatırım Bilgileri Sayfası  
+- Hisse ve fon detayları  
+- Düzenli güncellenen içerik  
+- Kullanıcı dostu arayüz  
 
-## 🛠️ Kurulum
+### 🔧 Teknik Özellikler  
+- Firebase Authentication ile güvenli giriş  
+- Firestore veritabanı ile gerçek zamanlı veri yönetimi  
+- Binance API entegrasyonu ile canlı kripto fiyatları  
+- Responsive tasarım (mobil uyumlu)  
+- Otomatik veri kaydetme ve cross-browser uyumluluğu  
 
-1. 📥 Projeyi klonlayın
-2. 🔧 Firebase konfigürasyonunu yapın
-3. 📦 Gerekli bağımlılıkları yükleyin
-4. 🚀 Projeyi local sunucuda çalıştırın
+## 🚀 Son Güncellemeler  
 
-## 💻 Teknolojiler
+✅ Admin paneline ana sayfa butonu eklendi  
+✅ Portföy listelerinde taşma sorunları giderildi  
+✅ Liste öğelerinin arka plan renkleri iyileştirildi  
+✅ Hisse düzenleme modalı düzeltildi  
+✅ Veri giriş formlarının düzeni geliştirildi  
+✅ Responsive tasarım güncellemeleri yapıldı  
 
-- 🌐 HTML5
-- 🎨 CSS3
-- 💻 JavaScript
-- 🔥 Firebase (Authentication & Firestore)
-- 📉 Binance API
+## 🛠️ Kurulum  
 
-## 🤝 Katkıda Bulunma
+1. Projeyi klonlayın  
+2. Firebase konfigürasyonunu yapın  
+3. Gerekli bağımlılıkları yükleyin  
+4. Local sunucuda çalıştırın  
 
-Projeye katkıda bulunmak için:
-1. 🍴 Fork edin
-2. 🌿 Feature branch oluşturun
-3. 💾 Değişikliklerinizi commit edin
-4. 🚀 Branch'inizi push edin
-5. 📥 Pull Request açın
+## 💻 Teknolojiler  
 
-## 📜 Lisans
+- HTML5  
+- CSS3  
+- JavaScript  
+- Firebase (Authentication & Firestore)  
+- Binance API  
 
-MIT License
+## 🤝 Katkıda Bulunma  
 
-## 📧 İletişim
+Projeye katkıda bulunmak için:  
+1. 🍴 Fork edin  
+2. 🌿 Feature branch oluşturun  
+3. 💾 Değişikliklerinizi commit edin  
+4. 🚀 Branch'inizi push edin  
+5. 📥 Pull Request açın  
 
-[İletişim bilgileri eklenecek]
+## 📜 Lisans  
 
+MIT License  
 
-Siteye erişebilmek için : https://portfoliocalculator.netlify.app
+📧 **İletişim**  
+[İletişim bilgileri eklenecek]  
 
+🔗 **Siteye erişim:** https://portfoliocalculator.netlify.app
