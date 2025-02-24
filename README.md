@@ -98,5 +98,7 @@ MIT License
 ## 📧 İletişim
 
 [İletişim bilgileri eklenecek]
-Siteye erişebilmek için : https://portfoliocalculator.netlify.app/portfoliocalculator
+
+
+Siteye erişebilmek için : https://portfoliocalculator.netlify.app
 
