@@ -63,6 +63,12 @@ Bu proje, yatırımcıların portföylerini yönetmelerine ve dengelemelerine ya
 ✅ Veri giriş formlarının düzeni geliştirildi  
 ✅ Responsive tasarım güncellemeleri yapıldı  
 
+# 🔄 Planlanan Güncellemeler  
+
+- 📊 **TEFAS** üzerinden fonların günlük getiri verilerinin çekilmesi  
+- 📈 **BIST**’ten 15 dakika gecikmeli hisse fiyat bilgilerinin alınması  
+- 📱 Mobil cihazlar için **responsive** tasarımın iyileştirilmesi
+
 ## 🛠️ Kurulum  
 
 1. Projeyi klonlayın  
@@ -92,6 +98,6 @@ Projeye katkıda bulunmak için:
 MIT License  
 
 📧 **İletişim**  
-[İletişim bilgileri eklenecek]  
+[İletişim bilgileri eklenecek]
 
 🔗 **Siteye erişim:** https://portfoliocalculator.netlify.app
