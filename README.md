@@ -1,6 +1,6 @@
 # 💼 Portföy Hesaplayıcı
 
-📊 Bu proje, yatırımcıların portföylerini yönetmelerine ve dengelerine yardımcı olan web tabanlı bir uygulamadır.
+📊 Bu proje, yatırımcıların portföylerini yönetmelerine ve dengelemelerine yardımcı olan web tabanlı bir uygulamadır.
 
 ## ⭐ Özellikler
 
