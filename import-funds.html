@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Excel Fon İçe Aktarma - Portföy Yöneticisi</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('https://d.pusulahaber.com.tr/news/553733.jpg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #2c2c2c;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #3b3b3b;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #ffffff;
+        }
+        button {
+            background: linear-gradient(45deg, #4a60ff, #8f8fff);
+            border: none;
+            padding: 12px 20px;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .home-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+        }
+        .progress-container {
+            width: 100%;
+            height: 20px;
+            background-color: #3b3b3b;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(45deg, #4a60ff, #8f8fff);
+            width: 0;
+            transition: width 0.3s;
+        }
+        #results {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            background-color: #3b3b3b;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .result-item {
+            margin: 5px 0;
+            padding: 5px;
+            border-bottom: 1px solid #444;
+        }
+        .success {
+            color: #4CAF50;
+        }
+        .error {
+            color: #ff4444;
+        }
+        .warning {
+            color: #ffbb33;
+        }
+        .table-container {
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        th {
+            background-color: #333;
+        }
+        tr:nth-child(even) {
+            background-color: #3b3b3b;
+        }
+        .login-section {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            background-color: #2c2c2c;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+    <!-- SheetJS library for Excel parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div id="loginSection" class="login-section">
+        <h2>Admin Girişi</h2>
+        <div class="form-group">
+            <input type="email" id="adminEmail" placeholder="Email" required>
+        </div>
+        <div class="form-group">
+            <input type="password" id="adminPassword" placeholder="Şifre" required>
+        </div>
+        <button id="loginBtn">Giriş Yap</button>
+    </div>
+
+    <div id="importContainer" class="container hidden">
+        <h1>Excel Fon İçe Aktarma</h1>
+        
+        <div class="form-group">
+            <label for="excelFile">Excel Dosyası Seçin:</label>
+            <input type="file" id="excelFile" accept=".xlsx">
+        </div>
+        
+        <div>
+            <button id="parseBtn">Dosyayı Oku</button>
+            <button id="uploadBtn" disabled>Veritabanına Yükle</button>
+            <button id="homeBtn" class="home-btn">Ana Sayfaya Dön</button>
+        </div>
+        
+        <div class="progress-container" id="progressContainer" style="display: none;">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+        
+        <div id="preview" class="table-container"></div>
+        
+        <div id="results" style="display: none;"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC5wZS1gZWWFcmxy1eTvgmQtkynK5HA3F4",
+            authDomain: "portfoilocalculator.firebaseapp.com",
+            projectId: "portfoilocalculator",
+            storageBucket: "portfoilocalculator.firebasestorage.app",
+            messagingSenderId: "597327926950",
+            appId: "1:597327926950:web:6077b172b0c6d68dd44667"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        // Global variables
+        let fundData = [];
+        
+        // Auth state change listener
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.email === 'admin@admin.com') {
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('importContainer').classList.remove('hidden');
+            } else {
+                document.getElementById('loginSection').classList.remove('hidden');
+                document.getElementById('importContainer').classList.add('hidden');
+            }
+        });
+        
+        // Login button event listener
+        document.getElementById('loginBtn').addEventListener('click', async () => {
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            if (email !== 'admin@admin.com') {
+                alert("Bu sayfaya erişim yetkiniz yok!");
+                return;
+            }
+            
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                if (userCredential.user.email !== 'admin@admin.com') {
+                    alert("Admin yetkisine sahip değilsiniz!");
+                    await auth.signOut();
+                    return;
+                }
+            } catch (error) {
+                alert("Giriş başarısız: " + error.message);
+            }
+        });
+        
+        // Parse button event listener
+        document.getElementById('parseBtn').addEventListener('click', () => {
+            const file = document.getElementById('excelFile').files[0];
+            if (!file) {
+                alert("Lütfen önce bir Excel dosyası seçin!");
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    // Convert Excel data to JSON
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
+                        raw: false,
+                        header: 1,  // Use array format instead of objects
+                        defval: ''  // Default empty string for empty cells
+                    });
+                    
+                    if (jsonData.length === 0) {
+                        alert("Dosya boş veya içeriği okunamıyor!");
+                        return;
+                    }
+                    
+                    // Process TEFAS data format
+                    fundData = processTEFASData(jsonData);
+                    
+                    if (fundData.length === 0) {
+                        // Try alternative processing if TEFAS format fails
+                        const jsonObjectData = XLSX.utils.sheet_to_json(worksheet, { raw: false });
+                        fundData = processFundData(jsonObjectData);
+                    }
+                    
+                    if (fundData.length === 0) {
+                        alert("İçe aktarılacak geçerli veri bulunamadı. Lütfen dosya formatını kontrol edin!");
+                        return;
+                    }
+                    
+                    // Show preview
+                    showPreview(fundData);
+                    
+                    // Enable upload button
+                    document.getElementById('uploadBtn').disabled = false;
+                } catch (error) {
+                    alert("Dosya okuma hatası: " + error.message);
+                    console.error(error);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+        
+        // Process TEFAS format data (with column headers in first row)
+        function processTEFASData(jsonData) {
+            const processedData = [];
+            
+            // Find header row (should contain "Fon Kodu", "Fon Adı", etc.)
+            let headerRowIndex = -1;
+            for (let i = 0; i < Math.min(10, jsonData.length); i++) {
+                const row = jsonData[i];
+                if (row.includes("Fon Kodu") && row.includes("Fon Adı")) {
+                    headerRowIndex = i;
+                    break;
+                }
+            }
+            
+            if (headerRowIndex === -1) {
+                console.log("TEFAS header row not found");
+                return []; // Return empty array if we can't find the header row
+            }
+            
+            // Get column indices
+            const header = jsonData[headerRowIndex];
+            const codeIndex = header.findIndex(col => col === "Fon Kodu" || col.includes("Kodu"));
+            const nameIndex = header.findIndex(col => col === "Fon Adı" || col.includes("Adı"));
+            const typeIndex = header.findIndex(col => col.includes("Şemsiye") || col.includes("Türü"));
+            
+            // Get performance period indices
+            const oneMonthIndex = header.findIndex(col => col === "1 Ay (%)" || col.includes("1 Ay"));
+            const threeMonthIndex = header.findIndex(col => col === "3 Ay (%)" || col.includes("3 Ay"));
+            const sixMonthIndex = header.findIndex(col => col === "6 Ay (%)" || col.includes("6 Ay"));
+            const ytdIndex = header.findIndex(col => col === "Yılbaşı (%)" || col.includes("Yılbaşı"));
+            const oneYearIndex = header.findIndex(col => col === "1 Yıl (%)" || col.includes("1 Yıl"));
+            const threeYearIndex = header.findIndex(col => col === "3 Yıl (%)" || col.includes("3 Yıl"));
+            const fiveYearIndex = header.findIndex(col => col === "5 Yıl (%)" || col.includes("5 Yıl"));
+            
+            if (codeIndex === -1 || nameIndex === -1) {
+                console.log("Required columns not found in TEFAS data");
+                return []; // Required columns not found
+            }
+            
+            // Process data rows (skip header row)
+            for (let i = headerRowIndex + 1; i < jsonData.length; i++) {
+                const row = jsonData[i];
+                
+                // Skip empty rows or rows without code/name
+                if (!row[codeIndex] || !row[nameIndex] || row.every(cell => !cell)) {
+                    continue;
+                }
+                
+                // Extract company from fund name if possible
+                let company = "Belirlenmemiş";
+                const fundName = row[nameIndex];
+                const nameParts = fundName.split(' ');
+                if (nameParts.length >= 2) {
+                    // Assume first 1-2 words might be company name
+                    company = nameParts.slice(0, 2).join(' ');
+                    // If company ends with "PORTFÖY", use that
+                    const portfoyIndex = fundName.indexOf("PORTFÖY");
+                    if (portfoyIndex > 0) {
+                        const beforePortfoy = fundName.substring(0, portfoyIndex + 7).trim();
+                        company = beforePortfoy;
+                    }
+                }
+                
+                // Parse performance metrics (handle different formats)
+                const parsePerformance = (value) => {
+                    if (!value || value === "") return null;
+                    // Convert to string, replace commas with dots and remove any % sign
+                    const cleanValue = String(value).replace(',', '.').replace('%', '');
+                    return isNaN(cleanValue) ? null : parseFloat(cleanValue);
+                };
+                
+                // Create fund object
+                const fund = {
+                    code: String(row[codeIndex]).trim().toUpperCase(),
+                    name: String(row[nameIndex]).trim(),
+                    description: `${row[nameIndex]} - ${typeIndex !== -1 ? row[typeIndex] : 'Yatırım Fonu'}`,
+                    type: typeIndex !== -1 ? String(row[typeIndex]).trim() : 'Karma Fon',
+                    company: company,
+                    risk: Math.floor(Math.random() * 3) + 3, // Random risk between 3-5
+                    createdAt: new Date().toISOString(),
+                    createdBy: 'import-tool',
+                    
+                    // Add performance metrics
+                    performance: {
+                        oneMonth: oneMonthIndex !== -1 ? parsePerformance(row[oneMonthIndex]) : null,
+                        threeMonth: threeMonthIndex !== -1 ? parsePerformance(row[threeMonthIndex]) : null,
+                        sixMonth: sixMonthIndex !== -1 ? parsePerformance(row[sixMonthIndex]) : null,
+                        ytd: ytdIndex !== -1 ? parsePerformance(row[ytdIndex]) : null,
+                        oneYear: oneYearIndex !== -1 ? parsePerformance(row[oneYearIndex]) : null,
+                        threeYear: threeYearIndex !== -1 ? parsePerformance(row[threeYearIndex]) : null,
+                        fiveYear: fiveYearIndex !== -1 ? parsePerformance(row[fiveYearIndex]) : null
+                    }
+                };
+                
+                processedData.push(fund);
+            }
+            
+            console.log(`TEFAS format processed ${processedData.length} funds`);
+            return processedData;
+        }
+        
+        // Original process function (backup method)
+        function processFundData(jsonData) {
+            const processedData = [];
+            
+            for (let i = 0; i < jsonData.length; i++) {
+                const row = jsonData[i];
+                
+                // Try different possible column names for fund code and name
+                let code = row.code || row.kod || row["Fon Kodu"] || row.FonKodu;
+                let name = row.name || row.ad || row["Fon Adı"] || row.FonAdı;
+                let type = row.type || row.tür || row["Şemsiye Fon Türü"] || row.FonTürü;
+                let company = row.company || row.şirket || row.kurucu;
+                
+                // Check if we have the minimum required fields
+                if (!code || !name) {
+                    continue;
+                }
+                
+                // Extract company from fund name if not provided
+                if (!company) {
+                    const nameParts = name.split(' ');
+                    if (nameParts.length >= 2) {
+                        company = nameParts.slice(0, 2).join(' ');
+                        const portfoyIndex = name.indexOf("PORTFÖY");
+                        if (portfoyIndex > 0) {
+                            company = name.substring(0, portfoyIndex + 7).trim();
+                        }
+                    } else {
+                        company = 'Belirlenmemiş';
+                    }
+                }
+                
+                // Create fund object
+                const fund = {
+                    code: String(code).trim().toUpperCase(),
+                    name: String(name).trim(),
+                    description: row.description || `${name} fonu.`,
+                    type: type ? String(type).trim() : 'Karma Fon',
+                    company: company,
+                    risk: row.risk ? parseInt(row.risk) : 3,
+                    createdAt: new Date().toISOString(),
+                    createdBy: 'import-tool'
+                };
+                
+                processedData.push(fund);
+            }
+            
+            return processedData;
+        }
+        
+        // Show preview of the data
+        function showPreview(data) {
+            const previewElement = document.getElementById('preview');
+            
+            if (data.length === 0) {
+                previewElement.innerHTML = '<p>İçe aktarılacak geçerli veri bulunamadı.</p>';
+                return;
+            }
+            
+            let html = `
+                <h3>İçe Aktarılacak Fonlar (${data.length})</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Kod</th>
+                            <th>İsim</th>
+                            <th>Tür</th>
+                            <th>Şirket</th>
+                            <th>Risk</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            data.forEach(fund => {
+                html += `
+                    <tr>
+                        <td>${fund.code}</td>
+                        <td>${fund.name}</td>
+                        <td>${fund.type}</td>
+                        <td>${fund.company}</td>
+                        <td>${fund.risk}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+            `;
+            
+            previewElement.innerHTML = html;
+        }
+        
+        // Upload button event listener
+        document.getElementById('uploadBtn').addEventListener('click', async () => {
+            if (fundData.length === 0) {
+                alert("Yüklenecek fon verisi bulunamadı!");
+                return;
+            }
+            
+            if (!confirm(`${fundData.length} adet fonu veritabanına yüklemek istediğinize emin misiniz?`)) {
+                return;
+            }
+            
+            // Show progress bar
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const resultsElement = document.getElementById('results');
+            
+            progressContainer.style.display = 'block';
+            resultsElement.style.display = 'block';
+            resultsElement.innerHTML = '';
+            
+            let successCount = 0;
+            let errorCount = 0;
+            let skipCount = 0;
+            
+            // Process each fund
+            for (let i = 0; i < fundData.length; i++) {
+                const fund = fundData[i];
+                
+                try {
+                    // Update progress
+                    const progress = Math.round((i / fundData.length) * 100);
+                    progressBar.style.width = progress + '%';
+                    
+                    // Check if fund code already exists
+                    const q = query(collection(db, "funds"), where("code", "==", fund.code));
+                    const querySnapshot = await getDocs(q);
+                    
+                    if (!querySnapshot.empty) {
+                        // Fund already exists
+                        logResult('warning', `Atlama: ${fund.code} - ${fund.name} (Zaten mevcut)`);
+                        skipCount++;
+                        continue;
+                    }
+                    
+                    // Add fund to the database
+                    await addDoc(collection(db, "funds"), fund);
+                    logResult('success', `Başarılı: ${fund.code} - ${fund.name}`);
+                    successCount++;
+                } catch (error) {
+                    logResult('error', `Hata: ${fund.code} - ${fund.name} (${error.message})`);
+                    errorCount++;
+                }
+            }
+            
+            // Complete the progress bar
+            progressBar.style.width = '100%';
+            
+            // Show summary
+            let summaryClass = errorCount > 0 ? 'warning' : 'success';
+            logResult(summaryClass, `İşlem Tamamlandı - ${successCount} başarılı, ${skipCount} atlanan, ${errorCount} hatalı`);
+            
+            // Disable upload button after completion
+            document.getElementById('uploadBtn').disabled = true;
+        });
+        
+        // Log result to the results panel
+        function logResult(type, message) {
+            const resultsElement = document.getElementById('results');
+            const resultItem = document.createElement('div');
+            resultItem.className = `result-item ${type}`;
+            resultItem.textContent = message;
+            resultsElement.appendChild(resultItem);
+            
+            // Auto-scroll to the bottom
+            resultsElement.scrollTop = resultsElement.scrollHeight;
+        }
+        
+        // Home button event listener
+        document.getElementById('homeBtn').addEventListener('click', () => {
+            window.location.href = 'admin.html';
+        });
+    </script>
+</body>
+</html>

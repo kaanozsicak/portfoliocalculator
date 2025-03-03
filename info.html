@@ -182,6 +182,46 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Pagination styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-btn {
+            background: #3b3b3b;
+            border: none;
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .pagination-btn:hover {
+            background: #4a4a4a;
+        }
+
+        .pagination-btn.active {
+            background: #4a60ff;
+        }
+
+        .pagination-btn:disabled {
+            background: #333;
+            color: #777;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            text-align: center;
+            margin-top: 10px;
+            color: #888;
+            font-size: 14px;
+        }
+
         @media (max-width: 768px) {
             .container {
                 margin: 20px 10px;
@@ -203,10 +243,19 @@
                 padding: 10px 15px;
                 font-size: 14px;
             }
+
+            .pagination {
+                gap: 5px;
+            }
+
+            .pagination-btn {
+                padding: 6px 10px;
+                font-size: 13px;
+            }
         }
     </style>
 </head>
-<body>
+<body></body>
     <div class="container">
         <div class="header">
             <h1>Yatırım Bilgileri</h1>
@@ -241,6 +290,10 @@
             <div id="fundsGrid" class="info-grid">
                 <!-- Fonlar burada listelenecek -->
             </div>
+
+            <!-- Pagination Controls -->
+            <div class="page-info" id="fundPageInfo"></div>
+            <div class="pagination" id="fundPagination"></div>
         </div>
 
         <div id="stocks" class="info-content">
@@ -264,6 +317,10 @@
             <div id="stocksGrid" class="info-grid">
                 <!-- Hisseler burada listelenecek -->
             </div>
+
+            <!-- Pagination Controls -->
+            <div class="page-info" id="stockPageInfo"></div>
+            <div class="pagination" id="stockPagination"></div>
         </div>
     </div>
 
@@ -288,7 +345,14 @@
 
         // Global değişkenler
         let allFunds = [];
+        let filteredFunds = [];
         let allStocks = [];
+        let filteredStocks = [];
+        
+        // Sayfalama değişkenleri
+        const itemsPerPage = 20; // Her sayfada gösterilecek öğe sayısı
+        let currentFundPage = 1;
+        let currentStockPage = 1;
 
         // Anonim giriş yaparak yetkilendirme sağla
         async function ensureAuthenticated() {
@@ -313,13 +377,12 @@
             });
         }
 
-        // Fonları yükleme - İyileştirilmiş hata yönetimi
+        // Fonları yükleme - Sayfalama ile iyileştirildi
         async function loadFunds() {
             try {
                 // Önce kimlik doğrulama yap
                 await ensureAuthenticated();
                 
-                const fundsGrid = document.getElementById('fundsGrid');
                 const fundsLoading = document.getElementById('fundsLoading');
                 
                 // Veriyi çek
@@ -330,7 +393,14 @@
                     allFunds.push(doc.data());
                 });
                 
-                displayFunds(allFunds);
+                // İlk sıralamayı kod'a göre yap
+                allFunds.sort((a, b) => (a.code || '').localeCompare(b.code || ''));
+                filteredFunds = [...allFunds];
+                
+                // İlk sayfayı göster
+                displayFundPage(1);
+                renderFundPagination();
+                
                 fundsLoading.style.display = 'none';
             } catch (error) {
                 console.error("Fonlar yüklenirken hata:", error);
@@ -345,13 +415,12 @@
             }
         }
 
-        // Hisseleri yükleme - İyileştirilmiş hata yönetimi
+        // Hisseleri yükleme - Sayfalama ile iyileştirildi
         async function loadStocks() {
             try {
                 // Önce kimlik doğrulama yap
                 await ensureAuthenticated();
                 
-                const stocksGrid = document.getElementById('stocksGrid');
                 const stocksLoading = document.getElementById('stocksLoading');
                 
                 // Veriyi çek
@@ -362,7 +431,14 @@
                     allStocks.push(doc.data());
                 });
                 
-                displayStocks(allStocks);
+                // İlk sıralamayı sembol'e göre yap
+                allStocks.sort((a, b) => (a.symbol || '').localeCompare(b.symbol || ''));
+                filteredStocks = [...allStocks];
+                
+                // İlk sayfayı göster
+                displayStockPage(1);
+                renderStockPagination();
+                
                 stocksLoading.style.display = 'none';
             } catch (error) {
                 console.error("Hisseler yüklenirken hata:", error);
@@ -377,17 +453,33 @@
             }
         }
 
-        // Fonları görüntüleme
-        function displayFunds(funds) {
+        // Fonlar için sayfa gösterimi
+        function displayFundPage(pageNumber) {
             const fundsGrid = document.getElementById('fundsGrid');
             fundsGrid.innerHTML = '';
             
-            if (funds.length === 0) {
+            // Sayfa numarasını güncelle
+            currentFundPage = pageNumber;
+            
+            // Sayfada gösterilecek öğeleri belirle
+            const startIndex = (pageNumber - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredFunds.length);
+            
+            if (filteredFunds.length === 0) {
                 fundsGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Hiç fon bulunamadı</p>';
+                document.getElementById('fundPageInfo').textContent = '';
+                document.getElementById('fundPagination').innerHTML = '';
                 return;
             }
             
-            funds.forEach(fund => {
+            // Sayfa bilgisi
+            document.getElementById('fundPageInfo').textContent = 
+                `${filteredFunds.length} fondan ${startIndex + 1}-${endIndex} arası gösteriliyor`;
+            
+            // Sadece mevcut sayfadaki öğeleri ekle
+            const currentPageItems = filteredFunds.slice(startIndex, endIndex);
+            
+            currentPageItems.forEach(fund => {
                 fundsGrid.innerHTML += `
                     <div class="info-card">
                         <h3>
@@ -404,17 +496,33 @@
             });
         }
 
-        // Hisseleri görüntüleme
-        function displayStocks(stocks) {
+        // Hisseler için sayfa gösterimi
+        function displayStockPage(pageNumber) {
             const stocksGrid = document.getElementById('stocksGrid');
             stocksGrid.innerHTML = '';
             
-            if (stocks.length === 0) {
+            // Sayfa numarasını güncelle
+            currentStockPage = pageNumber;
+            
+            // Sayfada gösterilecek öğeleri belirle
+            const startIndex = (pageNumber - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredStocks.length);
+            
+            if (filteredStocks.length === 0) {
                 stocksGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Hiç hisse bulunamadı</p>';
+                document.getElementById('stockPageInfo').textContent = '';
+                document.getElementById('stockPagination').innerHTML = '';
                 return;
             }
             
-            stocks.forEach(stock => {
+            // Sayfa bilgisi
+            document.getElementById('stockPageInfo').textContent = 
+                `${filteredStocks.length} hisseden ${startIndex + 1}-${endIndex} arası gösteriliyor`;
+            
+            // Sadece mevcut sayfadaki öğeleri ekle
+            const currentPageItems = filteredStocks.slice(startIndex, endIndex);
+            
+            currentPageItems.forEach(stock => {
                 stocksGrid.innerHTML += `
                     <div class="info-card">
                         <h3>${stock.symbol} - ${stock.name}</h3>
@@ -428,73 +536,239 @@
             });
         }
 
-        // Fonları filtreleme
+        // Fonlar için sayfalama butonlarını oluştur
+        function renderFundPagination() {
+            const pagination = document.getElementById('fundPagination');
+            pagination.innerHTML = '';
+            
+            if (filteredFunds.length === 0) return;
+            
+            const totalPages = Math.ceil(filteredFunds.length / itemsPerPage);
+            
+            // İlk sayfa butonu
+            const firstPageBtn = document.createElement('button');
+            firstPageBtn.className = 'pagination-btn';
+            firstPageBtn.textContent = '<<';
+            firstPageBtn.onclick = () => displayFundPage(1);
+            firstPageBtn.disabled = currentFundPage === 1;
+            pagination.appendChild(firstPageBtn);
+            
+            // Önceki sayfa butonu
+            const prevPageBtn = document.createElement('button');
+            prevPageBtn.className = 'pagination-btn';
+            prevPageBtn.textContent = '<';
+            prevPageBtn.onclick = () => displayFundPage(currentFundPage - 1);
+            prevPageBtn.disabled = currentFundPage === 1;
+            pagination.appendChild(prevPageBtn);
+            
+            // Sayfa numaraları - Sadece belli bir aralıktaki sayfaları göster
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentFundPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            // İlk sayfa gösterilmiyorsa üç nokta ekle
+            if (startPage > 1) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.style.margin = '0 5px';
+                pagination.appendChild(ellipsis);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = 'pagination-btn';
+                if (i === currentFundPage) pageBtn.classList.add('active');
+                pageBtn.textContent = i;
+                pageBtn.onclick = () => displayFundPage(i);
+                pagination.appendChild(pageBtn);
+            }
+            
+            // Son sayfa gösterilmiyorsa üç nokta ekle
+            if (endPage < totalPages) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.style.margin = '0 5px';
+                pagination.appendChild(ellipsis);
+            }
+            
+            // Sonraki sayfa butonu
+            const nextPageBtn = document.createElement('button');
+            nextPageBtn.className = 'pagination-btn';
+            nextPageBtn.textContent = '>';
+            nextPageBtn.onclick = () => displayFundPage(currentFundPage + 1);
+            nextPageBtn.disabled = currentFundPage === totalPages;
+            pagination.appendChild(nextPageBtn);
+            
+            // Son sayfa butonu
+            const lastPageBtn = document.createElement('button');
+            lastPageBtn.className = 'pagination-btn';
+            lastPageBtn.textContent = '>>';
+            lastPageBtn.onclick = () => displayFundPage(totalPages);
+            lastPageBtn.disabled = currentFundPage === totalPages;
+            pagination.appendChild(lastPageBtn);
+        }
+
+        // Hisseler için sayfalama butonlarını oluştur
+        function renderStockPagination() {
+            const pagination = document.getElementById('stockPagination');
+            pagination.innerHTML = '';
+            
+            if (filteredStocks.length === 0) return;
+            
+            const totalPages = Math.ceil(filteredStocks.length / itemsPerPage);
+            
+            // İlk sayfa butonu
+            const firstPageBtn = document.createElement('button');
+            firstPageBtn.className = 'pagination-btn';
+            firstPageBtn.textContent = '<<';
+            firstPageBtn.onclick = () => displayStockPage(1);
+            firstPageBtn.disabled = currentStockPage === 1;
+            pagination.appendChild(firstPageBtn);
+            
+            // Önceki sayfa butonu
+            const prevPageBtn = document.createElement('button');
+            prevPageBtn.className = 'pagination-btn';
+            prevPageBtn.textContent = '<';
+            prevPageBtn.onclick = () => displayStockPage(currentStockPage - 1);
+            prevPageBtn.disabled = currentStockPage === 1;
+            pagination.appendChild(prevPageBtn);
+            
+            // Sayfa numaraları - Sadece belli bir aralıktaki sayfaları göster
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentStockPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            // İlk sayfa gösterilmiyorsa üç nokta ekle
+            if (startPage > 1) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.style.margin = '0 5px';
+                pagination.appendChild(ellipsis);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = 'pagination-btn';
+                if (i === currentStockPage) pageBtn.classList.add('active');
+                pageBtn.textContent = i;
+                pageBtn.onclick = () => displayStockPage(i);
+                pagination.appendChild(pageBtn);
+            }
+            
+            // Son sayfa gösterilmiyorsa üç nokta ekle
+            if (endPage < totalPages) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.style.margin = '0 5px';
+                pagination.appendChild(ellipsis);
+            }
+            
+            // Sonraki sayfa butonu
+            const nextPageBtn = document.createElement('button');
+            nextPageBtn.className = 'pagination-btn';
+            nextPageBtn.textContent = '>';
+            nextPageBtn.onclick = () => displayStockPage(currentStockPage + 1);
+            nextPageBtn.disabled = currentStockPage === totalPages;
+            pagination.appendChild(nextPageBtn);
+            
+            // Son sayfa butonu
+            const lastPageBtn = document.createElement('button');
+            lastPageBtn.className = 'pagination-btn';
+            lastPageBtn.textContent = '>>';
+            lastPageBtn.onclick = () => displayStockPage(totalPages);
+            lastPageBtn.disabled = currentStockPage === totalPages;
+            pagination.appendChild(lastPageBtn);
+        }
+
+        // Fonları filtreleme - Arama işlemi için
         document.getElementById('fundSearch').addEventListener('input', function(e) {
             const searchText = e.target.value.toLowerCase();
-            const filteredFunds = allFunds.filter(fund => 
-                fund.code?.toLowerCase().includes(searchText) || 
-                fund.name?.toLowerCase().includes(searchText) ||
-                fund.company?.toLowerCase().includes(searchText) ||
-                fund.type?.toLowerCase().includes(searchText)
-            );
-            displayFunds(filteredFunds);
+            
+            if (searchText.trim() === '') {
+                // Arama metni boşsa, tüm fonları göster
+                filteredFunds = [...allFunds];
+            } else {
+                // Arama metnine göre filtrele
+                filteredFunds = allFunds.filter(fund => 
+                    fund.code?.toLowerCase().includes(searchText) || 
+                    fund.name?.toLowerCase().includes(searchText) ||
+                    fund.company?.toLowerCase().includes(searchText) ||
+                    fund.type?.toLowerCase().includes(searchText)
+                );
+            }
+            
+            // Her aramada ilk sayfayı göster
+            displayFundPage(1);
+            renderFundPagination();
         });
 
-        // Hisseleri filtreleme
+        // Hisseleri filtreleme - Arama işlemi için
         document.getElementById('stockSearch').addEventListener('input', function(e) {
             const searchText = e.target.value.toLowerCase();
-            const filteredStocks = allStocks.filter(stock => 
-                stock.symbol?.toLowerCase().includes(searchText) || 
-                stock.name?.toLowerCase().includes(searchText) ||
-                stock.sector?.toLowerCase().includes(searchText)
-            );
-            displayStocks(filteredStocks);
+            
+            if (searchText.trim() === '') {
+                // Arama metni boşsa, tüm hisseleri göster
+                filteredStocks = [...allStocks];
+            } else {
+                // Arama metnine göre filtrele
+                filteredStocks = allStocks.filter(stock => 
+                    stock.symbol?.toLowerCase().includes(searchText) || 
+                    stock.name?.toLowerCase().includes(searchText) ||
+                    stock.sector?.toLowerCase().includes(searchText)
+                );
+            }
+            
+            // Her aramada ilk sayfayı göster
+            displayStockPage(1);
+            renderStockPagination();
         });
 
         // Fonları sıralama
         window.sortFunds = function() {
             const sortOption = document.getElementById('fundSort').value;
-            let sortedFunds = [...allFunds];
             
             switch (sortOption) {
                 case 'code':
-                    sortedFunds.sort((a, b) => (a.code || '').localeCompare(b.code || ''));
+                    filteredFunds.sort((a, b) => (a.code || '').localeCompare(b.code || ''));
                     break;
                 case 'name':
-                    sortedFunds.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+                    filteredFunds.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
                     break;
                 case 'company':
-                    sortedFunds.sort((a, b) => (a.company || '').localeCompare(b.company || ''));
+                    filteredFunds.sort((a, b) => (a.company || '').localeCompare(b.company || ''));
                     break;
                 case 'riskAsc':
-                    sortedFunds.sort((a, b) => (parseInt(a.risk) || 0) - (parseInt(b.risk) || 0));
+                    filteredFunds.sort((a, b) => (parseInt(a.risk) || 0) - (parseInt(b.risk) || 0));
                     break;
                 case 'riskDesc':
-                    sortedFunds.sort((a, b) => (parseInt(b.risk) || 0) - (parseInt(a.risk) || 0));
+                    filteredFunds.sort((a, b) => (parseInt(b.risk) || 0) - (parseInt(a.risk) || 0));
                     break;
             }
             
-            displayFunds(sortedFunds);
+            // Sıralama sonrası ilk sayfayı göster
+            displayFundPage(1);
+            renderFundPagination();
         };
 
         // Hisseleri sıralama
         window.sortStocks = function() {
             const sortOption = document.getElementById('stockSort').value;
-            let sortedStocks = [...allStocks];
             
             switch (sortOption) {
                 case 'symbol':
-                    sortedStocks.sort((a, b) => (a.symbol || '').localeCompare(b.symbol || ''));
+                    filteredStocks.sort((a, b) => (a.symbol || '').localeCompare(b.symbol || ''));
                     break;
                 case 'name':
-                    sortedStocks.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+                    filteredStocks.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
                     break;
                 case 'sector':
-                    sortedStocks.sort((a, b) => (a.sector || '').localeCompare(b.sector || ''));
+                    filteredStocks.sort((a, b) => (a.sector || '').localeCompare(b.sector || ''));
                     break;
             }
             
-            displayStocks(sortedStocks);
+            // Sıralama sonrası ilk sayfayı göster
+            displayStockPage(1);
+            renderStockPagination();
         };
 
         // Tab değiştirme

@@ -126,8 +126,30 @@ class DemoFundsAPI {
         const fundCompany = foundFund ? foundFund.company : 'Demo Portföy Yönetimi A.Ş.';
         const fundRisk = foundFund ? foundFund.risk : Math.floor(Math.random() * 5) + 1;
         
+        // Add performance metrics similar to TEFAS
+        const randomPerformance = () => {
+            // Generate more realistic performance metrics
+            const oneMonth = ((Math.random() * 10) - 3).toFixed(2);
+            const threeMonth = ((Math.random() * 15) - 5).toFixed(2);
+            const sixMonth = ((Math.random() * 20) - 6).toFixed(2);
+            const ytd = ((Math.random() * 25) - 8).toFixed(2);
+            const oneYear = ((Math.random() * 30) - 10).toFixed(2);
+            const threeYear = ((Math.random() * 50) - 5).toFixed(2);
+            const fiveYear = ((Math.random() * 70)).toFixed(2); // Longer term tends to be positive
+            
+            return {
+                oneMonth,
+                threeMonth,
+                sixMonth,
+                ytd,
+                oneYear,
+                threeYear,
+                fiveYear
+            };
+        };
+        
         // Demo detayları oluştur
-        return {
+        const demoDetails = {
             code: code,
             name: fundName,
             type: fundType,
@@ -153,8 +175,12 @@ class DemoFundsAPI {
                 { category: 'Ters Repo', percentage: Math.floor(Math.random() * 20) + 5 },
                 { category: 'Yabancı Menkul', percentage: Math.floor(Math.random() * 15) + 5 },
                 { category: 'Diğer', percentage: Math.floor(Math.random() * 10) + 5 }
-            ]
+            ],
+            // Add performance data
+            performance: randomPerformance()
         };
+        
+        return demoDetails;
     }
 
     /**

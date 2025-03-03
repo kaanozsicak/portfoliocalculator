@@ -1,0 +1,60 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Base rules
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return request.auth.token.email == 'admin@admin.com';
+    }
+    
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    // Allow admins to read and write all documents
+    match /{document=**} {
+      allow read, write: if isAdmin();
+    }
+    
+    // User profiles - users can only read/write their own data
+    match /users/{userId} {
+      allow create: if isSignedIn() && isOwner(userId);
+      allow read, update, delete: if isSignedIn() && isOwner(userId);
+      
+      // Allow nested collections under user's own document
+      match /{nestedCollection}/{nestedDoc} {
+        allow read, write: if isSignedIn() && isOwner(userId);
+      }
+    }
+    
+    // Funds collection - anyone can read, only admin can write
+    match /funds/{fundId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    
+    // Stocks collection - anyone can read, only admin can write
+    match /stocks/{stockId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    
+    // Public data - available to all authenticated users
+    match /public/{document=**} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    
+    // Anonymous access for limited data
+    match /funds/{fundId} {
+      allow read: if true; // Allow anonymous reads for funds
+    }
+    
+    match /stocks/{stockId} {
+      allow read: if true; // Allow anonymous reads for stocks
+    }
+  }
+}

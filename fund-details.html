@@ -399,6 +399,45 @@
                     <button class="period-btn" onclick="changePeriod('MAX')">MAX</button>
                 </div>
 
+                <div class="info-section">
+                    <div class="info-title">TEFAS Performans Verileri</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">1 Aylık Değişim</div>
+                            <div class="info-value" id="oneMonthPerf">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">3 Aylık Değişim</div>
+                            <div class="info-value" id="threeMonthPerf">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">6 Aylık Değişim</div>
+                            <div class="info-value" id="sixMonthPerf">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Yılbaşından Beri</div>
+                            <div class="info-value" id="ytdPerf">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">1 Yıllık Değişim</div>
+                            <div class="info-value" id="oneYearPerf">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">3 Yıllık Değişim</div>
+                            <div class="info-value" id="threeYearPerf">--</div>
+                        </div>
+                        <div class="info-item"></div>
+                            <div class="info-label">5 Yıllık Değişim</div>
+                            <div class="info-value" id="fiveYearPerf">--</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="periodsChart"></canvas>
+                    <div class="loading" id="periodsChartLoading">Grafik yükleniyor...</div>
+                </div>
+
                 <div class="chart-container">
                     <canvas id="performanceChart"></canvas>
                     <div class="loading" id="chartLoading">Grafik yükleniyor...</div>
@@ -709,6 +748,29 @@
             }
             
             initializeDistributionCharts();
+
+            // Set TEFAS performance metrics
+            if (fund.performance) {
+                // Function to format percentage value
+                const formatPercentage = (value) => {
+                    if (value === null || value === undefined) return "--";
+                    const numValue = parseFloat(value);
+                    const formattedValue = numValue.toFixed(2) + "%";
+                    const cssClass = numValue >= 0 ? 'positive-change' : 'negative-change';
+                    return `<span class="${cssClass}">${formattedValue}</span>`;
+                };
+                
+                document.getElementById('oneMonthPerf').innerHTML = formatPercentage(fund.performance.oneMonth);
+                document.getElementById('threeMonthPerf').innerHTML = formatPercentage(fund.performance.threeMonth);
+                document.getElementById('sixMonthPerf').innerHTML = formatPercentage(fund.performance.sixMonth);
+                document.getElementById('ytdPerf').innerHTML = formatPercentage(fund.performance.ytd);
+                document.getElementById('oneYearPerf').innerHTML = formatPercentage(fund.performance.oneYear);
+                document.getElementById('threeYearPerf').innerHTML = formatPercentage(fund.performance.threeYear);
+                document.getElementById('fiveYearPerf').innerHTML = formatPercentage(fund.performance.fiveYear);
+                
+                // Initialize performance periods comparison chart
+                initializePeriodsComparisonChart(fund.performance);
+            }
         }
 
         // Function to display historical data from TEFAS
@@ -1254,6 +1316,105 @@
             const month = (date.getMonth() + 1).toString().padStart(2, '0');
             const year = date.getFullYear();
             return `${day}.${month}.${year}`;
+        }
+
+        // Function to initialize the periods comparison chart
+        function initializePeriodsComparisonChart(performance) {
+            // Hide loading indicator
+            document.getElementById('periodsChartLoading').style.display = 'none';
+            
+            // If no performance data available, return
+            if (!performance) {
+                return;
+            }
+            
+            // Prepare data for chart
+            const labels = ['1 Ay', '3 Ay', '6 Ay', 'YTD', '1 Yıl', '3 Yıl', '5 Yıl'];
+            const values = [
+                performance.oneMonth || 0,
+                performance.threeMonth || 0,
+                performance.sixMonth || 0,
+                performance.ytd || 0, 
+                performance.oneYear || 0,
+                performance.threeYear || 0,
+                performance.fiveYear || 0
+            ];
+            
+            // Determine colors based on values (positive or negative)
+            const backgroundColors = values.map(val => 
+                val >= 0 ? 'rgba(76, 175, 80, 0.6)' : 'rgba(255, 68, 68, 0.6)'
+            );
+            const borderColors = values.map(val => 
+                val >= 0 ? 'rgb(76, 175, 80)' : 'rgb(255, 68, 68)'
+            );
+            
+            // Create the chart
+            const ctx = document.getElementById('periodsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Dönem Bazında Getiri (%)',
+                        data: values,
+                        backgroundColor: backgroundColors,
+                        borderColor: borderColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(44, 44, 44, 0.9)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#444',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.parsed.y.toFixed(2)}%`;
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Dönem Bazında Performans Karşılaştırması',
+                            color: '#ffffff',
+                            font: {
+                                size: 16
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                            },
+                            ticks: {
+                                color: '#999'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                            },
+                            ticks: {
+                                color: '#999',
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         // Load the fund details when the page loads
