@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
     <meta charset="utf-8">
-    <title>Yatırım Araçları Bilgi Merkezi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yatırım Bilgileri - Portföy Yöneticisi</title>
     <style>
         body {
             margin: 0;
@@ -15,56 +16,70 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .info-container {
+        .container {
             max-width: 1200px;
             margin: 40px auto;
             padding: 20px;
+            background-color: #2c2c2c;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #444;
+        }
+
+        .home-btn {
+            background: linear-gradient(45deg, #4a60ff, #8f8fff);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .home-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        h1, h2 {
+            color: #ffffff;
+            margin-top: 0;
         }
 
         .info-tabs {
             display: flex;
-            gap: 20px;  /* Arttırıldı */
-            margin-bottom: 30px;  /* Arttırıldı */
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border-radius: 30px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         .info-tab {
-            background: rgba(74, 96, 255, 0.1);
-            border: 2px solid rgba(74, 96, 255, 0.3);  /* Kalınlık arttırıldı */
+            background: none;
+            border: none;
             color: #fff;
-            padding: 12px 40px;  /* Padding arttırıldı */
+            padding: 10px 20px;
             cursor: pointer;
             opacity: 0.7;
             transition: all 0.3s;
-            border-radius: 25px;
-            font-size: 16px;  /* Değiştirildi */
-            font-weight: 500;  /* Font kalınlığı arttırıldı */
-            letter-spacing: 0.5px;
-            text-transform: none;  /* Kaldırıldı */
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  /* Eklendi */
-        }
-
-        .info-tab:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(74, 96, 255, 0.2);
+            font-size: 16px;
         }
 
         .info-tab.active {
             opacity: 1;
-            background: rgba(74, 96, 255, 0.3);
-            border-color: rgba(74, 96, 255, 0.8);
-            box-shadow: 0 4px 20px rgba(74, 96, 255, 0.3);
-            font-weight: 600;
+            border-bottom: 2px solid #4a60ff;
         }
 
         .info-content {
             display: none;
-            animation: fadeIn 0.3s ease;
         }
 
         .info-content.active {
@@ -73,169 +88,189 @@
 
         .info-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 kolon */
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-            box-sizing: border-box;
         }
 
         .info-card {
-            background: rgba(59, 59, 59, 0.95);
-            border-radius: 12px;
-            padding: 20px;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            box-sizing: border-box;
-            width: 100%; /* Genişlik sınırlaması */
+            background: #3b3b3b;
+            border-radius: 8px;
+            padding: 15px;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .info-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
 
         .info-card h3 {
-            margin: 0 0 15px 0;
+            margin: 0 0 10px 0;
             color: #4a60ff;
-            font-size: 1.2em;
         }
 
         .info-card p {
-            margin: 10px 0;
-            font-size: 0.9em;
-            line-height: 1.6;
+            margin: 5px 0;
+            font-size: 14px;
+            line-height: 1.4;
         }
 
         .info-label {
             color: #888;
-            font-size: 0.8em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-size: 12px;
         }
 
-        .info-card a {
+        .search-section {
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            background-color: #3b3b3b;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .sort-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .sort-section label {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .sort-select {
+            padding: 8px;
+            background-color: #3b3b3b;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #fff;
+        }
+
+        a {
             color: #4a60ff;
             text-decoration: none;
-            transition: color 0.3s;
-            position: relative;
+            transition: color 0.2s;
         }
 
-        .info-card a:hover {
+        a:hover {
             color: #8f8fff;
+            text-decoration: underline;
         }
 
-        .info-card a:visited {
-            color: #4a60ff;  /* Ziyaret edilmiş linkler için de aynı renk */
+        .loader {
+            border: 5px solid #3b3b3b;
+            border-radius: 50%;
+            border-top: 5px solid #4a60ff;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
         }
 
-        .info-card a:after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 1px;
-            bottom: -2px;
-            left: 0;
-            background-color: #8f8fff;
-            transform: scaleX(0);
-            transform-origin: bottom right;
-            transition: transform 0.3s;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        .info-card a:hover:after {
-            transform: scaleX(1);
-            transform-origin: bottom left;
-        }
-
-        .back-btn {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: linear-gradient(45deg, #4a60ff, #8f8fff);
-            border: none;
-            padding: 10px 20px;
-            color: white;
-            border-radius: 20px;
-            cursor: pointer;
-            text-decoration: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .fund-details {
-            margin-top: auto;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            display: grid;
-            gap: 8px;
-        }
-
-        .fund-details p {
-            margin: 8px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            gap: 20px;
-        }
-
-        .fund-details .info-label {
-            color: #888;
-            font-size: 0.8em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            flex-shrink: 0;
-            min-width: 80px;
-        }
-
-        /* Tablet için responsive tasarım */
-        @media (max-width: 1024px) {
-            .info-grid {
-                grid-template-columns: repeat(2, 1fr); /* 2 kolon */
-            }
-        }
-
-        /* Mobil için responsive tasarım */
         @media (max-width: 768px) {
-            .info-grid {
-                grid-template-columns: 1fr; /* 1 kolon */
-                padding: 10px;
+            .container {
+                margin: 20px 10px;
+                padding: 15px;
             }
-            
-            .info-card {
-                min-height: auto;
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-tabs {
+                overflow-x: auto;
+                padding-bottom: 5px;
+                flex-wrap: nowrap;
+            }
+
+            .info-tab {
+                white-space: nowrap;
+                padding: 10px 15px;
+                font-size: 14px;
             }
         }
     </style>
 </head>
 <body>
-    <a href="index.html" class="back-btn">← Ana Sayfaya Dön</a>
-    
-    <div class="info-container">
+    <div class="container">
+        <div class="header">
+            <h1>Yatırım Bilgileri</h1>
+            <a href="index.html" class="home-btn">← Ana Sayfa</a>
+        </div>
+
         <div class="info-tabs">
-            <button class="info-tab active" onclick="showInfoTab('stocks')">Hisseler</button>
-            <button class="info-tab" onclick="showInfoTab('funds')">Fonlar</button>
+            <button class="info-tab active" onclick="showTab('funds')">Yatırım Fonları</button>
+            <button class="info-tab" onclick="showTab('stocks')">Hisse Senetleri</button>
         </div>
 
-        <div id="stocksInfo" class="info-content active">
-            <div class="info-grid" id="stocksGrid"></div>
+        <div id="funds" class="info-content active">
+            <div class="search-section">
+                <input type="text" id="fundSearch" placeholder="Fon ara (kod veya isim)" class="search-input">
+                <div class="sort-section">
+                    <label for="fundSort">Sıralama:</label>
+                    <select id="fundSort" class="sort-select" onchange="sortFunds()">
+                        <option value="code">Kod (A-Z)</option>
+                        <option value="name">İsim (A-Z)</option>
+                        <option value="company">Şirket (A-Z)</option>
+                        <option value="riskAsc">Risk (Düşükten Yükseğe)</option>
+                        <option value="riskDesc">Risk (Yüksekten Düşüğe)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="fundsLoading">
+                <div class="loader"></div>
+                <p style="text-align: center;">Fonlar yükleniyor...</p>
+            </div>
+            
+            <div id="fundsGrid" class="info-grid">
+                <!-- Fonlar burada listelenecek -->
+            </div>
         </div>
 
-        <div id="fundsInfo" class="info-content">
-            <div class="info-grid" id="fundsGrid"></div>
+        <div id="stocks" class="info-content">
+            <div class="search-section">
+                <input type="text" id="stockSearch" placeholder="Hisse ara (sembol veya isim)" class="search-input">
+                <div class="sort-section">
+                    <label for="stockSort">Sıralama:</label>
+                    <select id="stockSort" class="sort-select" onchange="sortStocks()">
+                        <option value="symbol">Sembol (A-Z)</option>
+                        <option value="name">İsim (A-Z)</option>
+                        <option value="sector">Sektör (A-Z)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="stocksLoading">
+                <div class="loader"></div>
+                <p style="text-align: center;">Hisseler yükleniyor...</p>
+            </div>
+            
+            <div id="stocksGrid" class="info-grid">
+                <!-- Hisseler burada listelenecek -->
+            </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyC5wZS1gZWWFcmxy1eTvgmQtkynK5HA3F4",
@@ -246,90 +281,247 @@
             appId: "1:597327926950:web:6077b172b0c6d68dd44667"
         };
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
-        // Sayfa yüklendiğinde bilgileri getir
-        window.addEventListener('DOMContentLoaded', loadDetailedInfo);
+        // Global değişkenler
+        let allFunds = [];
+        let allStocks = [];
 
-        async function loadDetailedInfo() {
+        // Anonim giriş yaparak yetkilendirme sağla
+        async function ensureAuthenticated() {
+            return new Promise((resolve, reject) => {
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        // Kullanıcı zaten giriş yapmış
+                        resolve();
+                    } else {
+                        // Anonim giriş yap
+                        signInAnonymously(auth)
+                            .then(() => {
+                                console.log("Anonim giriş yapıldı");
+                                resolve();
+                            })
+                            .catch((error) => {
+                                console.error("Anonim giriş hatası:", error);
+                                reject(error);
+                            });
+                    }
+                });
+            });
+        }
+
+        // Fonları yükleme - İyileştirilmiş hata yönetimi
+        async function loadFunds() {
             try {
-                await Promise.all([loadStocks(), loadFunds()]);
+                // Önce kimlik doğrulama yap
+                await ensureAuthenticated();
+                
+                const fundsGrid = document.getElementById('fundsGrid');
+                const fundsLoading = document.getElementById('fundsLoading');
+                
+                // Veriyi çek
+                const fundsSnapshot = await getDocs(collection(db, "funds"));
+                
+                allFunds = [];
+                fundsSnapshot.forEach(doc => {
+                    allFunds.push(doc.data());
+                });
+                
+                displayFunds(allFunds);
+                fundsLoading.style.display = 'none';
             } catch (error) {
-                console.error("Bilgiler yüklenirken hata:", error);
+                console.error("Fonlar yüklenirken hata:", error);
+                document.getElementById('fundsLoading').style.display = 'none';
+                document.getElementById('fundsGrid').innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 20px; background-color: rgba(255,68,68,0.1); border-radius: 8px; border: 1px solid #ff4444;">
+                        <h3 style="color: #ff4444;">Fonlar yüklenirken bir hata oluştu</h3>
+                        <p>${error.message || 'Beklenmeyen bir hata oluştu'}</p>
+                        <p>Bu genellikle veritabanı izinleri ile ilgili bir sorundur. Lütfen daha sonra tekrar deneyin veya site yöneticisiyle iletişime geçin.</p>
+                        <button onclick="window.location.reload()" style="background: linear-gradient(45deg, #4a60ff, #8f8fff); border: none; color: white; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-top: 10px;">Tekrar Dene</button>
+                    </div>`;
             }
         }
 
+        // Hisseleri yükleme - İyileştirilmiş hata yönetimi
         async function loadStocks() {
-            const stocksGrid = document.getElementById('stocksGrid');
-            const snapshot = await getDocs(collection(db, "stocks"));
-            
-            stocksGrid.innerHTML = '';
-            snapshot.forEach(doc => {
-                const stock = doc.data();
-                let cardContent = `
-                    <div class="info-card">
-                        <h3>${stock.symbol} - ${stock.name}</h3>`;
+            try {
+                // Önce kimlik doğrulama yap
+                await ensureAuthenticated();
                 
-                if (stock.description) {
-                    cardContent += `<p>${stock.description}</p>`;
-                }
+                const stocksGrid = document.getElementById('stocksGrid');
+                const stocksLoading = document.getElementById('stocksLoading');
                 
-                if (stock.sector) {
-                    cardContent += `<p><span class="info-label">Sektör:</span> ${stock.sector}</p>`;
-                }
+                // Veriyi çek
+                const stocksSnapshot = await getDocs(collection(db, "stocks"));
                 
-                if (stock.website) {
-                    cardContent += `<p><span class="info-label">Website:</span> 
-                        <a href="${stock.website}" target="_blank">${stock.website}</a>
-                    </p>`;
-                }
+                allStocks = [];
+                stocksSnapshot.forEach(doc => {
+                    allStocks.push(doc.data());
+                });
                 
-                cardContent += `</div>`;
-                stocksGrid.innerHTML += cardContent;
-            });
+                displayStocks(allStocks);
+                stocksLoading.style.display = 'none';
+            } catch (error) {
+                console.error("Hisseler yüklenirken hata:", error);
+                document.getElementById('stocksLoading').style.display = 'none';
+                document.getElementById('stocksGrid').innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 20px; background-color: rgba(255,68,68,0.1); border-radius: 8px; border: 1px solid #ff4444;">
+                        <h3 style="color: #ff4444;">Hisseler yüklenirken bir hata oluştu</h3>
+                        <p>${error.message || 'Beklenmeyen bir hata oluştu'}</p>
+                        <p>Bu genellikle veritabanı izinleri ile ilgili bir sorundur. Lütfen daha sonra tekrar deneyin veya site yöneticisiyle iletişime geçin.</p>
+                        <button onclick="window.location.reload()" style="background: linear-gradient(45deg, #4a60ff, #8f8fff); border: none; color: white; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-top: 10px;">Tekrar Dene</button>
+                    </div>`;
+            }
         }
 
-        async function loadFunds() {
+        // Fonları görüntüleme
+        function displayFunds(funds) {
             const fundsGrid = document.getElementById('fundsGrid');
-            const snapshot = await getDocs(collection(db, "funds"));
-            
             fundsGrid.innerHTML = '';
-            snapshot.forEach(doc => {
-                const fund = doc.data();
-                let cardContent = `
+            
+            if (funds.length === 0) {
+                fundsGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Hiç fon bulunamadı</p>';
+                return;
+            }
+            
+            funds.forEach(fund => {
+                fundsGrid.innerHTML += `
                     <div class="info-card">
-                        <h3>${fund.code} - ${fund.name}</h3>`;
-                
-                if (fund.description) {
-                    cardContent += `<p>${fund.description}</p>`;
-                }
-                
-                let details = '';
-                if (fund.type || fund.company || fund.risk) {
-                    details += '<div class="fund-details">';
-                    if (fund.type) details += `<p><span class="info-label">Tür:</span> ${fund.type}</p>`;
-                    if (fund.company) details += `<p><span class="info-label">Şirket:</span> ${fund.company}</p>`;
-                    if (fund.risk) details += `<p><span class="info-label">Risk:</span> ${fund.risk}/5</p>`;
-                    details += '</div>';
-                    cardContent += details;
-                }
-                
-                cardContent += `</div>`;
-                fundsGrid.innerHTML += cardContent;
+                        <h3>
+                            <a href="fund-details.html?code=${fund.code}">
+                                ${fund.code} - ${fund.name}
+                            </a>
+                        </h3>
+                        <p>${fund.description?.substring(0, 150) || 'Açıklama bulunmuyor'}${fund.description?.length > 150 ? '...' : ''}</p>
+                        <p><span class="info-label">Tür:</span> ${fund.type || 'Belirtilmemiş'}</p>
+                        <p><span class="info-label">Şirket:</span> ${fund.company || 'Belirtilmemiş'}</p>
+                        <p><span class="info-label">Risk Seviyesi:</span> ${fund.risk || 'Belirtilmemiş'}</p>
+                    </div>
+                `;
             });
         }
 
-        window.showInfoTab = function(tabName) {
+        // Hisseleri görüntüleme
+        function displayStocks(stocks) {
+            const stocksGrid = document.getElementById('stocksGrid');
+            stocksGrid.innerHTML = '';
+            
+            if (stocks.length === 0) {
+                stocksGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Hiç hisse bulunamadı</p>';
+                return;
+            }
+            
+            stocks.forEach(stock => {
+                stocksGrid.innerHTML += `
+                    <div class="info-card">
+                        <h3>${stock.symbol} - ${stock.name}</h3>
+                        <p>${stock.description?.substring(0, 150) || 'Açıklama bulunmuyor'}${stock.description?.length > 150 ? '...' : ''}</p>
+                        <p><span class="info-label">Sektör:</span> ${stock.sector || 'Belirtilmemiş'}</p>
+                        <p><span class="info-label">Website:</span> 
+                            ${stock.website ? `<a href="${stock.website}" target="_blank">${stock.website}</a>` : 'Belirtilmemiş'}
+                        </p>
+                    </div>
+                `;
+            });
+        }
+
+        // Fonları filtreleme
+        document.getElementById('fundSearch').addEventListener('input', function(e) {
+            const searchText = e.target.value.toLowerCase();
+            const filteredFunds = allFunds.filter(fund => 
+                fund.code?.toLowerCase().includes(searchText) || 
+                fund.name?.toLowerCase().includes(searchText) ||
+                fund.company?.toLowerCase().includes(searchText) ||
+                fund.type?.toLowerCase().includes(searchText)
+            );
+            displayFunds(filteredFunds);
+        });
+
+        // Hisseleri filtreleme
+        document.getElementById('stockSearch').addEventListener('input', function(e) {
+            const searchText = e.target.value.toLowerCase();
+            const filteredStocks = allStocks.filter(stock => 
+                stock.symbol?.toLowerCase().includes(searchText) || 
+                stock.name?.toLowerCase().includes(searchText) ||
+                stock.sector?.toLowerCase().includes(searchText)
+            );
+            displayStocks(filteredStocks);
+        });
+
+        // Fonları sıralama
+        window.sortFunds = function() {
+            const sortOption = document.getElementById('fundSort').value;
+            let sortedFunds = [...allFunds];
+            
+            switch (sortOption) {
+                case 'code':
+                    sortedFunds.sort((a, b) => (a.code || '').localeCompare(b.code || ''));
+                    break;
+                case 'name':
+                    sortedFunds.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+                    break;
+                case 'company':
+                    sortedFunds.sort((a, b) => (a.company || '').localeCompare(b.company || ''));
+                    break;
+                case 'riskAsc':
+                    sortedFunds.sort((a, b) => (parseInt(a.risk) || 0) - (parseInt(b.risk) || 0));
+                    break;
+                case 'riskDesc':
+                    sortedFunds.sort((a, b) => (parseInt(b.risk) || 0) - (parseInt(a.risk) || 0));
+                    break;
+            }
+            
+            displayFunds(sortedFunds);
+        };
+
+        // Hisseleri sıralama
+        window.sortStocks = function() {
+            const sortOption = document.getElementById('stockSort').value;
+            let sortedStocks = [...allStocks];
+            
+            switch (sortOption) {
+                case 'symbol':
+                    sortedStocks.sort((a, b) => (a.symbol || '').localeCompare(b.symbol || ''));
+                    break;
+                case 'name':
+                    sortedStocks.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+                    break;
+                case 'sector':
+                    sortedStocks.sort((a, b) => (a.sector || '').localeCompare(b.sector || ''));
+                    break;
+            }
+            
+            displayStocks(sortedStocks);
+        };
+
+        // Tab değiştirme
+        window.showTab = function(tabName) {
             document.querySelectorAll('.info-content').forEach(content => {
                 content.classList.remove('active');
             });
             document.querySelectorAll('.info-tab').forEach(tab => {
                 tab.classList.remove('active');
             });
-            document.getElementById(`${tabName}Info`).classList.add('active');
-            document.querySelector(`.info-tab[onclick="showInfoTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+            document.querySelector(`.info-tab[onclick="showTab('${tabName}')"]`).classList.add('active');
+
+            if (tabName === 'stocks' && allStocks.length === 0) {
+                loadStocks();
+            }
         };
+
+        // Sayfa yüklendiğinde çalışacak kod - Hata yönetimi ile güçlendirildi
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await loadFunds();
+            } catch (error) {
+                console.error("Sayfa yüklenirken hata:", error);
+                // Zaten loadFunds içinde hata mesajı gösteriliyor
+            }
+        });
     </script>
 </body>
 </html>

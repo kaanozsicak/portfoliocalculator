@@ -1167,7 +1167,7 @@ async function loadDetailedInfo() {
             `;
         });
 
-        // Fonları yükle
+        // Fonları yükle - link eklendi
         const fundsSnapshot = await getDocs(collection(db, "funds"));
         const fundsGrid = document.getElementById('fundsGrid');
         fundsGrid.innerHTML = '';
@@ -1176,7 +1176,11 @@ async function loadDetailedInfo() {
             const fund = doc.data();
             fundsGrid.innerHTML += `
                 <div class="info-card">
-                    <h3>${fund.code} - ${fund.name}</h3>
+                    <h3>
+                        <a href="fund-details.html?code=${fund.code}" style="color: #4a60ff; text-decoration: none;">
+                            ${fund.code} - ${fund.name}
+                        </a>
+                    </h3>
                     <p>${fund.description || 'Açıklama bulunmuyor'}</p>
                     <p><span class="info-label">Tür:</span> ${fund.type || 'Belirtilmemiş'}</p>
                     <p><span class="info-label">Şirket:</span> ${fund.company || 'Belirtilmemiş'}</p>
@@ -1258,7 +1262,7 @@ function showInfoTab(tabName) {
                 }
             });
 
-            // Fonları yükle
+            // Fonları yükle - detaylı bilgi için data attribute ekle
             const fundsSnapshot = await getDocs(collection(db, "funds"));
             fundsSnapshot.forEach(doc => {
                 const fund = doc.data();
@@ -1266,9 +1270,24 @@ function showInfoTab(tabName) {
                     const option = document.createElement('option');
                     option.value = fund.code;
                     option.textContent = `${fund.code} - ${fund.name}`;
+                    option.setAttribute('data-fundcode', fund.code);
                     fundSelect.appendChild(option);
                 }
             });
+
+            // Fon seçim kutusuna çift tıklama olayı ekle
+            fundSelect.addEventListener('dblclick', function(e) {
+                const selectedFund = fundSelect.options[fundSelect.selectedIndex];
+                const fundCode = selectedFund.getAttribute('data-fundcode');
+                if (fundCode) {
+                    window.open(`fund-details.html?code=${fundCode}`, '_blank');
+                }
+            });
+            
+            // Bilgilendirme ekle
+            const infoSpan = document.createElement('span');
+            infoSpan.innerHTML = `<small style="color: #999; margin-left: 10px;">Fon detayları için çift tıklayın</small>`;
+            fundSelect.parentNode.appendChild(infoSpan);
 
         } catch (error) {
             console.error("Hisse ve fon yükleme hatası:", error);
@@ -1420,6 +1439,60 @@ function showInfoTab(tabName) {
             alert("Çıkış yapılırken bir hata oluştu: " + error.message);
         }
     });
+</script>
+<script>
+// URL parametrelerini kontrol eden ve yeni eklenen fon için işlem yapan fonksiyon
+function checkUrlParamsForFundAdd() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const action = urlParams.get('action');
+    
+    if (action === 'addFund') {
+        const fundCode = urlParams.get('code');
+        const fundName = urlParams.get('name');
+        const fundValue = urlParams.get('value');
+        
+        if (fundCode && fundName && fundValue) {
+            // Yeni portföy oluştur veya mevcut portföye ekle
+            const portfolioId = createNewPortfolio();
+            
+            // Değer tipini fon olarak ayarla
+            const valueTypeSelect = document.getElementById(`valueType${portfolioId}`);
+            if (valueTypeSelect) {
+                valueTypeSelect.value = 'fund';
+                handleValueTypeChange(portfolioId);
+            }
+            
+            setTimeout(() => {
+                // Diğer fonkun yüklenmesini bekleyelim
+                const fundSelect = document.getElementById(`fundSelect${portfolioId}`);
+                if (fundSelect) {
+                    // Fonu seç
+                    for (let i = 0; i < fundSelect.options.length; i++) {
+                        if (fundSelect.options[i].value === fundCode) {
+                            fundSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                    // Değer adını güncelle
+                    updateValueName(portfolioId, 'fund');
+                    
+                    // Değer ve yüzde alanlarını doldur
+                    document.getElementById(`valueValue${portfolioId}`).value = fundValue;
+                    document.getElementById(`valuePercent${portfolioId}`).value = '100';
+                    
+                    // Fonu ekle
+                    addValue(portfolioId);
+                    
+                    // URL'i temizle
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }, 500);
+        }
+    }
+}
+
+// Sayfa yüklendiğinde URL parametrelerini kontrol et
+document.addEventListener('DOMContentLoaded', checkUrlParamsForFundAdd);
 </script>
 <button type="button" class="add-portfolio-btn" onclick="createNewPortfolio()">Yeni Portföy Ekle</button>
 </body>

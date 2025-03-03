@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fon Detayları - Portföy Yöneticisi</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('https://d.pusulahaber.com.tr/news/553733.jpg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #2c2c2c;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #444;
+        }
+
+        .fund-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .fund-title h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        .fund-code {
+            background: linear-gradient(45deg, #4a60ff, #8f8fff);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .fund-metrics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .metric-card {
+            background-color: #3b3b3b;
+            padding: 15px;
+            border-radius: 8px;
+            min-width: 150px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .metric-title {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .positive-change {
+            color: #4CAF50;
+        }
+
+        .negative-change {
+            color: #ff4444;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 15px;
+            margin: 25px 0 15px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+        }
+
+        .tab {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 8px 15px;
+            opacity: 0.7;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            opacity: 1;
+            border-bottom: 3px solid #4a60ff;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px 0;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .chart-container {
+            background: #333;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            height: 350px;
+            position: relative;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #fff;
+        }
+
+        th {
+            background-color: #333;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid #444;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #444;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(59, 59, 59, 0.5);
+        }
+
+        .info-section {
+            margin: 25px 0;
+            padding: 20px;
+            background-color: #333;
+            border-radius: 8px;
+        }
+
+        .info-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #4a60ff;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            color: #999;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-weight: bold;
+        }
+
+        .home-btn {
+            background: linear-gradient(45deg, #4a60ff, #8f8fff);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .home-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .portfolio-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .portfolio-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* Fund details specific styles */
+        .fund-details {
+            margin: 20px 0;
+        }
+
+        .fund-description {
+            line-height: 1.6;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #333;
+            border-radius: 8px;
+        }
+
+        .performance-periods {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .period-btn {
+            background: #3b3b3b;
+            border: 1px solid #444;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .period-btn.active {
+            background: linear-gradient(45deg, #4a60ff, #8f8fff);
+            border: 1px solid #4a60ff;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 1.2rem;
+        }
+
+        .distribution-chart {
+            width: 100%;
+            height: 250px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                margin: 20px 10px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .tabs {
+                overflow-x: auto;
+                padding-bottom: 5px;
+            }
+
+            .metric-card {
+                min-width: 120px;
+            }
+
+            .fund-metrics {
+                flex-direction: column;
+            }
+        }
+
+        /* Style for error messages */
+        .error-message {
+            background-color: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff4444;
+            padding: 10px;
+            border-radius: 5px;
+            color: #ff4444;
+            margin: 20px 0;
+        }
+
+        /* Loader styles */
+        .loader {
+            border: 5px solid #3b3b3b;
+            border-radius: 50%;
+            border-top: 5px solid #4a60ff;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <!-- TEFAS API referansını kaldırıp demo API'yi ekle -->
+    <script src="demo-funds-api.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <a href="index.html" class="home-btn">← Ana Sayfa</a>
+                <button id="addToPortfolioBtn" class="portfolio-btn">Portföye Ekle</button>
+            </div>
+        </div>
+
+        <div id="fundDetailsLoading">
+            <div class="loader"></div>
+            <p style="text-align: center;">Fon bilgileri yükleniyor...</p>
+        </div>
+
+        <div id="fundDetailsContent" style="display:none;">
+            <div class="fund-title">
+                <h1 id="fundName">Fon Adı</h1>
+                <span id="fundCode" class="fund-code">FON</span>
+            </div>
+
+            <div class="fund-description" id="fundDescription">
+                Fon açıklaması yükleniyor...
+            </div>
+
+            <div class="fund-metrics">
+                <div class="metric-card">
+                    <div class="metric-title">Günlük Değişim</div>
+                    <div id="dailyChange" class="metric-value">0.00%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Haftalık Değişim</div>
+                    <div id="weeklyChange" class="metric-value">0.00%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Aylık Değişim</div>
+                    <div id="monthlyChange" class="metric-value">0.00%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Yıllık Değişim</div>
+                    <div id="yearlyChange" class="metric-value">0.00%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Son Fiyat</div>
+                    <div id="lastPrice" class="metric-value">0.00 ₺</div>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('performance')">Performans</button>
+                <button class="tab" onclick="showTab('historical')">Geçmiş Veriler</button>
+                <button class="tab" onclick="showTab('info')">Fon Bilgileri</button>
+                <button class="tab" onclick="showTab('distribution')">Dağılım</button>
+            </div>
+
+            <div id="performance" class="tab-content active">
+                <div class="performance-periods">
+                    <button class="period-btn active" onclick="changePeriod('1M')">1A</button>
+                    <button class="period-btn" onclick="changePeriod('1W')">1H</button>
+                    <button class="period-btn" onclick="changePeriod('1M')">1A</button>
+                    <button class="period-btn" onclick="changePeriod('3M')">3A</button>
+                    <button class="period-btn" onclick="changePeriod('6M')">6A</button>
+                    <button class="period-btn" onclick="changePeriod('1Y')">1Y</button>
+                    <button class="period-btn" onclick="changePeriod('MAX')">MAX</button>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                    <div class="loading" id="chartLoading">Grafik yükleniyor...</div>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-title">Performans İstatistikleri</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Son 30 Gündeki En Yüksek Değer</div>
+                            <div class="info-value" id="maxValue30">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Son 30 Gündeki En Düşük Değer</div>
+                            <div class="info-value" id="minValue30">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Ortalama Günlük Getiri</div>
+                            <div class="info-value" id="avgDailyReturn">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Standart Sapma</div>
+                            <div class="info-value" id="stdDeviation">--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="historical" class="tab-content">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tarih</th>
+                                <th>Fiyat (₺)</th>
+                                <th>Günlük Değişim</th>
+                                <th>Hacim (₺)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historicalData">
+                            <tr>
+                                <td colspan="4" style="text-align: center;">Veri yükleniyor...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="info" class="tab-content">
+                <div class="info-section">
+                    <div class="info-title">Genel Bilgiler</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Fon Türü</div>
+                            <div class="info-value" id="fundType">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Kurucu</div>
+                            <div class="info-value" id="fundFounder">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Yönetici</div>
+                            <div class="info-value" id="fundManager">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Risk Değeri</div>
+                            <div class="info-value" id="fundRisk">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Kuruluş Tarihi</div>
+                            <div class="info-value" id="fundDate">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Toplam Değer</div>
+                            <div class="info-value" id="totalValue">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Pay Sayısı</div>
+                            <div class="info-value" id="shareCount">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Yönetim Ücreti</div>
+                            <div class="info-value" id="managementFee">--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="distribution" class="tab-content">
+                <div class="chart-container">
+                    <canvas id="assetDistributionChart"></canvas>
+                    <div class="loading" id="distributionLoading">Grafik yükleniyor...</div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="sectorDistributionChart"></canvas>
+                    <div class="loading" id="sectorLoading">Grafik yükleniyor...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+        import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC5wZS1gZWWFcmxy1eTvgmQtkynK5HA3F4",
+            authDomain: "portfoilocalculator.firebaseapp.com",
+            projectId: "portfoilocalculator",
+            storageBucket: "portfoilocalculator.firebasestorage.app",
+            messagingSenderId: "597327926950",
+            appId: "1:597327926950:web:6077b172b0c6d68dd44667"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Anonim giriş yaparak yetkilendirme sağla
+        async function ensureAuthenticated() {
+            return new Promise((resolve, reject) => {
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        // Kullanıcı zaten giriş yapmış
+                        resolve(user);
+                    } else {
+                        // Anonim giriş yap
+                        signInAnonymously(auth)
+                            .then((userCredential) => {
+                                console.log("Anonim giriş yapıldı");
+                                resolve(userCredential.user);
+                            })
+                            .catch((error) => {
+                                console.error("Anonim giriş hatası:", error);
+                                reject(error);
+                            });
+                    }
+                });
+            });
+        }
+
+        // Function to fetch fund details from Firebase
+        async function loadFundDetails() {
+            try {
+                // Kimlik doğrulama yap
+                await ensureAuthenticated();
+                
+                const params = getUrlParams();
+                const fundCode = params.code;
+                
+                if (!fundCode) {
+                    throw new Error("Fon kodu belirtilmedi");
+                }
+                
+                // Query the funds collection with the specified code
+                const fundsRef = collection(db, "funds");
+                const q = query(fundsRef, where("code", "==", fundCode));
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) {
+                    throw new Error(`${fundCode} kodlu fon bulunamadı`);
+                }
+                
+                // Get the fund data from Firebase
+                const fund = querySnapshot.docs[0].data();
+                
+                // Demo API'den fon detaylarını al
+                try {
+                    // Demo fon detaylarını al
+                    const demoData = await demoFundsAPI.getFundDetails(fundCode);
+                    
+                    // Demo verileri Firebase verileriyle birleştir
+                    if (demoData) {
+                        fund.lastPrice = demoData.last_price;
+                        fund.priceDate = demoData.price_date;
+                        fund.dailyChange = demoData.daily_change;
+                        fund.weeklyChange = demoData.weekly_change;
+                        fund.monthlyChange = demoData.monthly_change;
+                        fund.annualChange = demoData.annual_change;
+                        fund.fundSize = demoData.fund_size;
+                        fund.riskCategory = demoData.risk_category;
+                        fund.manager = demoData.manager;
+                        fund.inceptionDate = demoData.inception_date;
+                    }
+
+                    // Demo fiyat geçmişi verilerini al
+                    const historyData = await demoFundsAPI.getFundPriceHistory(fundCode);
+                    if (historyData && historyData.history) {
+                        fund.priceHistory = historyData.history;
+                    }
+                } catch (demoError) {
+                    console.warn("Demo veriler alınamadı:", demoError);
+                    // Hata durumunda fonun gösterilmesi için devam ediyoruz
+                }
+                
+                // Display the fund details
+                displayFundDetails(fund);
+                
+                // Load historical data
+                if (fund.priceHistory) {
+                    displayHistoricalData(fund.priceHistory);
+                } else {
+                    loadDemoHistoricalData();
+                }
+                
+                // Show the content
+                document.getElementById('fundDetailsLoading').style.display = 'none';
+                document.getElementById('fundDetailsContent').style.display = 'block';
+                
+            } catch (error) {
+                console.error("Error loading fund details:", error);
+                document.getElementById('fundDetailsLoading').style.display = 'none';
+                
+                const container = document.querySelector('.container');
+                const errorElement = document.createElement('div');
+                errorElement.className = 'error-message';
+                errorElement.innerHTML = `
+                    <p><strong>Hata:</strong> ${error.message}</p>
+                    <p>Ana sayfaya dönmek için <a href="index.html">buraya tıklayın</a>.</p>
+                    <button onclick="window.location.reload()" style="background: linear-gradient(45deg, #4a60ff, #8f8fff); border: none; color: white; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-top: 10px;">Tekrar Dene</button>
+                `;
+                container.appendChild(errorElement);
+            }
+        }
+
+        // Function to get URL parameters - DÜZELTME
+        function getUrlParams() {
+            const params = {};
+            const queryString = window.location.search.substring(1);
+            const pairs = queryString.split('&');
+            
+            for (let i = 0; i < pairs.length; i++) {
+                if (!pairs[i]) continue;
+                const pair = pairs[i].split('=');
+                params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+            }
+            
+            return params;
+        }
+
+        // Function to display fund details with real data when available
+        function displayFundDetails(fund) {
+            // Set basic fund information
+            document.getElementById('fundName').textContent = fund.name || 'Fon Adı';
+            document.getElementById('fundCode').textContent = fund.code || 'FON';
+            document.getElementById('fundDescription').textContent = fund.description || 'Fon açıklaması bulunmuyor.';
+            
+            // Set fund details in the info tab with real TEFAS data when available
+            document.getElementById('fundType').textContent = fund.type || '--';
+            document.getElementById('fundFounder').textContent = fund.company || '--';
+            document.getElementById('fundManager').textContent = fund.manager || fund.company || '--';
+            document.getElementById('fundRisk').textContent = fund.riskCategory || fund.risk || '--';
+            document.getElementById('fundDate').textContent = fund.inceptionDate || 'Belirtilmemiş';
+            document.getElementById('totalValue').textContent = fund.fundSize || 'Belirtilmemiş';
+            document.getElementById('shareCount').textContent = '-- Adet';  // This info might not be available from TEFAS
+            document.getElementById('managementFee').textContent = '%' + (fund.managementFee || '2.5'); // Default value if not available
+            
+            // Set metrics with real data or generate random data as fallback
+            let dailyChange = fund.dailyChange;
+            let weeklyChange = fund.weeklyChange;
+            let monthlyChange = fund.monthlyChange;
+            let yearlyChange = fund.annualChange;
+            let lastPrice = fund.lastPrice;
+
+            // Convert string percentages to numbers and clean up
+            if (dailyChange) dailyChange = parseFloat(dailyChange.replace('%', '').replace(',', '.'));
+            if (weeklyChange) weeklyChange = parseFloat(weeklyChange.replace('%', '').replace(',', '.'));
+            if (monthlyChange) monthlyChange = parseFloat(monthlyChange.replace('%', '').replace(',', '.'));
+            if (yearlyChange) yearlyChange = parseFloat(yearlyChange.replace('%', '').replace(',', '.'));
+            if (lastPrice) lastPrice = parseFloat(lastPrice.replace('TL', '').replace(',', '.').trim());
+            
+            // If real data is not available, generate random values
+            if (!dailyChange) dailyChange = (Math.random() * 4 - 2).toFixed(2);
+            if (!weeklyChange) weeklyChange = (Math.random() * 8 - 4).toFixed(2);
+            if (!monthlyChange) monthlyChange = (Math.random() * 12 - 5).toFixed(2);
+            if (!yearlyChange) yearlyChange = (Math.random() * 30 - 10).toFixed(2);
+            if (!lastPrice) lastPrice = (Math.random() * 10 + 1).toFixed(4);
+            
+            // Set values and classes for display
+            document.getElementById('dailyChange').textContent = `${dailyChange}%`;
+            document.getElementById('dailyChange').className = `metric-value ${dailyChange >= 0 ? 'positive-change' : 'negative-change'}`;
+            
+            document.getElementById('weeklyChange').textContent = `${weeklyChange}%`;
+            document.getElementById('weeklyChange').className = `metric-value ${weeklyChange >= 0 ? 'positive-change' : 'negative-change'}`;
+            
+            document.getElementById('monthlyChange').textContent = `${monthlyChange}%`;
+            document.getElementById('monthlyChange').className = `metric-value ${monthlyChange >= 0 ? 'positive-change' : 'negative-change'}`;
+            
+            document.getElementById('yearlyChange').textContent = `${yearlyChange}%`;
+            document.getElementById('yearlyChange').className = `metric-value ${yearlyChange >= 0 ? 'positive-change' : 'negative-change'}`;
+            
+            document.getElementById('lastPrice').textContent = `${lastPrice} ₺`;
+            
+            // Performance statistics
+            document.getElementById('maxValue30').textContent = `${(parseFloat(lastPrice) * 1.1).toFixed(4)} ₺`;
+            document.getElementById('minValue30').textContent = `${(parseFloat(lastPrice) * 0.9).toFixed(4)} ₺`;
+            document.getElementById('avgDailyReturn').textContent = `${(dailyChange / 30).toFixed(2)}%`;
+            document.getElementById('stdDeviation').textContent = `${(Math.random() * 1.5).toFixed(2)}%`;
+            
+            // Initialize charts with real data if available, otherwise use demo data
+            if (fund.priceHistory) {
+                initializePerformanceChartWithRealData(fund.priceHistory);
+            } else {
+                initializePerformanceChart();
+            }
+            
+            initializeDistributionCharts();
+        }
+
+        // Function to display historical data from TEFAS
+        function displayHistoricalData(historyData) {
+            const historicalData = document.getElementById('historicalData');
+            historicalData.innerHTML = '';
+            
+            // Sort data by date in descending order
+            const sortedData = [...historyData].sort((a, b) => {
+                return new Date(b.TARIH) - new Date(a.TARIH);
+            });
+            
+            // Generate the HTML for the table
+            sortedData.forEach((item, index) => {
+                if (index > 30) return; // Only show the last 30 days
+                
+                const date = item.TARIH;
+                const price = parseFloat(item.FONFTD).toFixed(4);
+                
+                // Calculate daily change
+                let dailyChange = 0;
+                let dailyChangeClass = '';
+                
+                if (index < sortedData.length - 1) {
+                    const previousPrice = parseFloat(sortedData[index + 1].FONFTD);
+                    dailyChange = ((price - previousPrice) / previousPrice) * 100;
+                    dailyChangeClass = dailyChange >= 0 ? 'positive-change' : 'negative-change';
+                }
+                
+                // Estimate volume (this is made up as TEFAS doesn't provide this)
+                const volume = Math.floor(Math.random() * 1000000) + 500000;
+                
+                historicalData.innerHTML += `<tr>
+                    <td>${formatTurkishDate(date)}</td>
+                    <td>${price} ₺</td>
+                    <td class="${dailyChangeClass}">${dailyChange.toFixed(2)}%</td>
+                    <td>${volume.toLocaleString()} ₺</td>
+                </tr>`;
+            });
+        }
+
+        // Function to format Turkish date
+        function formatTurkishDate(dateString) {
+            const date = new Date(dateString);
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}.${month}.${year}`;
+        }
+
+        // Function to load demo historical data if real data is not available
+        function loadDemoHistoricalData() {
+            const historicalData = document.getElementById('historicalData');
+            const now = new Date();
+            let price = 5 + Math.random() * 5; // Starting price between 5-10
+            let html = '';
+            
+            // Generate data for the last 30 days
+            for (let i = 30; i >= 0; i--) {
+                const date = new Date(now);
+                date.setDate(date.getDate() - i);
+                
+                // Add some random price movement
+                const dailyChange = Math.random() * 0.06 - 0.03; // -3% to +3% daily change
+                price = price * (1 + dailyChange);
+                
+                const volume = Math.floor(Math.random() * 1000000) + 500000; // Random volume between 500K and 1.5M
+                
+                html += `<tr>
+                    <td>${formatDate(date)}</td>
+                    <td>${price.toFixed(4)} ₺</td>
+                    <td class="${dailyChange >= 0 ? 'positive-change' : 'negative-change'}">${(dailyChange * 100).toFixed(2)}%</td>
+                    <td>${volume.toLocaleString()} ₺</td>
+                </tr>`;
+            }
+            
+            historicalData.innerHTML = html;
+        }
+
+        // Initialize performance chart with real data
+        function initializePerformanceChartWithRealData(historyData) {
+            // Hide loading indicator
+            document.getElementById('chartLoading').style.display = 'none';
+            
+            // Prepare data for the chart
+            const dates = [];
+            const prices = [];
+            
+            // Sort data by date in ascending order
+            const sortedData = [...historyData].sort((a, b) => {
+                return new Date(a.TARIH) - new Date(b.TARIH);
+            });
+            
+            // Extract dates and prices
+            sortedData.forEach(item => {
+                dates.push(formatTurkishDate(item.TARIH));
+                prices.push(parseFloat(item.FONFTD));
+            });
+            
+            // Create the chart
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            window.performanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Fon Fiyatı (₺)',
+                        data: prices,
+                        borderColor: '#4a60ff',
+                        backgroundColor: 'rgba(74, 96, 255, 0.1)',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        pointHoverRadius: 5,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(44, 44, 44, 0.9)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#444',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return `Fiyat: ${context.parsed.y.toFixed(4)} ₺`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                            },
+                            ticks: {
+                                color: '#999',
+                                maxTicksLimit: 10
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                            },
+                            ticks: {
+                                color: '#999',
+                                callback: function(value) {
+                                    return value.toFixed(2) + ' ₺';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Function to initialize performance chart
+        function initializePerformanceChart() {
+            // Create sample data
+            const dates = [];
+            const prices = [];
+            
+            // Generate data for the last 30 days
+            const now = new Date();
+            let price = 5 + Math.random() * 5; // Starting price between 5-10
+            
+            for (let i = 30; i >= 0; i--) {
+                const date = new Date(now);
+                date.setDate(date.getDate() - i);
+                dates.push(formatDate(date));
+                
+                // Add some random price movement
+                price = price * (1 + (Math.random() * 0.06 - 0.03)); // -3% to +3% daily change
+                prices.push(price);
+            }
+            
+            // Hide loading indicator
+            document.getElementById('chartLoading').style.display = 'none';
+            
+            // Create the chart
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            window.performanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Fon Fiyatı (₺)',
+                        data: prices,
+                        borderColor: '#4a60ff',
+                        backgroundColor: 'rgba(74, 96, 255, 0.1)',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        pointHoverRadius: 5,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(44, 44, 44, 0.9)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#444',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return `Fiyat: ${context.parsed.y.toFixed(4)} ₺`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                            },
+                            ticks: {
+                                color: '#999',
+                                maxTicksLimit: 10
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                            },
+                            ticks: {
+                                color: '#999',
+                                callback: function(value) {
+                                    return value.toFixed(2) + ' ₺';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Function to initialize distribution charts
+        function initializeDistributionCharts() {
+            // Hide loading indicators
+            document.getElementById('distributionLoading').style.display = 'none';
+            document.getElementById('sectorLoading').style.display = 'none';
+            
+            // Asset Distribution Chart
+            const assetCtx = document.getElementById('assetDistributionChart').getContext('2d');
+            new Chart(assetCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Hisse Senedi', 'Tahvil/Bono', 'Ters Repo', 'Yabancı Menkul', 'Diğer'],
+                    datasets: [{
+                        data: [40, 25, 15, 12, 8],
+                        backgroundColor: [
+                            '#4a60ff', '#8f8fff', '#45a049', '#ff9900', '#ff4444'
+                        ],
+                        borderColor: '#2c2c2c',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: '#ffffff',
+                                padding: 15
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Varlık Dağılımı',
+                            color: '#ffffff',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(44, 44, 44, 0.9)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#444',
+                            borderWidth: 1
+                        }
+                    }
+                }
+            });
+            
+            // Sector Distribution Chart
+            const sectorCtx = document.getElementById('sectorDistributionChart').getContext('2d');
+            new Chart(sectorCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Bankacılık', 'Teknoloji', 'Enerji', 'Sağlık', 'Perakende', 'Diğer'],
+                    datasets: [{
+                        data: [30, 20, 15, 12, 10, 13],
+                        backgroundColor: [
+                            '#4a60ff', '#8f8fff', '#45a049', '#ff9900', '#ff4444', '#9c27b0'
+                        ],
+                        borderColor: '#2c2c2c',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: '#ffffff',
+                                padding: 15
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Sektör Dağılımı',
+                            color: '#ffffff',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(44, 44, 44, 0.9)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#444',
+                            borderWidth: 1
+                        }
+                    }
+                }
+            });
+        }
+
+        // Function to change the chart period with demo data
+        window.changePeriod = async function(period) {
+            // Update active button
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Show loading indicator
+            document.getElementById('chartLoading').style.display = 'block';
+            
+            // Get fund code from URL
+            const params = getUrlParams();
+            const fundCode = params.code;
+            
+            try {
+                // Demo fiyat geçmişi verilerini al
+                const historyData = await demoFundsAPI.getFundPriceHistory(fundCode);
+                
+                if (historyData && historyData.history) {
+                    // Filter data based on selected period
+                    const now = new Date();
+                    let startDate = new Date();
+                    
+                    switch(period) {
+                        case '1W': startDate.setDate(now.getDate() - 7); break;
+                        case '1M': startDate.setMonth(now.getMonth() - 1); break;
+                        case '3M': startDate.setMonth(now.getMonth() - 3); break;
+                        case '6M': startDate.setMonth(now.getMonth() - 6); break;
+                        case '1Y': startDate.setFullYear(now.getFullYear() - 1); break;
+                        case 'MAX': startDate = new Date(0); break;
+                    }
+                    
+                    // Filter the data
+                    const filteredData = historyData.history.filter(item => {
+                        const itemDate = new Date(item.TARIH);
+                        return itemDate >= startDate;
+                    });
+                    
+                    // Update the chart with filtered data
+                    updateChartWithFilteredData(filteredData);
+                } else {
+                    // Fall back to demo data generation
+                    generateDemoDataForPeriod(period);
+                }
+            } catch (error) {
+                console.error("Period data fetch error:", error);
+                generateDemoDataForPeriod(period);
+            }
+            
+            // Demo veri oluşturma fonksiyonu - daha önce yazdığınız fonksiyon
+            function generateDemoDataForPeriod(period) {
+                const dates = [];
+                const prices = [];
+                const now = new Date();
+                let startPrice = 5 + Math.random() * 5;
+                let days = 30; // Default to 1M
+                
+                switch(period) {
+                    case '1W':
+                        days = 7;
+                        break;
+                    case '1M':
+                        days = 30;
+                        break;
+                    case '3M':
+                        days = 90;
+                        break;
+                    case '6M':
+                        days = 180;
+                        break;
+                    case '1Y':
+                        days = 365;
+                        break;
+                    case 'MAX':
+                        days = 1095; // ~3 years
+                        break;
+                }
+                
+                // Generate price data
+                let price = startPrice;
+                for (let i = days; i >= 0; i--) {
+                    const date = new Date(now);
+                    date.setDate(date.getDate() - i);
+                    dates.push(formatDate(date));
+                    
+                    // Add price movement with more volatility for longer periods
+                    const volatility = days > 90 ? 0.04 : 0.03;
+                    price = price * (1 + (Math.random() * volatility * 2 - volatility));
+                    prices.push(price);
+                }
+                
+                // Update the chart
+                window.performanceChart.data.labels = dates;
+                window.performanceChart.data.datasets[0].data = prices;
+                window.performanceChart.update();
+                
+                // Hide loading indicator
+                document.getElementById('chartLoading').style.display = 'none';
+            }
+        };
+
+        // Function to show/hide tabs
+        window.showTab = function(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            
+            // Show the selected tab
+            document.getElementById(tabName).style.display = 'block';
+            
+            // Update active tab button
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        };
+
+        // Add to portfolio button click handler
+        document.getElementById('addToPortfolioBtn').addEventListener('click', function() {
+            const fundCode = document.getElementById('fundCode').textContent;
+            const fundName = document.getElementById('fundName').textContent;
+            const lastPrice = document.getElementById('lastPrice').textContent.split(' ')[0];
+            
+            if (confirm(`"${fundName}" fonunu portföyünüze eklemek istiyor musunuz?`)) {
+                // Redirect to index page with parameters to add the fund
+                window.location.href = `index.html?action=addFund&code=${fundCode}&name=${encodeURIComponent(fundName)}&value=${lastPrice}`;
+            }
+        });
+
+        // Function to update chart with filtered data from TEFAS
+        function updateChartWithFilteredData(filteredData) {
+            // Prepare data for the chart
+            const dates = [];
+            const prices = [];
+            
+            // Sort data by date in ascending order
+            const sortedData = [...filteredData].sort((a, b) => {
+                return new Date(a.TARIH) - new Date(b.TARIH);
+            });
+            
+            // Extract dates and prices
+            sortedData.forEach(item => {
+                dates.push(formatTurkishDate(item.TARIH));
+                prices.push(parseFloat(item.FONFTD));
+            });
+            
+            // Update the chart
+            window.performanceChart.data.labels = dates;
+            window.performanceChart.data.datasets[0].data = prices;
+            window.performanceChart.update();
+            
+            // Hide loading indicator
+            document.getElementById('chartLoading').style.display = 'none';
+            
+            // Update performance statistics
+            if (prices.length > 0) {
+                const lastPrice = prices[prices.length - 1];
+                const maxPrice = Math.max(...prices);
+                const minPrice = Math.min(...prices);
+                
+                // Calculate daily returns
+                const returns = [];
+                for (let i = 1; i < prices.length; i++) {
+                    const dailyReturn = (prices[i] - prices[i-1]) / prices[i-1] * 100;
+                    returns.push(dailyReturn);
+                }
+                
+                const avgReturn = returns.length > 0 ? 
+                    returns.reduce((sum, val) => sum + val, 0) / returns.length : 0;
+                
+                // Calculate standard deviation
+                const sqDiffs = returns.map(value => {
+                    const diff = value - avgReturn;
+                    return diff * diff;
+                });
+                const avgSquareDiff = sqDiffs.length > 0 ? 
+                    sqDiffs.reduce((sum, val) => sum + val, 0) / sqDiffs.length : 0;
+                const stdDev = Math.sqrt(avgSquareDiff);
+                
+                document.getElementById('maxValue30').textContent = `${maxPrice.toFixed(4)} ₺`;
+                document.getElementById('minValue30').textContent = `${minPrice.toFixed(4)} ₺`;
+                document.getElementById('avgDailyReturn').textContent = `${avgReturn.toFixed(2)}%`;
+                document.getElementById('stdDeviation').textContent = `${stdDev.toFixed(2)}%`;
+            }
+        }
+
+        // Helper function to format dates
+        function formatDate(date) {
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}.${month}.${year}`;
+        }
+
+        // Load the fund details when the page loads
+        document.addEventListener('DOMContentLoaded', loadFundDetails);
+    </script>
+</body>
+</html>
