@@ -73,50 +73,91 @@ Bu proje, yatırımcıların portföylerini yönetmelerine, izlemelerine ve deng
 
 ### Versiyon 1.5.0 (Güncel)
 - **Yeni Özellikler:**
+
   ✅ Fon performans metriklerini Excel'den içe aktarma (1ay, 3ay, 6ay, YTD, 1yıl, 3yıl, 5yıl)
+
   ✅ Performans karşılaştırma grafiği ile fonların dönemsel getirileri
+
   ✅ Dönemsel sonuçların yeşil/kırmızı renk vurgularıyla gösterimi
+
   ✅ Fon detay sayfalarından portföye doğrudan ekleme
+
 - **İyileştirmeler:**
+
   ✅ Demo fon API'si genişletildi
+
   ✅ Sayfalama sistemi ile büyük listelerde performans optimizasyonu
+
   ✅ Veri önbelleğe alma ile hızlı erişim
+
   ✅ Hata yönetimi geliştirildi
+
 - **Güvenlik:**
+
   ✅ Firestore kuralları güçlendirildi
+
   ✅ Admin erişim kontrolleri sıkılaştırıldı
 
+
 ### Versiyon 1.4.0
+
 ✅ Demo fon API'si eklendi
+
 ✅ Fon detay sayfası geliştirildi
+
 ✅ Performans grafikleri ve istatistikleri eklendi
+
 ✅ Fon bilgileri görüntüleme sistemi yenilendi
+
 ✅ Yatırım bilgileri sayfası eklendi
+
 ✅ URL parametreleriyle fon ekleme özelliği eklendi
+
 ✅ Portföye doğrudan ekleme özelliği geliştirildi
 
+
 ### Versiyon 1.3.0
+
 ✅ Admin paneline ana sayfa butonu eklendi
+
 ✅ Portföy listelerinde taşma sorunları giderildi
+
 ✅ Liste öğelerinin arka plan renkleri iyileştirildi
+
 ✅ Hisse düzenleme modalı düzeltildi
+
 ✅ Veri giriş formlarının düzeni geliştirildi
+
 ✅ Responsive tasarım güncellemeleri yapıldı
 
+
 ### Versiyon 1.2.0
+
 ✅ Firebase entegrasyonu tamamlandı
+
 ✅ Hisse ve fon veritabanı oluşturuldu
+
 ✅ Portföy kaydetme özelliği eklendi
+
 ✅ Admin paneli geliştirildi
+
 ✅ Kullanıcı yetkilendirme sistemi eklendi
+
 ✅ Hata yönetimi ve güvenlik artırıldı
 
+
 ### Versiyon 1.1.0
+
 ✅ Çoklu portföy desteği eklendi
+
 ✅ Binance API entegrasyonu yapıldı
+
 ✅ Kripto para birimleri için minimum işlem tutarı kontrolü eklendi
+
 ✅ Portföy gizleme/gösterme özelliği eklendi
+
 ✅ Arayüz iyileştirmeleri yapıldı
+
 
 ## 🔄 Planlanan Güncellemeler
 
