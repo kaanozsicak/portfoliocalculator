@@ -71,7 +71,22 @@ Bu proje, yatırımcıların portföylerini yönetmelerine, izlemelerine ve deng
 
 ## 🚀 Son Güncellemeler
 
-### Versiyon 1.4.0 (Güncel)
+### Versiyon 1.5.0 (Güncel)
+- **Yeni Özellikler:**
+  ✅ Fon performans metriklerini Excel'den içe aktarma (1ay, 3ay, 6ay, YTD, 1yıl, 3yıl, 5yıl)
+  ✅ Performans karşılaştırma grafiği ile fonların dönemsel getirileri
+  ✅ Dönemsel sonuçların yeşil/kırmızı renk vurgularıyla gösterimi
+  ✅ Fon detay sayfalarından portföye doğrudan ekleme
+- **İyileştirmeler:**
+  ✅ Demo fon API'si genişletildi
+  ✅ Sayfalama sistemi ile büyük listelerde performans optimizasyonu
+  ✅ Veri önbelleğe alma ile hızlı erişim
+  ✅ Hata yönetimi geliştirildi
+- **Güvenlik:**
+  ✅ Firestore kuralları güçlendirildi
+  ✅ Admin erişim kontrolleri sıkılaştırıldı
+
+### Versiyon 1.4.0
 ✅ Demo fon API'si eklendi
 ✅ Fon detay sayfası geliştirildi
 ✅ Performans grafikleri ve istatistikleri eklendi
@@ -162,3 +177,4 @@ MIT License - Detaylar için [LICENSE](LICENSE) dosyasına bakın.
 [İletişim bilgileri eklenecek]
 
 🔗 **Demo Sürüm:** https://portfoliocalculator.netlify.app
+```
