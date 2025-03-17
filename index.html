@@ -417,6 +417,8 @@
 
 <script>
 let newValues = { 1: [], 2: [], 3: [], 4: [] };
+// Add a new tracking object for deleted values with better structure
+let deletedValues = {};
 
 // Genel Değer Ekleme Fonksiyonu
 function addValue(portfolioId, valueName = null, valueValue = null, valuePercent = null) {
@@ -469,6 +471,17 @@ function removeValue(portfolioId, valueName) {
   // Input değerlerini sıfırla
   document.getElementById(valueName).value = '0';
   document.getElementById(`${valueName}_percent`).value = '0';
+
+  // Track this value as deleted with timestamp for more reliable tracking
+  if (!deletedValues[portfolioId]) {
+    deletedValues[portfolioId] = {};
+  }
+  deletedValues[portfolioId][valueName] = {
+    timestamp: Date.now(),
+    deleted: true
+  };
+  
+  console.log(`Deleted value ${valueName} in portfolio ${portfolioId}`, deletedValues);
 
   // Kalan görünür değerlerin yüzdelerini yeniden hesapla
   const visibleRows = Array.from(form.getElementsByClassName('portfolio-row'))
@@ -1148,46 +1161,57 @@ function updateValueName(portfolioId, type) {
 
 async function loadDetailedInfo() {
     try {
+        // Check if elements exist before trying to populate them
+        const stocksGrid = document.getElementById('stocksGrid');
+        const fundsGrid = document.getElementById('fundsGrid');
+        
+        if (!stocksGrid && !fundsGrid) {
+            console.log("Info grid elements not found, skipping loadDetailedInfo");
+            return; // Skip if elements don't exist
+        }
+
         // Hisseleri yükle
         const stocksSnapshot = await getDocs(collection(db, "stocks"));
-        const stocksGrid = document.getElementById('stocksGrid');
-        stocksGrid.innerHTML = '';
-
-        stocksSnapshot.forEach(doc => {
-            const stock = doc.data();
-            stocksGrid.innerHTML += `
-                <div class="info-card">
-                    <h3>${stock.symbol} - ${stock.name}</h3>
-                    <p>${stock.description || 'Açıklama bulunmuyor'}</p>
-                    <p><span class="info-label">Sektör:</span> ${stock.sector || 'Belirtilmemiş'}</p>
-                    <p><span class="info-label">Website:</span> 
-                        ${stock.website ? `<a href="${stock.website}" target="_blank">${stock.website}</a>` : 'Belirtilmemiş'}
-                    </p>
-                </div>
-            `;
-        });
+        
+        if (stocksGrid) {
+            stocksGrid.innerHTML = '';
+            stocksSnapshot.forEach(doc => {
+                const stock = doc.data();
+                stocksGrid.innerHTML += `
+                    <div class="info-card">
+                        <h3>${stock.symbol} - ${stock.name}</h3>
+                        <p>${stock.description || 'Açıklama bulunmuyor'}</p>
+                        <p><span class="info-label">Sektör:</span> ${stock.sector || 'Belirtilmemiş'}</p>
+                        <p><span class="info-label">Website:</span> 
+                            ${stock.website ? `<a href="${stock.website}" target="_blank">${stock.website}</a>` : 'Belirtilmemiş'}
+                        </p>
+                    </div>
+                `;
+            });
+        }
 
         // Fonları yükle - link eklendi
         const fundsSnapshot = await getDocs(collection(db, "funds"));
-        const fundsGrid = document.getElementById('fundsGrid');
-        fundsGrid.innerHTML = '';
-
-        fundsSnapshot.forEach(doc => {
-            const fund = doc.data();
-            fundsGrid.innerHTML += `
-                <div class="info-card">
-                    <h3>
-                        <a href="fund-details.html?code=${fund.code}" style="color: #4a60ff; text-decoration: none;">
-                            ${fund.code} - ${fund.name}
-                        </a>
-                    </h3>
-                    <p>${fund.description || 'Açıklama bulunmuyor'}</p>
-                    <p><span class="info-label">Tür:</span> ${fund.type || 'Belirtilmemiş'}</p>
-                    <p><span class="info-label">Şirket:</span> ${fund.company || 'Belirtilmemiş'}</p>
-                    <p><span class="info-label">Risk Seviyesi:</span> ${fund.risk || 'Belirtilmemiş'}</p>
-                </div>
-            `;
-        });
+        
+        if (fundsGrid) {
+            fundsGrid.innerHTML = '';
+            fundsSnapshot.forEach(doc => {
+                const fund = doc.data();
+                fundsGrid.innerHTML += `
+                    <div class="info-card">
+                        <h3>
+                            <a href="fund-details.html?code=${fund.code}" style="color: #4a60ff; text-decoration: none;">
+                                ${fund.code} - ${fund.name}
+                            </a>
+                        </h3>
+                        <p>${fund.description || 'Açıklama bulunmuyor'}</p>
+                        <p><span class="info-label">Tür:</span> ${fund.type || 'Belirtilmemiş'}</p>
+                        <p><span class="info-label">Şirket:</span> ${fund.company || 'Belirtilmemiş'}</p>
+                        <p><span class="info-label">Risk Seviyesi:</span> ${fund.risk || 'Belirtilmemiş'}</p>
+                    </div>
+                `;
+            });
+        }
     } catch (error) {
         console.error("Detaylı bilgi yüklenirken hata:", error);
     }
@@ -1355,15 +1379,22 @@ function showInfoTab(tabName) {
             } catch (error) {
                 console.error("Veriler yüklenemedi:", error);
             }
-            await loadDetailedInfo(); // Detaylı bilgileri yükle
+            
+            // Only call loadDetailedInfo if we're on the info page
+            // Check if the info page elements exist before trying to load the info
+            if (document.getElementById('stocksGrid') || document.getElementById('fundsGrid')) {
+                await loadDetailedInfo(); 
+            }
         } else {
             window.location.replace('login.html');
         }
     });
 
-    // Tüm portföy verilerini toplama fonksiyonu
+    // Tüm portföy verilerini toplama fonksiyonu - Debug output enhanced
     function getAllPortfolioData() {
         const portfolios = {};
+        console.log("Starting to collect portfolio data, deletedValues:", JSON.stringify(deletedValues));
+        
         document.querySelectorAll('.container').forEach(container => {
             const id = container.id.replace('container', '');
             
@@ -1375,30 +1406,75 @@ function showInfoTab(tabName) {
 
             const form = document.getElementById(`portfolioForm${id}`);
             if (form) {
+                console.log(`Processing portfolio ${id}`);
+                
+                // Find all portfolio rows with inputs
                 form.querySelectorAll('.portfolio-row').forEach(row => {
-                    if (row.style.display !== 'none') {
-                        const label = row.querySelector('label');
-                        if (label && !label.textContent.includes('Değer Tipi:')) {
-                            const name = label.textContent.replace(':', '');
-                            const valueInput = row.querySelector('input[type="number"]:not(.percent-input)');
-                            const percentInput = row.querySelector('.percent-input');
-                            
-                            if (valueInput && percentInput) {
-                                portfolios[id].values[name] = {
-                                    value: valueInput.value || '0',
-                                    percent: parseFloat(percentInput.value) / 100, // Yüzdeyi 0-1 aralığında kaydet
-                                    visible: true
-                                };
-                            }
-                        }
+                    // Skip hidden rows (this also skips deleted rows that were hidden)
+                    if (row.style.display === 'none') {
+                        console.log(`Skipping hidden row: ${row.id || 'unnamed'}`);
+                        return;
+                    }
+                    
+                    // Skip rows with buttons for calculations
+                    if (row.querySelector('button[onclick^="calculate"]')) {
+                        console.log("Skipping calculate button row");
+                        return;
+                    }
+                    
+                    // Skip form control rows (like Değer Tipi, etc.)
+                    const label = row.querySelector('label');
+                    if (!label) {
+                        console.log("Skipping row without label");
+                        return;
+                    }
+                    
+                    const labelText = label.textContent;
+                    if (labelText.includes('Değer Tipi:') || 
+                        labelText.includes('Hisse Seç:') || 
+                        labelText.includes('Fon Seç:') ||
+                        labelText.includes('Değer İsmi:') ||
+                        labelText.includes('Değer:') ||
+                        labelText.includes('Yüzde:')) {
+                        console.log(`Skipping form control row: ${labelText}`);
+                        return;
+                    }
+                    
+                    // Get the value name from the label
+                    const name = labelText.replace(':', '');
+                    console.log(`Processing row: ${name}`);
+                    
+                    // Skip this value if it's in the deleted list for this portfolio
+                    if (deletedValues[id] && deletedValues[id][name] && deletedValues[id][name].deleted) {
+                        console.log(`Skipping deleted value: ${name} in portfolio ${id}`);
+                        return;
+                    }
+                    
+                    // Get the value and percent inputs
+                    const inputId = label.getAttribute('for');
+                    const valueInput = document.getElementById(inputId);
+                    const percentInput = document.getElementById(`${inputId}_percent`);
+                    
+                    // Add this value to the portfolio data if the inputs exist
+                    if (valueInput && percentInput) {
+                        portfolios[id].values[name] = {
+                            value: valueInput.value || '0',
+                            percent: parseFloat(percentInput.value) / 100, // Yüzdeyi 0-1 aralığında kaydet
+                            visible: true
+                        };
+                        console.log(`Added value ${name} to portfolio ${id}`);
+                    } else {
+                        console.log(`Warning: Missing inputs for ${name}`);
                     }
                 });
             }
         });
+        
+        console.log("Final portfolio data to save:", JSON.stringify(portfolios));
         return portfolios;
     }
 
-    // Kaydet butonu işleyicisi
+    // Kaydet butonu işleyicisi - enhanced with better debugging
     document.getElementById('saveBtn').addEventListener('click', async () => {
         try {
             const user = auth.currentUser;
@@ -1407,17 +1483,91 @@ function showInfoTab(tabName) {
                 return;
             }
 
+            // Show saving indicator or disable button
+            const saveBtn = document.getElementById('saveBtn');
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = "Kaydediliyor...";
+            saveBtn.disabled = true;
+
+            console.log("Starting save process...");
+            console.log("Current deletedValues:", JSON.stringify(deletedValues));
+
+            // Get all portfolio data with correctly handled deletions
             const portfolioData = getAllPortfolioData();
+            console.log("Saving portfolio data:", JSON.stringify(portfolioData));
+
+            // Save to Firestore with force replace instead of merge
             await setDoc(doc(db, "users", user.uid), {
-                portfolios: portfolioData
-            }, { merge: true });
+                portfolios: portfolioData,
+                lastUpdated: new Date().toISOString()
+            }, { merge: false });  // Changed to false to completely replace the portfolios data
             
+            console.log("Save successful, clearing deletedValues");
+            
+            // Clear the deleted values tracking after successful save
+            deletedValues = {};
+            
+            // Show success message
             alert("Portföy verileri başarıyla kaydedildi!");
+            
+            // Reset button state
+            saveBtn.textContent = originalText;
+            saveBtn.disabled = false;
         } catch (error) {
             console.error("Kaydetme hatası:", error);
             alert("Kaydetme başarısız oldu: " + error.message);
+            document.getElementById('saveBtn').disabled = false;
+            document.getElementById('saveBtn').textContent = "Kaydet";
         }
     });
+
+    // loadUserPortfolios fonksiyonu - reset deletedValues on load
+    window.loadUserPortfolios = function(portfolioData) {
+        console.log("Loading user portfolios, resetting deletedValues");
+        // Reset deletedValues when loading portfolios
+        deletedValues = {};
+        
+        // Önce tüm mevcut portföyleri temizle
+        document.querySelectorAll('.container').forEach(container => {
+            container.remove();
+        });
+
+        // Portföyleri yükle
+        Object.entries(portfolioData).forEach(([id, portfolio]) => {
+            createNewPortfolio(parseInt(id));
+            const container = document.getElementById(`container${id}`);
+            
+            if (container) {
+                container.style.display = portfolio.visible ? '' : 'none';
+                
+                if (portfolio.title) {
+                    container.querySelector('h1').textContent = portfolio.title;
+                }
+
+                // Değerleri yüklerken yüzdeleri olduğu gibi kullan
+                if (portfolio.values) {
+                    const form = document.getElementById(`portfolioForm${id}`);
+                    if (form) {
+                        Object.entries(portfolio.values).forEach(([name, data]) => {
+                            if (data.visible) {
+                                // percent değerini tekrar 100 ile çarp çünkü addValue fonksiyonu 100'e bölecek
+                                addValue(id, name, data.value, data.percent * 100);
+                            }
+                        });
+                    }
+                    
+                    // Hesapla butonunun onclick özelliğini güncelle
+                    const calcButton = form.querySelector('button[onclick^="calculate"]');
+                    if (calcButton) {
+                        calcButton.setAttribute('onclick', `calculatePortfolio('${id}')`);
+                    }
+                }
+            }
+        });
+
+        const maxId = Math.max(...Object.keys(portfolioData).map(id => parseInt(id)), 0);
+        portfolioCounter = maxId + 1;
+    };
 
     // Çıkış yapma butonu işleyicisi
     document.getElementById('logoutBtn').addEventListener('click', async () => {
@@ -1428,8 +1578,12 @@ function showInfoTab(tabName) {
                 if (shouldSave) {
                     const portfolioData = getAllPortfolioData();
                     await setDoc(doc(db, "users", user.uid), {
-                        portfolios: portfolioData
-                    }, { merge: true });
+                        portfolios: portfolioData,
+                        lastUpdated: new Date().toISOString()
+                    }, { merge: false });  // Changed to false to completely replace the portfolios data
+                    
+                    // Clear the deleted values tracking
+                    deletedValues = {};
                 }
             }
             await signOut(auth);
